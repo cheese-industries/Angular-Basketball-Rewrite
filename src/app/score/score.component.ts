@@ -9,24 +9,6 @@ import { ScoreService } from './score.service';
 })
 export class ScoreComponent implements OnInit {
   //data: Data = { events: [{ competitions: [{ competitors: [{ linescores: [{}] }] }] }] };
-<<<<<<< Updated upstream
-  data: GameData = { events: [{ competitions: [{ competitors: [{ linescores: [{}, {}, {}, {}, {}, {}] }] }] }] };
-
-
-  events = this.data.events;
-  linescores = this.data.events[0].competitions[0].competitors[0].linescores;
-  constructor(private service: ScoreService) { }
-
-  ngOnInit(): void {
-    this.service.getData().subscribe(response => { 
-      let testingThis: GameData = response
-      console.log(testingThis) 
-    })
-  }
-
-
-}
-=======
   data: GameData =
     {
       events:
@@ -70,4 +52,3 @@ ngOnInit(): void {
   }
     
   )}}
->>>>>>> Stashed changes
