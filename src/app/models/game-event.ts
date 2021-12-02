@@ -1,9 +1,3 @@
-<<<<<<< Updated upstream
-import { Competition } from "./competition";
-
-export interface GameEvent{
-    competitions: Competition[];
-=======
 import { Competition } from "./competition";
 import { Date } from "./date";
 import { GameStatus } from "./game-status";
@@ -14,5 +8,4 @@ export interface GameEvent{
     date: Date;
     links: Links[];
     status: GameStatus;
->>>>>>> Stashed changes
 }

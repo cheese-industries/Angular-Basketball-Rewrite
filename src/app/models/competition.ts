@@ -1,9 +1,3 @@
-<<<<<<< Updated upstream
-import { Competitor } from "./competitor";
-
-export interface Competition{
-    competitors: Competitor[];
-=======
 import { Broadcasts } from "./broadcasts";
 import { Competitor } from "./competitor";
 import { Headlines } from "./headlines";
@@ -18,5 +12,4 @@ export interface Competition{
     headlines: Headlines[];
     notes: Notes[];
     series: Series;
->>>>>>> Stashed changes
 }

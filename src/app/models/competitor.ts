@@ -1,9 +1,3 @@
-<<<<<<< Updated upstream
-import { Linescore } from "./linescore";
-
-export interface Competitor{
-    linescores: Linescore[] | null;
-=======
 import { HomeAway } from "./home-away";
 import { LeadersParent } from "./leaders-parent";
 import { Linescore } from "./linescore";
@@ -18,5 +12,5 @@ export interface Competitor{
     homeAway: HomeAway;
     leaders: LeadersParent[] | null;
     records: Records[];
->>>>>>> Stashed changes
+
 }
