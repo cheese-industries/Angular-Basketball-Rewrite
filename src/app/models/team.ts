@@ -1,5 +1,7 @@
 import { TeamName } from "./team-name";
 
 export interface Team{
-    displayName: TeamName | null
+   name: TeamName
+   shortDisplayName: TeamName
+   location: TeamName
 }

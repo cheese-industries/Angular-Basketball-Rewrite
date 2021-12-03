@@ -6,11 +6,11 @@ import { Team } from "./team";
 import { TotalScore } from "./total-score";
 
 export interface Competitor{
-    linescores: Linescore[] | null;
+    linescores: Linescore[];
     score: TotalScore;
-    team: Team | null;
+    team: Team;
     homeAway: HomeAway;
-    leaders: LeadersParent[] | null;
+    leaders: LeadersParent[];
     records: Records[];
 
 }

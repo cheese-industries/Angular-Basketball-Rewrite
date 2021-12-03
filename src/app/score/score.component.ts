@@ -35,7 +35,7 @@ export class ScoreComponent implements OnInit {
           }};
 */
   events = this.data?.events;
-  linescores = this.data.events[0].competitions[0].competitors[0].linescores;
+ // linescores = this.data.events[0].competitions[0].competitors[0].linescores;
 
 
   //score = this.data.events[0].competitions[0].competitors[0].score;
@@ -45,8 +45,10 @@ export class ScoreComponent implements OnInit {
     this.service.getData().subscribe(response => {
       let testingThis: GameData = response;
       this.data = response;
-      console.log(testingThis);
-      console.log(testingThis.events[0].competitions[0].venue.fullName);
+      console.log(this.data);
+      console.log('events ');
+      console.log(this.data.events[0].competitions[0].competitors[0])
+      
       //      console.log(testingThis.events[0])
       //      console.log('events[0]' + testingThis.events[0])      
 
