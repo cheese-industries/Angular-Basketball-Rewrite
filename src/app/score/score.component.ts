@@ -24,6 +24,7 @@ export class ScoreComponent implements OnInit {
     setInterval(() => this.service.getData().subscribe(response => {
       let testingThis: GameData = response;
       this.data = response;
+      console.log('data updated')
     }), 30000);
   }
 }

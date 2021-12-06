@@ -86,7 +86,7 @@ div:empty {
 	width: 200px;
 	box-align: left;
 	float: left;
-	font-size: 12px;
+	font-size: 10px;
 }
 
 .leaders {
@@ -113,7 +113,7 @@ div:empty {
 	width: 300px;
 	box-align: left;
 	float: left;
-	font-size: 12px;
+	font-size: 10px;
     overflow: hidden;
 }
 

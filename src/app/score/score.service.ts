@@ -13,7 +13,7 @@ export class ScoreService {
   getData(): Observable<GameData> {
     //REST request to ESPN
     //Will return that data asynchronously
-  let returnedData = this.http.get<GameData>('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20211127');
+  let returnedData = this.http.get<GameData>('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard');
   console.log(returnedData);
   return returnedData
   }
