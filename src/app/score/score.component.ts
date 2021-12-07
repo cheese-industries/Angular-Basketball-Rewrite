@@ -13,18 +13,20 @@ export class ScoreComponent implements OnInit {
   constructor(private service: ScoreService) { };
 
   ngOnInit(): void {
-    this.service.getData().subscribe(response => {
-      let testingThis: GameData = response;
-      this.data = response;
-    })
+    this.getTheScores();
     this.setIntrvl();
   }
 
   setIntrvl() {
-    setInterval(() => this.service.getData().subscribe(response => {
-      let testingThis: GameData = response;
-      this.data = response;
-      console.log('data updated')
-    }), 30000);
+    setInterval(() => this.getTheScores(), 30000);
+  }
+
+  getTheScores() {
+    this.service.getData().subscribe
+      (response => {
+        let testingThis: GameData = response;
+        this.data = response;
+      })
+      .unsubscribe
   }
 }
