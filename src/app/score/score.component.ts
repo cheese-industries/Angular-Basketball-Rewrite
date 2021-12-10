@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { DatePipe, DATE_PIPE_DEFAULT_TIMEZONE, formatDate } from '@angular/common';
+import { Component, Injectable, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GameData } from '../models/game-data';
 import { ScoreService } from './score.service';
 
@@ -7,10 +9,18 @@ import { ScoreService } from './score.service';
   templateUrl: './score.component.html',
   styleUrls: ['./score.component.css']
 })
+
 export class ScoreComponent implements OnInit {
   data!: GameData;
   events = this.data?.events;
-  constructor(private service: ScoreService) { };
+  form: FormGroup;
+  dateToAppend: string | null;
+  pipe = new DatePipe('en-us')
+
+  constructor(private service: ScoreService) {
+    this.form = new FormGroup({dateToCall: new FormControl(this.getTodaysDate(), [Validators.required])});
+    this.dateToAppend = '';
+   };
 
   ngOnInit(): void {
     this.getTheScores();
@@ -29,4 +39,15 @@ export class ScoreComponent implements OnInit {
       })
       .unsubscribe
   }
+
+  getTodaysDate(): Date {
+    return new Date();
+  }
+
+  handleDateChange() {
+    console.log(this.form.get('dateToCall')?.value)
+    this.dateToAppend = this.pipe.transform(this.form.get('dateToCall')?.value, 'yyyyMMdd')
+    console.log(this.dateToAppend)
+  }
+
 }

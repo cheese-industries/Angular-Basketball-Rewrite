@@ -4,4 +4,5 @@ export interface Team{
    name: TeamName
    shortDisplayName: TeamName
    location: TeamName
+   abbreviation: TeamName
 }
