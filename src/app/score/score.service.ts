@@ -10,13 +10,13 @@ import { ScoreComponent } from './score.component';
 export class ScoreService {
   
   constructor(private http: HttpClient) { }
-
+  
   getData(): Observable<GameData> {
     //REST request to ESPN
     //Will return that data asynchronously
-
-  let returnedData = this.http.get<GameData>('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20211208');
+  let returnedData = this.http.get<GameData>('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20211203');
   return returnedData;
+  console.log(returnedData);
   }
 }
  
