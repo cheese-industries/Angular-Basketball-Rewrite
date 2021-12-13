@@ -45,10 +45,6 @@ export class ScoreComponent implements OnInit {
     this.makeTodaysDateString();
     this.dateToAppend = this.makeTodaysDateString();
     this.getIsMobileScreen();
-/*     window.onresize = () => {
-      this.mobile = this.getIsMobileScreen();
-      location.reload()
-    }; */
   }
 
 
