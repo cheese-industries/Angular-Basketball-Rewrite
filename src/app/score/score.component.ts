@@ -22,15 +22,14 @@ export class ScoreComponent implements OnInit {
   events = this.data?.events;
   form: FormGroup;
   pipe = new DatePipe('en-us')
-  dateToAppend: string | null = this.pipe.transform(this.getTodaysDate(), 'yyyyMMdd');
-  urlToFetch: string = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard";
-
+  
   constructor(private service: ScoreService, changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
     this.form = new FormGroup({dateToCall: new FormControl(this.getTodaysDate(), [Validators.required])});
-    this.mobileQuery = media.matchMedia('(max-width: 500px)');
+    this.mobileQuery = media.matchMedia('(max-width: 556px)');
     this.mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this.mobileQueryListener);
    };
+
 
    private mobileQueryListener: () => void;
 
@@ -39,60 +38,54 @@ export class ScoreComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getTheScores();
+    this.getTheScores(this.makeDefaultDate());
     this.setIntrvl();
     this.getTodaysDate();
-    this.makeTodaysDateString();
-    this.dateToAppend = this.makeTodaysDateString();
     this.getIsMobileScreen();
-  }
-
+ }
 
   
   getIsMobileScreen() {
-    console.log(window.window.innerWidth)
-    if (window.window.innerWidth < 500) {
+    if (window.window.innerWidth < 556) {
       this.mobile = true;
     } else {
       this.mobile = false;
     }
-    console.log(this.mobile);
   }
 
   setIntrvl() {
-    setInterval(() => this.getTheScores(), 30000);
+    setInterval(() => this.getTheScores(this.getDateToCall()), 30000);
   }
 
-  getTheScores() {
-    this.service.getData().subscribe
+  getTheScores(dateToFetch: string | null) {
+    const subscription = this.service.getData(dateToFetch).subscribe
       (response => {
         let testingThis: GameData = response;
+        console.log(testingThis)
         this.data = response;
+        subscription.unsubscribe();
       })
-      .unsubscribe
   }
 
   getTodaysDate(): Date {
     return new Date();
   }
 
-  makeTodaysDateString(): string {
+  getDateToCall() {
+    return this.pipe.transform(this.form.get('dateToCall')?.value, 'yyyyMMdd');
+  }
+
+   makeDefaultDate(): string {
     let month: string = String(this.getTodaysDate().getMonth() + 1);
     let day: string = String(this.getTodaysDate().getDate());
     let year: string = String(this.getTodaysDate().getFullYear());
-    let dateString : string = year + month + day;
-    console.log(dateString)
-    console.log("I want to fetch https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=" + dateString)
+    let dateString: string = year + month + day;
     return dateString;
-    }
-
+  }
+ 
   handleDateChange() {
     console.log(this.form.get('dateToCall')?.value)
-    this.dateToAppend = this.pipe.transform(this.form.get('dateToCall')?.value, 'yyyyMMdd')
-    console.log(this.dateToAppend)
-    this.urlToFetch = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=" + this.dateToAppend;  
-    console.log('i want to fetch ' + this.urlToFetch)
-    this.getTheScores()
+    this.getTheScores(this.getDateToCall())
   }
 
 }

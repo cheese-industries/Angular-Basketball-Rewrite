@@ -207,3 +207,8 @@ div:empty {
   float: left;
   font-size: 12px;
 }
+
+.datepicker-center {
+  text-align: center;
+  margin-top: 16px;
+}
