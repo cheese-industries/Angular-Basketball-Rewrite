@@ -87,8 +87,8 @@ div:empty {
 }
 
 .venue {
-	background-color: #b4bfcc;
-	width: 56%;
+  background-color: #b4bfcc;
+  width: 56%;
   box-align: left;
   float: left;
   font-size: 16px;
@@ -96,8 +96,8 @@ div:empty {
 }
 
 .xsVenue {
-	background-color: #b4bfcc;
-	width: 100%;
+  background-color: #b4bfcc;
+  width: 100%;
   box-align: left;
   float: left;
   font-size: 16px;
@@ -106,17 +106,17 @@ div:empty {
 }
 
 .headers {
-	background-color: #b4bfcc;
-	width: 44%;
-	box-align: left;
-	float: left;
-	font-size: 16px;
-	font-weight: bold;
-}  
+  background-color: #b4bfcc;
+  width: 44%;
+  box-align: left;
+  float: left;
+  font-size: 16px;
+  font-weight: bold;
+}
 
 .scoreHeaders {
-	background-color: #b4bfcc;
-	width: 80%;
+  background-color: #b4bfcc;
+  width: 80%;
   text-align: center;
   float: left;
   font-size: 16px;
@@ -124,16 +124,16 @@ div:empty {
 }
 
 .quarterHeaders {
-	background-color: #b4bfcc;
-	width: 12%;
+  background-color: #b4bfcc;
+  width: 12%;
   text-align: center;
   float: left;
   font-size: 16px;
 }
 
 .finalHeader {
-	background-color: #b4bfcc;
-	width: 20%;
+  background-color: #b4bfcc;
+  width: 20%;
   text-align: center;
   float: left;
   font-size: 16px;
@@ -211,4 +211,10 @@ div:empty {
 .datepicker-center {
   text-align: center;
   margin-top: 16px;
+}
+
+.centerVertically {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

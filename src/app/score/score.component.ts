@@ -1,9 +1,11 @@
-import { DatePipe, DATE_PIPE_DEFAULT_TIMEZONE, formatDate, getLocaleDateFormat } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, Injectable, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GameData } from '../models/game-data';
 import { ScoreService } from './score.service';
-import {MediaMatcher} from '@angular/cdk/layout';
+import { MediaMatcher } from '@angular/cdk/layout';
+
+
 
 @Component({
   selector: 'app-score',
@@ -61,7 +63,6 @@ export class ScoreComponent implements OnInit {
     const subscription = this.service.getData(dateToFetch).subscribe
       (response => {
         let testingThis: GameData = response;
-        console.log(testingThis)
         this.data = response;
         subscription.unsubscribe();
       })
@@ -84,8 +85,12 @@ export class ScoreComponent implements OnInit {
   }
  
   handleDateChange() {
-    console.log(this.form.get('dateToCall')?.value)
     this.getTheScores(this.getDateToCall())
   }
 
+  onSubmitClick(){
+    this.handleDateChange()
+  }
+
 }
+

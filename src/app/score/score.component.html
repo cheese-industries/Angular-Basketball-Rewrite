@@ -1,14 +1,15 @@
 <form [formGroup]="form" class="datepicker-center">
   <mat-form-field appearance="fill">
     <mat-label>Choose a date</mat-label>
-    <input formControlName="dateToCall" (dateChange)="handleDateChange()" matInput [matDatepicker]="picker">
+    <!-- <input formControlName="dateToCall" (dateChange)="handleDateChange()" matInput [matDatepicker]="picker"> -->
+    <input formControlName="dateToCall" matInput [matDatepicker]="picker">
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
+  <button mat-button (click)="onSubmitClick()">Submit</button>
 </form>
-
 <ng-container *ngIf="!mobileQuery.matches">
-  <mat-card-flat *ngIf="data" fxLayout="row wrap">
+  <mat-card-flat class="centerVertically" *ngIf="data" fxLayout="row wrap">
     <ul class="notTinyUl" *ngFor="let event of data.events; let i = index">
       <mat-card>
         <div class="container">
