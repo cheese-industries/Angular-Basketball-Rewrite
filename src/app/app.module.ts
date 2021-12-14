@@ -13,7 +13,7 @@ import { MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input'
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 
 
@@ -37,9 +37,8 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
     FormsModule,
     ReactiveFormsModule,
     MatInputModule,
-    MatPaginatorModule,
-    MatPaginator
-  ],
+    MatPaginatorModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
