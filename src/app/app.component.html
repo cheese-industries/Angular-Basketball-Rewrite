@@ -1,6 +1,13 @@
 <mat-toolbar color="primary">
-  <span class="title-center">NBA Scoreboard</span>
+  <h1>Sports Scores</h1>
 </mat-toolbar>
-
-<app-score></app-score>
-<!-- <app-datepicker></app-datepicker> -->
+<mat-toolbar  color="primary">
+<nav mat-tab-nav-bar ngClass = "tabs">
+<a mat-tab-link routerLink="/nba" routerLinkActive="active-button">NBA</a>
+<a mat-tab-link routerLink="/nfl" routerLinkActive="active-button">NFL</a>
+<a mat-tab-link routerLink="/nhl" routerLinkActive="active-button">NHL</a>
+<a mat-tab-link routerLink="/mlb" routerLinkActive="active-button">MLB</a>
+  </nav>
+</mat-toolbar>
+<router-outlet></router-outlet>
+ 

@@ -2,6 +2,10 @@ div:empty {
   display: none;
 }
 
+button {
+  margin-left: 16px;
+}
+
 .tinyUl {
   margin: 0;
   width: 360px;
@@ -217,4 +221,21 @@ div:empty {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.paginator {
+  margin: auto;
+  text-align: center;
+}
+
+@media only screen and (min-device-width: 0px) and (max-device-width: 556px) {
+  .isNotMobile {
+    display: none;
+  }
+}
+
+@media only screen and (min-device-width: 557px) {
+  .isMobile {
+    display: none;
+  }
 }

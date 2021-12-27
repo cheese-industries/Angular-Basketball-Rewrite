@@ -18,52 +18,35 @@ import { MediaMatcher } from '@angular/cdk/layout';
 })
 
 export class ScoreComponent implements OnInit {
-  mobileQuery: MediaQueryList;
-  mobile: boolean | undefined | void;
   data!: GameData;
   events = this.data?.events;
   form: FormGroup;
   pipe = new DatePipe('en-us')
-  
+  totalLength: any;
+  page: number = 1;
+  view: string = 'main';
+
   constructor(private service: ScoreService, changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
     this.form = new FormGroup({dateToCall: new FormControl(this.getTodaysDate(), [Validators.required])});
-    this.mobileQuery = media.matchMedia('(max-width: 556px)');
-    this.mobileQueryListener = () => changeDetectorRef.detectChanges();
-    this.mobileQuery.addListener(this.mobileQueryListener);
    };
 
-
-   private mobileQueryListener: () => void;
-
-   ngOnDestroy() {
-    this.mobileQuery.removeListener(this.mobileQueryListener);
-  }
 
   ngOnInit(): void {
     this.getTheScores(this.makeDefaultDate());
     this.setIntrvl();
     this.getTodaysDate();
-    this.getIsMobileScreen();
  }
 
-  
-  getIsMobileScreen() {
-    if (window.window.innerWidth < 556) {
-      this.mobile = true;
-    } else {
-      this.mobile = false;
-    }
-  }
-
   setIntrvl() {
-    setInterval(() => this.getTheScores(this.getDateToCall()), 30000);
+    setInterval(() => this.getTheScores(this.getDateToCall()), 150000);
   }
 
   getTheScores(dateToFetch: string | null) {
     const subscription = this.service.getData(dateToFetch).subscribe
       (response => {
-        let testingThis: GameData = response;
+        this.page = 1;
         this.data = response;
+        this.totalLength = this.data.events.length;
         subscription.unsubscribe();
       })
   }
@@ -83,14 +66,10 @@ export class ScoreComponent implements OnInit {
     let dateString: string = year + month + day;
     return dateString;
   }
- 
-  handleDateChange() {
-    this.getTheScores(this.getDateToCall())
-  }
 
   onSubmitClick(){
-    this.handleDateChange()
+    this.getTheScores(this.getDateToCall());
   }
-
+  
 }
 

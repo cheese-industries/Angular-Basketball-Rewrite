@@ -1,4 +1,15 @@
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
 .title-center {
-    flex: 1 1 auto;
     text-align: center;
   }
+
+  .tabs {
+    display: inline-block;
+    background-color: #eee;
+    border-radius: 4px;
+}
+.active-button {
+    color: #F20B22;
+} 
+
