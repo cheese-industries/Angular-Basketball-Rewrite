@@ -1,0 +1,512 @@
+<form [formGroup]="form" class="datepicker-center">
+  <mat-form-field appearance="fill">
+    <mat-label>Choose a date</mat-label>
+    <input formControlName="dateToCall" (dateChange)="handleDateChange()" matInput [matDatepicker]="picker">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    <!-- <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let team of arrayForFilter | async" [value] = "team">
+        {{team}}
+      </mat-option>
+    </mat-autocomplete> -->
+  </mat-form-field>
+</form>
+
+
+<ng-container>
+  <div class="isNotMobile">
+    <mat-card-flat class="centerVertically" *ngIf="data" fxLayout="row wrap">
+      <ul class="notTinyUl" *ngFor="let event of data.events; let i = index">
+        <mat-card class="game-card">
+          <div class="container">
+            <div class="headerLine">
+              <span class="venue">
+                {{event.competitions[0].venue.address.city}},
+                {{event.competitions[0].venue.address.state}}
+              </span>
+              <span class="headers">
+                <span class="quarterHeaders">
+                  1
+                </span>
+                <span class="quarterHeaders">
+                  2
+                </span>
+                <span class="quarterHeaders">
+                  3
+                </span>
+                <span class="quarterHeaders">
+                  4
+                </span>
+                <div *ngFor="let linescore of event.competitions[0].competitors[0].linescores; let j = index">
+                  <span *ngIf="j===4" class="quarterHeaders">
+                    OT
+                  </span>
+                  <span *ngIf="j>4" class="quarterHeaders">
+                    {{j - 3}}OT
+                  </span>
+                </div>
+
+                <span class="finalHeader">
+                  Total
+                </span>
+              </span>
+            </div>
+            <div class="teamContainer">
+              <span
+                *ngIf="event.competitions[0].competitors[1].records && event.competitions[0].competitors[1].records[3]"
+                class="teamName">
+                <span class="teamRank">
+                  {{event.competitions[0].competitors[1].curatedRank.current}}
+                </span>
+                {{event.competitions[0].competitors[1].team.location}}
+                ({{event.competitions[0].competitors[1].records[0].summary}},
+                {{event.competitions[0].competitors[1].records[3].summary}}
+                {{event.competitions[0].competitors[1].team.conferenceId}})
+              </span>
+              <span
+                *ngIf="event.competitions[0].competitors[1].records && !event.competitions[0].competitors[1].records[3]"
+                class="teamName">
+                <span class="teamRank">
+                  {{event.competitions[0].competitors[1].curatedRank.current}}
+                </span>
+                {{event.competitions[0].competitors[1].team.location}}
+                ({{event.competitions[0].competitors[1].records[0].summary}})
+              </span>
+              <span *ngIf="!event.competitions[0].competitors[1].records" class="teamName">
+                <span class="teamRank">
+                  {{event.competitions[0].competitors[1].curatedRank.current}}
+                </span>
+                {{event.competitions[0].competitors[1].team.location}}
+              </span>
+              <div class="teamScores">
+                <div *ngIf="event.competitions[0].competitors[0].linescores">
+                  <div *ngIf=data.events[i].competitions[0].competitors[1].linescores[0] class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[0].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[0] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <div *ngIf=event.competitions[0].competitors[1].linescores[1] class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[1].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[1] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <div *ngIf=event.competitions[0].competitors[1].linescores[2] class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[2].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[2] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <div *ngIf=event.competitions[0].competitors[1].linescores[3] class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[3].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[3] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[4]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[4].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[5]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[5].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[6]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[6].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[7]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[7].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[8]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[8].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[9]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[9].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[10]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[10].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[11]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[11].value}}
+                  </span>
+                  <div *ngIf="event.competitions[0].competitors[0].score" class="teamFinalScores">
+                    {{event.competitions[0].competitors[1].score}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="teamContainer">
+              <span *ngIf="!event.competitions[0].competitors[0].records" class="teamName">
+                <span class="teamRank">
+                  {{event.competitions[0].competitors[0].curatedRank.current}}
+                </span>
+                {{event.competitions[0].competitors[0].team.location}}
+              </span>
+              <span *ngIf="event.competitions[0].competitors[0].records">
+              <span *ngIf="event.competitions[0].competitors[0].records[3]" class="teamName">
+                <span *ngIf="event.competitions[0].competitors[0].curatedRank" class="teamRank">
+                  {{event.competitions[0].competitors[0].curatedRank.current}}
+                </span>
+                {{event.competitions[0].competitors[0].team.location}}
+                ({{event.competitions[0].competitors[0].records[0].summary}},
+                {{event.competitions[0].competitors[0].records[3].summary}}
+                {{event.competitions[0].competitors[0].team.conferenceId}})
+              </span>
+              <span
+                *ngIf="!event.competitions[0].competitors[0].records[3] && event.competitions[0].competitors[0].records"
+                class="teamName">
+                <span class="teamRank">
+                  {{event.competitions[0].competitors[0].curatedRank.current}}
+                </span>
+                {{event.competitions[0].competitors[0].team.location}}
+                ({{event.competitions[0].competitors[0].records[0].summary}})
+              </span>
+            </span>
+              <div class="teamScores">
+                <div *ngIf="data.events[i].competitions[0].competitors[0].linescores">
+                  <div *ngIf=data.events[i].competitions[0].competitors[1].linescores[0] class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[0].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[0] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <div *ngIf=event.competitions[0].competitors[1].linescores[1] class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[1].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[1] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <div *ngIf=event.competitions[0].competitors[1].linescores[2] class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[2].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[2] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <div *ngIf=event.competitions[0].competitors[1].linescores[3] class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[3].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[3] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[4]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[4].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[5]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[5].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[6]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[6].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[7]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[7].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[8]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[8].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[9]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[9].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[10]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[10].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[11]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[11].value}}
+                  </span>
+                  <div *ngIf="event.competitions[0].competitors[0].score" class="teamFinalScores">
+                    {{event.competitions[0].competitors[0].score}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="clockAndPeriod">{{event.status.type.detail}}</div>
+            <div class="links">
+              <div *ngIf="data.events[i].links">
+                <a href="{{event.links[0].href}}">ESPN GameCast</a>
+                <span *ngIf="data.events[i].links[1]"> /<a href="{{event.links[1].href}}"> Box Score</a></span>
+                <span *ngIf="data.events[i].links[3]"> /<a href="{{event.links[3].href}}">Play By Play</a></span>
+                <span *ngIf=event.links[4]> / <a href="{{event.links[4].href}}">Recap</a></span>
+              </div>
+            </div>
+            <div *ngIf="data.events[i].competitions[0].competitors[1].leaders">
+              <div class="leaders">
+                <b>
+                  {{event.competitions[0].competitors[1].team.location}} Leaders:</b><br>
+                <span *ngIf="data.events[i].competitions[0].competitors[1].leaders">
+                  <b>{{event.competitions[0].competitors[1].leaders[0].shortDisplayName}}: </b>
+                  {{event.competitions[0].competitors[1].leaders[0].leaders[0].athlete.fullName}}
+                  {{event.competitions[0].competitors[1].leaders[0].leaders[0].displayValue}}<br>
+                </span>
+                <span *ngIf="data.events[i].competitions[0].competitors[1].leaders[1]">
+                  <b>{{event.competitions[0].competitors[1].leaders[1].shortDisplayName}}: </b>
+                  {{event.competitions[0].competitors[1].leaders[1].leaders[0].athlete.fullName}}
+                  {{event.competitions[0].competitors[1].leaders[1].leaders[0].displayValue}}<br>
+                </span>
+                <span *ngIf="data.events[i].competitions[0].competitors[1].leaders[2]">
+                  <b>{{event.competitions[0].competitors[1].leaders[2].shortDisplayName}}: </b>
+                  {{event.competitions[0].competitors[1].leaders[2].leaders[0].athlete.fullName}}
+                  {{event.competitions[0].competitors[1].leaders[2].leaders[0].displayValue}}<br>
+                </span>
+              </div>
+              <div class="leaders">
+                <b>
+                  {{event.competitions[0].competitors[0].team.location}} Leaders:</b><br>
+                <span *ngIf="data.events[i].competitions[0].competitors[0].leaders[0]">
+                  <b>{{event.competitions[0].competitors[0].leaders[0].shortDisplayName}}: </b>
+                  {{event.competitions[0].competitors[0].leaders[0].leaders[0].athlete.fullName}}
+                  {{event.competitions[0].competitors[0].leaders[0].leaders[0].displayValue}}<br>
+                </span>
+                <span *ngIf="data.events[i].competitions[0].competitors[0].leaders[1]">
+                  <b>{{event.competitions[0].competitors[0].leaders[1].shortDisplayName}}: </b>
+                  {{event.competitions[0].competitors[0].leaders[1].leaders[0].athlete.fullName}}
+                  {{event.competitions[0].competitors[0].leaders[1].leaders[0].displayValue}}<br>
+                </span>
+                <span *ngIf="data.events[i].competitions[0].competitors[0].leaders[2]">
+                  <b>{{event.competitions[0].competitors[0].leaders[2].shortDisplayName}}: </b>
+                  {{event.competitions[0].competitors[0].leaders[2].leaders[0].athlete.fullName}}
+                  {{event.competitions[0].competitors[0].leaders[2].leaders[0].displayValue}}<br>
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </mat-card>
+        <!-- </a> -->
+
+      </ul>
+      <p></p>
+
+    </mat-card-flat>
+  </div>
+</ng-container>
+
+<ng-container>
+  <div class="isMobile">
+    <mat-card-flat *ngIf="data" fxLayout="row wrap">
+      <ul class="xs" *ngFor="let event of data.events; let i = index">
+        <mat-card>
+          <div class="xsContainer">
+            <span class="xsVenue">
+              {{event.competitions[0].venue.fullName}} -
+              {{event.competitions[0].venue.address.city}},
+              {{event.competitions[0].venue.address.state}}
+            </span>
+            <div class="headerLine">
+              <span class="xsBlankHeaderPlaceholder">
+                &nbsp;
+              </span>
+              <div class="scoreHeaders">
+                <span class="quarterHeaders">
+                  1
+                </span>
+                <span class="quarterHeaders">
+                  2
+                </span>
+                <span class="quarterHeaders">
+                  3
+                </span>
+                <span class="quarterHeaders">
+                  4
+                </span>
+                <div *ngIf="data.events[i].competitions[0].competitors[0].linescores">
+                  <!--           <div *ngFor="let linescore of 'data.events[i].competitions[0].competitors[0].linescores'; let j = index">
+                  <span *ngIf="j===3" class="quarterHeaders">
+                      OT
+                  </span>
+                <span *ngIf="j>4" class="quarterHeaders">
+                  {{j - 3}}OT
+                </span> -->
+                  <span *ngIf="data.events[i].competitions[0].competitors[0].linescores[4]" class="quarterHeaders">
+                    OT
+                  </span>
+                  <span *ngIf="data.events[i].competitions[0].competitors[0].linescores[5]" class="quarterHeaders">
+                    2OT
+                  </span>
+                  <span *ngIf="data.events[i].competitions[0].competitors[0].linescores[6]" class="quarterHeaders">
+                    3OT
+                  </span>
+                  <span *ngIf="data.events[i].competitions[0].competitors[0].linescores[7]" class="quarterHeaders">
+                    4OT
+                  </span>
+                  <span *ngIf="data.events[i].competitions[0].competitors[0].linescores[8]" class="quarterHeaders">
+                    5OT
+                  </span>
+                  <span *ngIf="data.events[i].competitions[0].competitors[0].linescores[9]" class="quarterHeaders">
+                    6OT
+                  </span>
+                  <span *ngIf="data.events[i].competitions[0].competitors[0].linescores[10]" class="quarterHeaders">
+                    7OT
+                  </span>
+                  <span *ngIf="data.events[i].competitions[0].competitors[0].linescores[11]" class="quarterHeaders">
+                    8OT
+                  </span>
+                </div>
+                <span class="finalHeader">
+                  Total
+                </span>
+              </div>
+            </div>
+            <div class="teamContainer">
+              <span class="xsTeamName">
+                {{event.competitions[0].competitors[1].team.abbreviation}}
+              </span>
+              <div class="xsTeamScores">
+                <div *ngIf="data.events[i].competitions[0].competitors[0].linescores">
+                  <div *ngIf=data.events[i].competitions[0].competitors[1].linescores[0] class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[0].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[0] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <div *ngIf=event.competitions[0].competitors[1].linescores[1] class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[1].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[1] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <div *ngIf=event.competitions[0].competitors[1].linescores[2] class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[2].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[2] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <div *ngIf=event.competitions[0].competitors[1].linescores[3] class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[3].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[3] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[4]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[4].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[5]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[5].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[6]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[6].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[7]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[7].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[8]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[8].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[9]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[9].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[10]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[10].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[11]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[1].linescores[11].value}}
+                  </span>
+                  <div *ngIf="event.competitions[0].competitors[0].score" class="teamFinalScores">
+                    {{event.competitions[0].competitors[1].score}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="teamContainer">
+              <span class="xsTeamName">
+                {{event.competitions[0].competitors[0].team.abbreviation}}
+              </span>
+              <div class="xsTeamScores">
+                <div *ngIf="data.events[i].competitions[0].competitors[0].linescores">
+                  <div *ngIf=data.events[i].competitions[0].competitors[1].linescores[0] class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[0].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[0] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <div *ngIf=event.competitions[0].competitors[1].linescores[1] class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[1].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[1] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <div *ngIf=event.competitions[0].competitors[1].linescores[2] class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[2].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[2] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <div *ngIf=event.competitions[0].competitors[1].linescores[3] class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[3].value}}
+                  </div>
+                  <div *ngIf=!data.events[i].competitions[0].competitors[1].linescores[3] class="teamQtrScores">
+                    &nbsp;
+                  </div>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[4]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[4].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[5]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[5].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[6]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[6].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[7]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[7].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[8]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[8].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[9]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[9].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[10]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[10].value}}
+                  </span>
+                  <span *ngIf="event.competitions[0].competitors[0].linescores[11]" class="teamQtrScores">
+                    {{event.competitions[0].competitors[0].linescores[11].value}}
+                  </span>
+                  <div *ngIf="event.competitions[0].competitors[0].score" class="teamFinalScores">
+                    {{event.competitions[0].competitors[0].score}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="clockAndPeriodxs">{{event.status.type.detail}}</div>
+            <div *ngIf="data.events[i].competitions[0].competitors[1].leaders">
+              <div class="leaders">
+                <b>{{event.competitions[0].competitors[1].team.abbreviation}} Leaders:</b><br>
+                <span *ngIf="data.events[i].competitions[0].competitors[1].leaders[0]">
+                  <b>{{event.competitions[0].competitors[1].leaders[0].shortDisplayName}}: </b>
+                  {{event.competitions[0].competitors[1].leaders[0].leaders[0].athlete.shortName}}
+                  {{event.competitions[0].competitors[1].leaders[0].leaders[0].displayValue}}<br>
+                </span>
+                <span *ngIf="data.events[i].competitions[0].competitors[1].leaders[1]">
+                  <b>{{event.competitions[0].competitors[1].leaders[1].shortDisplayName}}: </b>
+                  {{event.competitions[0].competitors[1].leaders[1].leaders[0].athlete.shortName}}
+                  {{event.competitions[0].competitors[1].leaders[1].leaders[0].displayValue}}<br>
+                </span>
+                <span *ngIf="data.events[i].competitions[0].competitors[1].leaders[2]">
+                  <b>{{event.competitions[0].competitors[1].leaders[2].shortDisplayName}}: </b>
+                  {{event.competitions[0].competitors[1].leaders[2].leaders[0].athlete.shortName}}
+                  {{event.competitions[0].competitors[1].leaders[2].leaders[0].displayValue}}<br>
+                </span>
+              </div>
+              <div class="leaders">
+                <b>{{event.competitions[0].competitors[0].team.abbreviation}} Leaders:</b><br>
+                <span *ngIf="data.events[i].competitions[0].competitors[0].leaders[0]">
+                  <b>{{event.competitions[0].competitors[0].leaders[0].shortDisplayName}}: </b>
+                  {{event.competitions[0].competitors[0].leaders[0].leaders[0].athlete.shortName}}
+                  {{event.competitions[0].competitors[0].leaders[0].leaders[0].displayValue}}<br>
+                </span>
+                <span *ngIf="data.events[i].competitions[0].competitors[0].leaders[1]">
+                  <b>{{event.competitions[0].competitors[0].leaders[1].shortDisplayName}}: </b>
+                  {{event.competitions[0].competitors[0].leaders[1].leaders[0].athlete.shortName}}
+                  {{event.competitions[0].competitors[0].leaders[1].leaders[0].displayValue}}<br>
+                </span>
+                <span *ngIf="data.events[i].competitions[0].competitors[0].leaders[2]">
+                  <b>{{event.competitions[0].competitors[0].leaders[2].shortDisplayName}}: </b>
+                  {{event.competitions[0].competitors[0].leaders[2].leaders[0].athlete.shortName}}
+                  {{event.competitions[0].competitors[0].leaders[2].leaders[0].displayValue}}<br>
+                </span>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+
+      </ul>
+    </mat-card-flat>
+  </div>
+</ng-container>

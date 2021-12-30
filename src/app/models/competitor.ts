@@ -4,6 +4,7 @@ import { Linescore } from "./linescore";
 import { Records } from "./records";
 import { Team } from "./team";
 import { TotalScore } from "./total-score";
+import { Rank} from './rank'
 
 export interface Competitor{
     linescores: Linescore[];
@@ -12,5 +13,6 @@ export interface Competitor{
     homeAway: HomeAway;
     leaders: LeadersParent[];
     records: Records[];
+    curatedRank: Rank;
 
 }

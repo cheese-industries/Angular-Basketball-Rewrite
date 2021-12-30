@@ -1,6 +1,86 @@
 <mat-toolbar color="primary">
-  <span class="title-center">NBA Scoreboard</span>
+  <button mat-button [matMenuTriggerFor]="sports">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <h1>Sports Scores</h1>
 </mat-toolbar>
+  <div>
+<router-outlet></router-outlet>
+</div>
 
-<app-score></app-score>
-<!-- <app-datepicker></app-datepicker> -->
+<mat-menu #sports="matMenu">
+  <button mat-menu-item [matMenuTriggerFor]="baseball"><mat-icon>sports_baseball</mat-icon>Baseball</button>
+  <button mat-menu-item [matMenuTriggerFor]="basketball"><mat-icon>sports_basketball</mat-icon>Basketball</button>
+  <button mat-menu-item [matMenuTriggerFor]="football"><mat-icon>sports_football</mat-icon>Football</button>
+  <button mat-menu-item [matMenuTriggerFor]="hockey"><mat-icon>sports_hockey</mat-icon>Hockey</button>
+  <button mat-menu-item [matMenuTriggerFor]="soccer"><mat-icon>sports_soccer</mat-icon>Soccer</button>
+  <button mat-menu-item [matMenuTriggerFor]="golf"><mat-icon>sports_golf</mat-icon>Golf</button>
+  <button mat-menu-item [matMenuTriggerFor]="tennis"><mat-icon>sports_tennis</mat-icon>Tennis</button>
+  <button mat-menu-item [matMenuTriggerFor]="rugby"><mat-icon>sports_rugby</mat-icon>Rugby</button>
+  <a routerLink="/afl"><button mat-menu-item><mat-icon>sports_cricket</mat-icon>Cricket</button></a>
+  <a routerLink="/afl"><button mat-menu-item><mat-icon svgIcon="aus"></mat-icon>Aussie Rules Football</button></a>
+  </mat-menu>
+  
+  <mat-menu #basketball="matMenu">
+    <a routerLink="/nba"><button mat-menu-item (click)="setLeague('nba')"><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="can"></mat-icon>NBA</button></a>
+    <a routerLink="/wnba"><button mat-menu-item (click)="setLeague('wnba')"><mat-icon svgIcon="usa"></mat-icon>WNBA</button></a>
+    <a routerLink="/g-league"><button mat-menu-item (click)="setLeague('nba-development')"><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="can"></mat-icon>NBA G-League</button></a>
+    <a routerLink="/ncaam"><button mat-menu-item (click)="setLeague('mens-college-basketball')"><mat-icon svgIcon="usa"></mat-icon>NCAA Men's</button></a>
+    <a routerLink="/ncaaw"><button mat-menu-item (click)="setLeague('womens-college-basketball')"><mat-icon svgIcon="usa"></mat-icon>NCAA Women's</button></a>
+    <a routerLink="/basketball-shared"><button mat-menu-item (click)="setLeague('nba')"><mat-icon svgIcon="usa"></mat-icon>Shared Test</button></a>
+  </mat-menu>
+
+  <mat-menu #baseball="matMenu">
+    <a routerLink="/mlb"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="can"></mat-icon>MLB</button></a>
+    <a routerLink="/aaa"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon>AAA</button></a>
+    <a routerLink="/aa"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon>AA</button></a>
+    <a routerLink="/high-a"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="can"></mat-icon>High A</button></a>
+    <a routerLink="/low-a"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon>Low A</button></a>
+    <a routerLink="/rookieleague"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="dom"></mat-icon>Rookie League</button></a>
+    <a routerLink="/ncaabaseball"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon>NCAA Baseball</button></a>
+    <a routerLink="/npb"><button mat-menu-item><mat-icon svgIcon="jpn"></mat-icon>NPB</button></a>
+    <a routerLink="/kbo"><button mat-menu-item><mat-icon svgIcon="kor"></mat-icon>KBO</button></a>
+    <a routerLink="/cpbl"><button mat-menu-item><mat-icon svgIcon="twn"></mat-icon>CPBL</button></a>
+
+  </mat-menu>
+
+  <mat-menu #football="matMenu">
+    <a routerLink="/nfl"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon>NFL</button></a>
+    <a routerLink="/ncaaf"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon>NCAA FBS</button></a>
+    <a routerLink="/cfl"><button mat-menu-item><mat-icon svgIcon="can"></mat-icon>CFL</button></a>
+  </mat-menu>
+
+  <mat-menu #hockey="matMenu">
+    <a routerLink="/nhl"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="can"></mat-icon>NHL</button></a>
+    <a routerLink="/ahl"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="can"></mat-icon>AHL</button></a>
+    <a routerLink="/echl"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="can"></mat-icon>ECHL</button></a>
+    <a routerLink="/khl"><button mat-menu-item><mat-icon svgIcon="rus"></mat-icon>KHL</button></a>
+    <a routerLink="/ncaah"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon>NCAA Hockey</button></a>
+  </mat-menu>
+
+  <mat-menu #soccer="matMenu">
+    <a routerLink="/mls"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="can"></mat-icon>MLS</button></a>
+    <a routerLink="/uslchampionship"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon>USL Championship</button></a>
+    <a routerLink="/epl"><button mat-menu-item><mat-icon svgIcon="eng"></mat-icon>Premier League</button></a>
+    <a routerLink="/bundesliga"><button mat-menu-item><mat-icon svgIcon="ger"></mat-icon>1. Bundesliga</button></a>
+    <a routerLink="/serie-a"><button mat-menu-item><mat-icon svgIcon="ita"></mat-icon>Serie A</button></a>
+    <a routerLink="/ligue-1"><button mat-menu-item><mat-icon svgIcon="fra"></mat-icon>Ligue 1</button></a>
+    <a routerLink="/la-liga"><button mat-menu-item><mat-icon svgIcon="esp"></mat-icon>La Liga</button></a>
+    <a routerLink="/championsleague"><button mat-menu-item><mat-icon svgIcon="eu"></mat-icon>Champions League</button></a>
+    <a routerLink="/europaleague"><button mat-menu-item><mat-icon svgIcon="eu"></mat-icon>Europa League</button></a>
+  </mat-menu>
+
+  <mat-menu #golf="matMenu">
+    <a routerLink="/pga"><button mat-menu-item>PGA</button></a>
+    <a routerLink="/lpga"><button mat-menu-item>LPGA</button></a>
+  </mat-menu>
+
+  <mat-menu #tennis="matMenu">
+    <a routerLink="/atp"><button mat-menu-item>ATP</button></a>
+    <a routerLink="/wta"><button mat-menu-item>WTA</button></a>
+  </mat-menu>
+
+  <mat-menu #rugby="matMenu">
+  <a routerLink="/rugbyunion"><button mat-menu-item>Rugby Union</button></a>
+  <a routerLink="/rugbyleague"><button mat-menu-item>Rugby League</button></a>
+</mat-menu>
