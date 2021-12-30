@@ -1,0 +1,86 @@
+div:empty {
+  display: none;
+}
+
+button {
+  margin: 16px;
+}
+
+.settingMaxWidth {
+  max-width: 1440px;
+  margin: auto;
+}
+
+@media only screen and (min-width: 1440px) {
+  .name {
+    font-weight: bold;
+    text-align: center;
+    font-size: 43.2px;
+  }
+
+  .teamScore {
+    font-size: 86.4px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .gameDetails {
+    font-size: 57.6px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .teamLinks {
+    font-size: 28.8px !important; text-align: center !important;
+  } 
+}
+
+@media only screen and (max-width: 1439px) {
+  .name {
+    font-size: 3vw;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .teamScore {
+    font-size: 6vw;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .gameDetails {
+    font-size: 4vw;
+    font-weight: bold;
+    text-align: center;
+  }
+
+}
+
+@media only screen and (min-device-width: 720px) {
+  .stackedLinks {
+    display: none;
+  }
+  .teamLinks {
+    font-size:2vw; text-align: center;
+  }
+}
+
+@media only screen and (max-device-width: 719px) {
+  .sideBySideLinks {
+    display: none;
+  }
+  .teamLinks {
+    font-size:4vw; text-align: center;
+  }
+}
+
+@media only screen and (min-device-width: 430px) {
+  .noHeadshots {
+    display: none;
+  }
+}
+
+@media only screen and (max-device-width: 429px) {
+  .headshots {
+    display: none;
+  }
+}

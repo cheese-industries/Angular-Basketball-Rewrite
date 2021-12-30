@@ -8,6 +8,7 @@ import { DomSanitizer } from "@angular/platform-browser";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+<<<<<<< HEAD
   title = 'basketball';
   league: any = 'nba';
 
@@ -77,4 +78,7 @@ setLeague(league: string) {
   this.league = league;
   console.log(this.league);
 }
+=======
+  title = 'Sports Scores';
+>>>>>>> f952296ab131c473c815cef1b65b6d27e5aed1cf
 }

@@ -1,4 +1,5 @@
 <mat-toolbar color="primary">
+<<<<<<< HEAD
   <button mat-button [matMenuTriggerFor]="sports">
     <mat-icon>menu</mat-icon>
   </button>
@@ -84,3 +85,17 @@
   <a routerLink="/rugbyunion"><button mat-menu-item>Rugby Union</button></a>
   <a routerLink="/rugbyleague"><button mat-menu-item>Rugby League</button></a>
 </mat-menu>
+=======
+  <h1>Sports Scores</h1>
+</mat-toolbar>
+<mat-toolbar  color="primary">
+<nav mat-tab-nav-bar ngClass = "tabs">
+<a mat-tab-link routerLink="/nba" routerLinkActive="active-button">NBA</a>
+<a mat-tab-link routerLink="/nfl" routerLinkActive="active-button">NFL</a>
+<a mat-tab-link routerLink="/nhl" routerLinkActive="active-button">NHL</a>
+<a mat-tab-link routerLink="/mlb" routerLinkActive="active-button">MLB</a>
+  </nav>
+</mat-toolbar>
+<router-outlet></router-outlet>
+ 
+>>>>>>> f952296ab131c473c815cef1b65b6d27e5aed1cf

@@ -1,0 +1,168 @@
+<div class="settingMaxWidth">
+  <div class="name">{{data.name}}</div>
+  <mat-divider></mat-divider>
+  <mat-grid-list cols="20">
+    <mat-grid-tile colspan="7" rowspan="6">
+      <img src="{{data.competitions[0].competitors[1].team.logo}}"
+        style="max-width: 90%; max-height: 90%; height: auto;">
+    </mat-grid-tile>
+    <mat-grid-tile colspan="3" rowspan="6">
+      <div class="teamScore">{{data.competitions[0].competitors[1].score}}
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="3" rowspan="6">
+      <div class="teamScore">{{data.competitions[0].competitors[0].score}}
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="7" rowspan="6">
+      <img src="{{data.competitions[0].competitors[0].team.logo}}"
+        style="max-width: 90%; max-height: 90%; height: auto;">
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-divider></mat-divider>
+  <mat-grid-list cols="20">
+    <mat-grid-tile colspan="20" style="height: auto">
+      <div class="gameDetails">{{data.status.type.detail}}</div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="20">
+      <div class="gameDetails">{{data.competitions[0].venue.address.city}},
+        {{data.competitions[0].venue.address.state}}</div>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-divider></mat-divider>
+  <mat-grid-list cols="20">
+    <mat-grid-tile colspan="10">
+      <div class="gameDetails">
+        {{data.competitions[0].competitors[1].team.shortDisplayName}} Leaders</div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="10">
+      <div class="gameDetails">
+        {{data.competitions[0].competitors[0].team.shortDisplayName}} Leaders</div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="3" rowspan="3">
+      <img src="{{data.competitions[0].competitors[1].leaders[0].leaders[0].athlete.headshot}}"
+        style="width: auto; height: 100%">
+    </mat-grid-tile>
+    <mat-grid-tile colspan="7" rowspan="3">
+      <div class="name">
+        {{data.competitions[0].competitors[1].leaders[0].leaders[0].athlete.fullName}}<br>
+        {{data.competitions[0].competitors[1].leaders[0].leaders[0].displayValue}}
+        {{data.competitions[0].competitors[1].leaders[0].shortDisplayName}}</div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="3" rowspan="3">
+      <img src="{{data.competitions[0].competitors[0].leaders[0].leaders[0].athlete.headshot}}"
+        style="width: auto; height: 100%">
+    </mat-grid-tile>
+    <mat-grid-tile colspan="7" rowspan="3">
+      <div class="name">
+        {{data.competitions[0].competitors[0].leaders[0].leaders[0].athlete.fullName}}<br>
+        {{data.competitions[0].competitors[0].leaders[0].leaders[0].displayValue}}
+        {{data.competitions[0].competitors[0].leaders[0].shortDisplayName}}</div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="3" rowspan="3">
+      <img src="{{data.competitions[0].competitors[1].leaders[1].leaders[0].athlete.headshot}}"
+        style="width: auto; height: 100%">
+    </mat-grid-tile>
+    <mat-grid-tile colspan="7" rowspan="3">
+      <div class="name">
+        {{data.competitions[0].competitors[1].leaders[1].leaders[0].athlete.fullName}}<br>
+        {{data.competitions[0].competitors[1].leaders[1].leaders[0].displayValue}}
+        {{data.competitions[0].competitors[1].leaders[1].shortDisplayName}}</div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="3" rowspan="3">
+      <img src="{{data.competitions[0].competitors[0].leaders[1].leaders[0].athlete.headshot}}"
+        style="width: auto; height: 100%">
+    </mat-grid-tile>
+    <mat-grid-tile colspan="7" rowspan="3">
+      <div class="name">
+        {{data.competitions[0].competitors[0].leaders[1].leaders[0].athlete.fullName}}<br>
+        {{data.competitions[0].competitors[0].leaders[1].leaders[0].displayValue}}
+        {{data.competitions[0].competitors[0].leaders[1].shortDisplayName}}</div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="3" rowspan="3">
+      <img src="{{data.competitions[0].competitors[1].leaders[2].leaders[0].athlete.headshot}}"
+        style="width: auto; height: 100%">
+    </mat-grid-tile>
+    <mat-grid-tile colspan="7" rowspan="3">
+      <div class="name">
+        {{data.competitions[0].competitors[1].leaders[2].leaders[0].athlete.fullName}}<br>
+        {{data.competitions[0].competitors[1].leaders[2].leaders[0].displayValue}}
+        {{data.competitions[0].competitors[1].leaders[2].shortDisplayName}}</div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="3" rowspan="3">
+      <img src="{{data.competitions[0].competitors[0].leaders[2].leaders[0].athlete.headshot}}"
+        style="width: auto; height: 100%">
+    </mat-grid-tile>
+    <mat-grid-tile colspan="7" rowspan="3">
+      <div class="name">
+        {{data.competitions[0].competitors[0].leaders[2].leaders[0].athlete.fullName}}<br>
+        {{data.competitions[0].competitors[0].leaders[2].leaders[0].displayValue}}
+        {{data.competitions[0].competitors[0].leaders[2].shortDisplayName}}</div>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-divider></mat-divider>
+  <mat-grid-list cols="20" class="sideBySideLinks">
+    <mat-grid-tile class="gameDetails" colspan="10">
+      {{data.competitions[0].competitors[1].team.shortDisplayName}} Links
+    </mat-grid-tile>
+    <mat-grid-tile class="gameDetails" colspan="10">
+      {{data.competitions[0].competitors[0].team.shortDisplayName}} Links
+    </mat-grid-tile>
+    <mat-grid-tile class="teamLinks" colspan="10">
+      <a
+        href="{{data.competitions[0].competitors[1].team.links[1].href}}">{{data.competitions[0].competitors[1].team.links[1].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <a
+        href="{{data.competitions[0].competitors[1].team.links[2].href}}">{{data.competitions[0].competitors[1].team.links[2].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <a
+        href="{{data.competitions[0].competitors[1].team.links[3].href}}">{{data.competitions[0].competitors[1].team.links[3].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <a
+        href="{{data.competitions[0].competitors[1].team.links[9].href}}">{{data.competitions[0].competitors[1].team.links[9].text}}</a>
+    </mat-grid-tile>
+    <mat-grid-tile class="teamLinks" colspan="10">
+      <a
+        href="{{data.competitions[0].competitors[0].team.links[1].href}}">{{data.competitions[0].competitors[0].team.links[1].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <a
+        href="{{data.competitions[0].competitors[0].team.links[2].href}}">{{data.competitions[0].competitors[0].team.links[2].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <a
+        href="{{data.competitions[0].competitors[0].team.links[3].href}}">{{data.competitions[0].competitors[0].team.links[3].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <a
+        href="{{data.competitions[0].competitors[0].team.links[9].href}}">{{data.competitions[0].competitors[0].team.links[9].text}}</a>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <mat-grid-list cols="20" class="stackedLinks">
+    <mat-grid-tile colspan="20">
+      <div style="font-size:5vw; font-weight: bold; text-align: center;">
+        {{data.competitions[0].competitors[1].team.shortDisplayName}} Links
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="20" class="teamLinks">
+      <a
+        href="{{data.competitions[0].competitors[1].team.links[1].href}}">{{data.competitions[0].competitors[1].team.links[1].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <a
+        href="{{data.competitions[0].competitors[1].team.links[2].href}}">{{data.competitions[0].competitors[1].team.links[2].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <a
+        href="{{data.competitions[0].competitors[1].team.links[3].href}}">{{data.competitions[0].competitors[1].team.links[3].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <a
+        href="{{data.competitions[0].competitors[1].team.links[9].href}}">{{data.competitions[0].competitors[1].team.links[9].text}}</a>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="20">
+      <div style="font-size:5vw; font-weight: bold; text-align: center;">
+        {{data.competitions[0].competitors[0].team.shortDisplayName}} Links
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="20" class="teamLinks">
+      <a
+        href="{{data.competitions[0].competitors[0].team.links[1].href}}">{{data.competitions[0].competitors[0].team.links[1].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <a
+        href="{{data.competitions[0].competitors[0].team.links[2].href}}">{{data.competitions[0].competitors[0].team.links[2].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <a
+        href="{{data.competitions[0].competitors[0].team.links[3].href}}">{{data.competitions[0].competitors[0].team.links[3].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <a
+        href="{{data.competitions[0].competitors[0].team.links[9].href}}">{{data.competitions[0].competitors[0].team.links[9].text}}</a>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <a routerLink="/">
+    <button mat-raised-button color="primary">Return to main scoreboard</button>
+  </a>
+</div>
