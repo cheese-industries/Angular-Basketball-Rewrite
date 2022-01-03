@@ -5,8 +5,10 @@ import { NcaamenComponent } from './modules/basketball/components/ncaamen/ncaame
 import { NcaawomenComponent } from './modules/basketball/components/ncaawomen/ncaawomen.component';
 import { NbaComponent } from './modules/basketball/components/nba/nba.component';
 import { WnbaComponent } from './modules/basketball/components/wnba/wnba.component';
+import { GameDetailsComponent } from './game-details/game-details.component';
 
 const routes: Routes = [
+  {path: 'game-details/:id', component: GameDetailsComponent},
   {path: 'ncaam', component: NcaamenComponent},
   {path: 'ncaaw', component: NcaawomenComponent},
   {path: 'g-league', component: GLeagueComponent},

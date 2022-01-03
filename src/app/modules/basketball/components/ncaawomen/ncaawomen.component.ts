@@ -9,7 +9,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GameData } from '../../../../models/game-data';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
 import { BasketballService } from '../../basketball.service';
 
 @Component({
@@ -32,7 +31,6 @@ export class NcaawomenComponent implements OnInit {
   arrayForFilter = [''];
   leagueToFetch = 'womens-college-basketball';
   filteredOptions: Observable<string[]> | undefined;
-
   conferenceIds: object = {
     '3': 'A-10',
     '2': 'ACC',
@@ -82,6 +80,7 @@ export class NcaawomenComponent implements OnInit {
     this.getTheScores(this.makeDefaultDate());
     this.setIntrvl();
     this.getTodaysDate();
+    this.service.leagueToFetch = this.leagueToFetch;
     // this.filteredOptions = this.myControl.valueChanges.pipe(
     //   startWith(''),
     //   map(value =>this._filter(value))
@@ -107,6 +106,7 @@ export class NcaawomenComponent implements OnInit {
         this.totalLength = this.data.events.length;
         this.conferenceLookup();
         this.checkForRankings();
+        this.shrinkLongSchoolNames();
         this.createArrayForFilter();
         console.log(this.arrayForFilter);
         subscription.unsubscribe();
@@ -140,12 +140,34 @@ export class NcaawomenComponent implements OnInit {
     let month: string = String(this.getTodaysDate().getMonth() + 1);
     let day: string = String(this.getTodaysDate().getDate());
     let year: string = String(this.getTodaysDate().getFullYear());
+    if (+day < 10) {
+      day = '0' + day;
+    }
+    if (+month < 10) {
+      month = '0' + month;
+    }
     let dateString: string = year + month + day;
     return dateString;
   }
 
   handleDateChange() {
     this.getTheScores(this.getDateToCall());
+  }
+
+  shrinkLongSchoolNames() {
+    for (var i = 0; i < this.totalLength; i++) {
+      for (var j = 0; j < 2; j++) {
+        let schoolName = <string>(
+          this.data.events[i].competitions[0].competitors[j].team.location
+        );
+        if (schoolName.length > 20) {
+          schoolName = schoolName.replace('University', 'U');
+          schoolName = schoolName.replace('College', 'Col');
+          this.data.events[i].competitions[0].competitors[j].team.location =
+            schoolName;
+        }
+      }
+    }
   }
 
   conferenceLookup() {

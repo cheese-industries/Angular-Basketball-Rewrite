@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 export class BasketballService {
   urlToFetch: string =
     'https://site.api.espn.com/apis/site/v2/sports/basketball';
+  leagueToFetch: string | undefined;
 
   constructor(private http: HttpClient) {}
 
@@ -50,11 +51,11 @@ export class BasketballService {
   }
 
   getIndividualGame(
-    leagueToFetch: string,
+    leagueToFetch: string | undefined = this.leagueToFetch,
     gameId: string
   ): Observable<GameData> {
     return this.http.get<GameData>(
-      `${this.urlToFetch}/${leagueToFetch}/scoreboard/${gameId}`
+      `${this.urlToFetch}/${this.leagueToFetch}/scoreboard/${gameId}`
     );
   }
 }

@@ -8,8 +8,5 @@ export interface Team{
    abbreviation: TeamName
    logo: TeamName
    links: TeamLinks []
-<<<<<<< HEAD
    conferenceId: TeamName
-=======
->>>>>>> f952296ab131c473c815cef1b65b6d27e5aed1cf
 }

@@ -1,5 +1,4 @@
 <mat-toolbar color="primary">
-<<<<<<< HEAD
   <button mat-button [matMenuTriggerFor]="sports">
     <mat-icon>menu</mat-icon>
   </button>
@@ -23,12 +22,11 @@
   </mat-menu>
   
   <mat-menu #basketball="matMenu">
-    <a routerLink="/nba"><button mat-menu-item (click)="setLeague('nba')"><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="can"></mat-icon>NBA</button></a>
-    <a routerLink="/wnba"><button mat-menu-item (click)="setLeague('wnba')"><mat-icon svgIcon="usa"></mat-icon>WNBA</button></a>
-    <a routerLink="/g-league"><button mat-menu-item (click)="setLeague('nba-development')"><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="can"></mat-icon>NBA G-League</button></a>
-    <a routerLink="/ncaam"><button mat-menu-item (click)="setLeague('mens-college-basketball')"><mat-icon svgIcon="usa"></mat-icon>NCAA Men's</button></a>
-    <a routerLink="/ncaaw"><button mat-menu-item (click)="setLeague('womens-college-basketball')"><mat-icon svgIcon="usa"></mat-icon>NCAA Women's</button></a>
-    <a routerLink="/basketball-shared"><button mat-menu-item (click)="setLeague('nba')"><mat-icon svgIcon="usa"></mat-icon>Shared Test</button></a>
+    <a routerLink="/nba"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="can"></mat-icon>NBA</button></a>
+    <a routerLink="/wnba"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon>WNBA</button></a>
+    <a routerLink="/g-league"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon><mat-icon svgIcon="can"></mat-icon>NBA G-League</button></a>
+    <a routerLink="/ncaam"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon>NCAA Men's</button></a>
+    <a routerLink="/ncaaw"><button mat-menu-item><mat-icon svgIcon="usa"></mat-icon>NCAA Women's</button></a>
   </mat-menu>
 
   <mat-menu #baseball="matMenu">
@@ -85,17 +83,3 @@
   <a routerLink="/rugbyunion"><button mat-menu-item>Rugby Union</button></a>
   <a routerLink="/rugbyleague"><button mat-menu-item>Rugby League</button></a>
 </mat-menu>
-=======
-  <h1>Sports Scores</h1>
-</mat-toolbar>
-<mat-toolbar  color="primary">
-<nav mat-tab-nav-bar ngClass = "tabs">
-<a mat-tab-link routerLink="/nba" routerLinkActive="active-button">NBA</a>
-<a mat-tab-link routerLink="/nfl" routerLinkActive="active-button">NFL</a>
-<a mat-tab-link routerLink="/nhl" routerLinkActive="active-button">NHL</a>
-<a mat-tab-link routerLink="/mlb" routerLinkActive="active-button">MLB</a>
-  </nav>
-</mat-toolbar>
-<router-outlet></router-outlet>
- 
->>>>>>> f952296ab131c473c815cef1b65b6d27e5aed1cf

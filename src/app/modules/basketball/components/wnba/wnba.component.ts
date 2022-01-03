@@ -27,6 +27,7 @@ export class WnbaComponent implements OnInit {
 
 
 
+
   constructor(
     private service: BasketballService,
     changeDetectorRef: ChangeDetectorRef,
@@ -41,6 +42,7 @@ export class WnbaComponent implements OnInit {
     this.getTheScores(this.makeDefaultDate());
     this.setIntrvl();
     this.getTodaysDate();
+    this.service.leagueToFetch = this.leagueToFetch;
   }
 
   setIntrvl() {
@@ -72,6 +74,12 @@ export class WnbaComponent implements OnInit {
     let month: string = String(this.getTodaysDate().getMonth() + 1);
     let day: string = String(this.getTodaysDate().getDate());
     let year: string = String(this.getTodaysDate().getFullYear());
+    if (+day < 10) {
+      day = '0' + day;
+    }
+    if (+month < 10) {
+      month = '0' + month;
+    }
     let dateString: string = year + month + day;
     return dateString;
   }

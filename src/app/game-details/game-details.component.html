@@ -101,53 +101,56 @@
     </mat-grid-tile>
   </mat-grid-list>
   <mat-divider></mat-divider>
-  <mat-grid-list cols="20" class="sideBySideLinks">
+  <mat-grid-list cols="20" class="sideBySideLinks" *ngIf="data.competitions[0].competitors[1].team.links">
     <mat-grid-tile class="gameDetails" colspan="10">
       {{data.competitions[0].competitors[1].team.shortDisplayName}} Links
     </mat-grid-tile>
     <mat-grid-tile class="gameDetails" colspan="10">
       {{data.competitions[0].competitors[0].team.shortDisplayName}} Links
     </mat-grid-tile>
-    <mat-grid-tile class="teamLinks" colspan="10">
+    <mat-grid-tile class="teamLinks" colspan="10" *ngIf="data.competitions[0].competitors[1].team.links">
       <a
         href="{{data.competitions[0].competitors[1].team.links[1].href}}">{{data.competitions[0].competitors[1].team.links[1].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
       <a
         href="{{data.competitions[0].competitors[1].team.links[2].href}}">{{data.competitions[0].competitors[1].team.links[2].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
       <a
-        href="{{data.competitions[0].competitors[1].team.links[3].href}}">{{data.competitions[0].competitors[1].team.links[3].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-      <a
+        href="{{data.competitions[0].competitors[1].team.links[3].href}}">{{data.competitions[0].competitors[1].team.links[3].text}}</a>
+<span *ngIf="data.competitions[0].competitors[1].team.links[9]">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a
         href="{{data.competitions[0].competitors[1].team.links[9].href}}">{{data.competitions[0].competitors[1].team.links[9].text}}</a>
+      </span>
     </mat-grid-tile>
-    <mat-grid-tile class="teamLinks" colspan="10">
+    <mat-grid-tile class="teamLinks" colspan="10"  *ngIf="data.competitions[0].competitors[0].team.links">
       <a
         href="{{data.competitions[0].competitors[0].team.links[1].href}}">{{data.competitions[0].competitors[0].team.links[1].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
       <a
         href="{{data.competitions[0].competitors[0].team.links[2].href}}">{{data.competitions[0].competitors[0].team.links[2].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
       <a
-        href="{{data.competitions[0].competitors[0].team.links[3].href}}">{{data.competitions[0].competitors[0].team.links[3].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-      <a
-        href="{{data.competitions[0].competitors[0].team.links[9].href}}">{{data.competitions[0].competitors[0].team.links[9].text}}</a>
+        href="{{data.competitions[0].competitors[0].team.links[3].href}}">{{data.competitions[0].competitors[0].team.links[3].text}}</a>
+        <span *ngIf="data.competitions[0].competitors[1].team.links[9]">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a
+        href="{{data.competitions[0].competitors[0].team.links[9].href}}">{{data.competitions[0].competitors[0].team.links[9].text}}</a></span>
     </mat-grid-tile>
   </mat-grid-list>
 
-  <mat-grid-list cols="20" class="stackedLinks">
+  <mat-grid-list cols="20" class="stackedLinks"  *ngIf="data.competitions[0].competitors[1].team.links">
     <mat-grid-tile colspan="20">
       <div style="font-size:5vw; font-weight: bold; text-align: center;">
         {{data.competitions[0].competitors[1].team.shortDisplayName}} Links
       </div>
     </mat-grid-tile>
-    <mat-grid-tile colspan="20" class="teamLinks">
+    <mat-grid-tile colspan="20" class="teamLinks"  *ngIf="data.competitions[0].competitors[1].team.links">
       <a
         href="{{data.competitions[0].competitors[1].team.links[1].href}}">{{data.competitions[0].competitors[1].team.links[1].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
       <a
         href="{{data.competitions[0].competitors[1].team.links[2].href}}">{{data.competitions[0].competitors[1].team.links[2].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
       <a
-        href="{{data.competitions[0].competitors[1].team.links[3].href}}">{{data.competitions[0].competitors[1].team.links[3].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-      <a
+        href="{{data.competitions[0].competitors[1].team.links[3].href}}">{{data.competitions[0].competitors[1].team.links[3].text}}</a>
+        <span *ngIf="data.competitions[0].competitors[1].team.links[9]">
+          &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a
         href="{{data.competitions[0].competitors[1].team.links[9].href}}">{{data.competitions[0].competitors[1].team.links[9].text}}</a>
+        </span>
     </mat-grid-tile>
     <mat-grid-tile colspan="20">
-      <div style="font-size:5vw; font-weight: bold; text-align: center;">
+      <div style="font-size:5vw; font-weight: bold; text-align: center;"  *ngIf="data.competitions[0].competitors[0].team.links">
         {{data.competitions[0].competitors[0].team.shortDisplayName}} Links
       </div>
     </mat-grid-tile>
@@ -157,9 +160,11 @@
       <a
         href="{{data.competitions[0].competitors[0].team.links[2].href}}">{{data.competitions[0].competitors[0].team.links[2].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
       <a
-        href="{{data.competitions[0].competitors[0].team.links[3].href}}">{{data.competitions[0].competitors[0].team.links[3].text}}</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-      <a
+        href="{{data.competitions[0].competitors[0].team.links[3].href}}">{{data.competitions[0].competitors[0].team.links[3].text}}</a>
+        <span *ngIf="data.competitions[0].competitors[0].team.links[9]">
+          &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a
         href="{{data.competitions[0].competitors[0].team.links[9].href}}">{{data.competitions[0].competitors[0].team.links[9].text}}</a>
+        </span>
     </mat-grid-tile>
   </mat-grid-list>
   <a routerLink="/">

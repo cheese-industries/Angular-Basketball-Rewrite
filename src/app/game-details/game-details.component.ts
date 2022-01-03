@@ -1,6 +1,6 @@
 import { Component, Injectable, OnInit, ChangeDetectorRef, Inject } from '@angular/core';
 import { GameData } from '../models/game-data';
-import { ScoreService } from '../score/score.service';
+import { BasketballService } from '../modules/basketball/basketball.service';
 import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-game-details',
@@ -15,11 +15,12 @@ import { ActivatedRoute } from '@angular/router';
 
 export class GameDetailsComponent implements OnInit {
 
-  constructor(private service: ScoreService, private activatedRoute: ActivatedRoute) {
+  constructor(private service: BasketballService, private activatedRoute: ActivatedRoute) {
    };
 
    gameId: string = '';
     data!: GameData;
+    leagueToFetch: string = '';
 
     ngOnInit(): void {
     this.gameId = this.activatedRoute.snapshot.params['id'];
@@ -28,7 +29,7 @@ export class GameDetailsComponent implements OnInit {
   }
 
   getTheGame(gameId: string | null) {
-  const subscription = this.service.getGame(this.gameId).subscribe
+  const subscription = this.service.getIndividualGame(this.leagueToFetch, this.gameId).subscribe
   (response => {
     this.data = response;
     console.log(this.data)
