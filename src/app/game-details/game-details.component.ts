@@ -38,7 +38,4 @@ export class GameDetailsComponent implements OnInit {
 
 }
 
-//ask about getting dateToFetch from score component
-
-
 }

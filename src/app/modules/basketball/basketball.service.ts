@@ -10,6 +10,7 @@ export class BasketballService {
   urlToFetch: string =
     'https://site.api.espn.com/apis/site/v2/sports/basketball';
   leagueToFetch: string | undefined;
+  urlSuffix: string | undefined;
 
   constructor(private http: HttpClient) {}
 
@@ -21,31 +22,16 @@ export class BasketballService {
     //REST request to ESPN
     //Will return that data asynchronously
 
-    //Without a defined groups parameter in the URL for college games, the API only returns games involving the Top 25. "groups=50" displays every Division I game.
-    //The "limit" parameter in college games tells the API to return every game, not just some subset.
-
-    // PRO GAME WITH A DEFINED DATE TO FETCH
-    if (dateToFetch && !isCollege) {
+    // GAME WITH A DEFINED DATE TO FETCH
+    if (dateToFetch) {
       return this.http.get<GameData>(
-        `${this.urlToFetch}/${leagueToFetch}/scoreboard?dates=${dateToFetch}`
+        `${this.urlToFetch}/${leagueToFetch}/scoreboard?dates=${dateToFetch}${this.urlSuffix}`
       );
     }
-    // PRO GAME WITHOUT A DEFINED DATE TO FETCH, DEFAULTS TO TODAY'S DATE
-    else if (!dateToFetch && !isCollege) {
-      return this.http.get<GameData>(
-        `${this.urlToFetch}/${leagueToFetch}/scoreboard`
-      );
-    }
-    //COLLEGE GAME WITH A DEFINED DATE TO FETCH
-    else if (dateToFetch && isCollege) {
-      return this.http.get<GameData>(
-        `${this.urlToFetch}/${leagueToFetch}/scoreboard?dates=${dateToFetch}&groups=50&limit=200`
-      );
-    }
-    //IF NONE OF THE ABOVE APPLY, THE ONLY OPTION LEFT IS THAT IT'S A COLLEGE GAME WITH NO DEFINED DATE TO FETCH
+    // GAME WITHOUT A DEFINED DATE TO FETCH, DEFAULTS TO TODAY'S DATE
     else {
       return this.http.get<GameData>(
-        `${this.urlToFetch}/${leagueToFetch}/scoreboard?groups=50&limit=200`
+        `${this.urlToFetch}/${leagueToFetch}/scoreboard?${this.urlSuffix}`
       );
     }
   }

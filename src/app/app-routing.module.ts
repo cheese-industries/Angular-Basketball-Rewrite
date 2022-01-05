@@ -6,6 +6,7 @@ import { NcaawomenComponent } from './modules/basketball/components/ncaawomen/nc
 import { NbaComponent } from './modules/basketball/components/nba/nba.component';
 import { WnbaComponent } from './modules/basketball/components/wnba/wnba.component';
 import { GameDetailsComponent } from './game-details/game-details.component';
+import { BasketballComponent } from './modules/basketball/components/basketball/basketball.component';
 
 const routes: Routes = [
   {path: 'game-details/:id', component: GameDetailsComponent},
@@ -14,7 +15,9 @@ const routes: Routes = [
   {path: 'g-league', component: GLeagueComponent},
   {path: 'wnba', component: WnbaComponent},
   {path: 'nba', component: NbaComponent},
+  {path: 'basketball/:league', component: BasketballComponent},
   {path: '**', component: NbaComponent},
+
   
 ] 
 

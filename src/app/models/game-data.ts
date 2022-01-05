@@ -4,8 +4,10 @@ import { GameName } from "./game-name";
 import { GameStatus } from "./game-status";
 import { Id } from "./id";
 import { Links } from "./links";
+import { Leagues} from "./leagues";
 
 export interface GameData{
+    leagues: Leagues[];
     length: number;
     events: GameEvent[];
     competitions: Competition[];

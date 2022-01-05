@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, formatDate } from '@angular/common';
 import {
   Component,
   Injectable,
@@ -8,27 +8,34 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GameData } from '../../../../models/game-data';
 import { MediaMatcher } from '@angular/cdk/layout';
+import { Observable } from 'rxjs';
 import { BasketballService } from '../../basketball.service';
-import { formatDate } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { Router, Event, NavigationStart, NavigationEnd, NavigationError} from '@angular/router';
+import { ThisReceiver } from '@angular/compiler';
+
 
 @Component({
-  selector: 'app-ncaamen',
-  templateUrl: './ncaamen.component.html',
-  styleUrls: ['./ncaamen.component.css'],
+  selector: 'app-basketball',
+  templateUrl: './basketball.component.html',
+  styleUrls: ['./basketball.component.css'],
 })
 @Injectable({
   providedIn: 'root',
 })
-export class NcaamenComponent implements OnInit {
+export class BasketballComponent implements OnInit {
   data!: GameData;
   events = this.data?.events;
   form: FormGroup;
+  leagueToFetch: string = '';
   pipe = new DatePipe('en-us');
   totalLength: any;
   page: number = 1;
   view: string = 'main';
+  urlSuffix: string = '';
+  myControl: FormControl = new FormControl();
   arrayForFilter = [''];
-  leagueToFetch = 'mens-college-basketball';
+  filteredOptions: Observable<string[]> | undefined;
   conferenceIds: object = {
     '3': 'A-10',
     '2': 'ACC',
@@ -67,29 +74,89 @@ export class NcaamenComponent implements OnInit {
   constructor(
     private service: BasketballService,
     changeDetectorRef: ChangeDetectorRef,
-    media: MediaMatcher
+    media: MediaMatcher,
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {
     this.form = new FormGroup({
       dateToCall: new FormControl(this.getTodaysDate(), [Validators.required]),
     });
+    this.router.events.subscribe((event: Event) => {
+      if (event instanceof NavigationStart) {
+        this.leagueToFetch = event.url;
+        this.leagueToFetch = this.leagueToFetch.replace('/basketball/', '')
+        this.correctLeagueNameParameter();
+        this.isItCollegeOrPro();
+        this.service.leagueToFetch = this.leagueToFetch;
+        this.service.urlSuffix = this.urlSuffix;
+        this.getTheScores(this.makeDefaultDate());
+        this.setIntrvl();
+        this.getTodaysDate();    
+      }
+    })
   }
 
+
   ngOnInit(): void {
+    this.leagueToFetch = this.activatedRoute.snapshot.params['league'];
+    this.correctLeagueNameParameter();
+    this.isItCollegeOrPro();
+    this.service.leagueToFetch = this.leagueToFetch;
+    this.service.urlSuffix = this.urlSuffix;
     this.getTheScores(this.makeDefaultDate());
     this.setIntrvl();
     this.getTodaysDate();
-    this.service.leagueToFetch = this.leagueToFetch;
+    // this.filteredOptions = this.myControl.valueChanges.pipe(
+    //   startWith(''),
+    //   map(value =>this._filter(value))
+    // )
   }
+
+  // private _filter(value: any): any[] {
+  //   const filterValue = value.toLowerCase();
+
+  //   return this.arrayForFilter.filter(option => option.toLowerCase().includes(filterValue));
+  // }
 
   setIntrvl() {
     setInterval(() => this.getTheScores(this.getDateToCall()), 30000);
   }
 
+  //Without a defined groups parameter in the URL for college games, the API only returns games involving the Top 25. "groups=50" displays every Division I game.
+  //The "limit" parameter in college games tells the API to return every game, not just some subset.
+
+  isItCollegeOrPro() {
+    if (this.leagueToFetch.includes('college')) {
+      this.urlSuffix = '&groups=50&limit=200';
+    } else {
+      this.urlSuffix = '';
+    }
+  }
+
+  correctLeagueNameParameter() {
+    switch (this.leagueToFetch) {
+      case 'ncaam':
+        this.leagueToFetch = 'mens-college-basketball';
+        break;
+      case 'ncaaw':
+        this.leagueToFetch = 'womens-college-basketball';
+        break;
+      case 'nbdl':
+        this.leagueToFetch = 'nba-development';
+        break;
+      case 'd-league':
+        this.leagueToFetch = 'nba-development';
+        break;
+      case 'g-league':
+        this.leagueToFetch = 'nba-development';
+        break;
+    }
+  }
+
   getTheScores(dateToFetch: string) {
     const subscription = this.service
-      .getGameData(this.leagueToFetch, dateToFetch, true)
+      .getGameData(this.leagueToFetch, dateToFetch, false)
       .subscribe((response) => {
-        this.page = 1;
         this.data = response;
         this.totalLength = this.data.events.length;
         this.conferenceLookup();
@@ -98,6 +165,10 @@ export class NcaamenComponent implements OnInit {
         this.createArrayForFilter();
         subscription.unsubscribe();
       });
+  }
+
+  getTodaysDate(): Date {
+    return new Date();
   }
 
   createArrayForFilter() {
@@ -111,10 +182,6 @@ export class NcaamenComponent implements OnInit {
         );
       }
     }
-  }
-
-  getTodaysDate(): Date {
-    return new Date();
   }
 
   getDateToCall(): string {
@@ -189,7 +256,7 @@ export class NcaamenComponent implements OnInit {
             case '62':
               this.data.events[g].competitions[0].competitors[
                 t
-              ].team.conferenceId = 'American';
+              ].team.conferenceId = 'AAC';
               break;
             case '8':
               this.data.events[g].competitions[0].competitors[
@@ -229,7 +296,7 @@ export class NcaamenComponent implements OnInit {
             case '10':
               this.data.events[g].competitions[0].competitors[
                 t
-              ].team.conferenceId = 'Colonial';
+              ].team.conferenceId = 'CAA';
               break;
             case '45':
               this.data.events[g].competitions[0].competitors[
@@ -299,14 +366,14 @@ export class NcaamenComponent implements OnInit {
             case '24':
               this.data.events[g].competitions[0].competitors[
                 t
-              ].team.conferenceId = 'Southern';
+              ].team.conferenceId = 'SoCon';
               break;
             case '25':
               this.data.events[g].competitions[0].competitors[
                 t
               ].team.conferenceId = 'Southland';
               break;
-            case '49':
+            case '47':
               this.data.events[g].competitions[0].competitors[
                 t
               ].team.conferenceId = 'Summit';
@@ -334,10 +401,11 @@ export class NcaamenComponent implements OnInit {
     }
   }
 
+  //Checking for rankings is only applicable for college teams. These league IDs are for women's and men's college basketball.
   checkForRankings() {
-    for (var g = 0; g < this.totalLength; g++) {
-      for (var t = 0; t < 2; t++) {
-        try {
+    if (this.data.leagues[0].id == 54 || this.data.leagues[0].id == 41) {
+      for (var g = 0; g < this.totalLength; g++) {
+        for (var t = 0; t < 2; t++) {
           if (
             !this.data.events[g].competitions[0].competitors[t].curatedRank
               .current
@@ -353,8 +421,16 @@ export class NcaamenComponent implements OnInit {
               t
             ].curatedRank.current = '';
           }
-        } catch (error) {}
+        }
       }
+    }
+  }
+
+  setUrlSuffix() {
+    if (this.data.leagues[0].id == 54 || this.data.leagues[0].id == 41) {
+      this.urlSuffix = '?groups=50&limit=200';
+    } else {
+      this.urlSuffix = '';
     }
   }
 }

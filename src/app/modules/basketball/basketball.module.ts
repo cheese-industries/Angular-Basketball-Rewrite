@@ -9,7 +9,7 @@ import { SharedComponent } from './components/shared/shared.component';
 @NgModule({
   declarations: [
   
-    SharedComponent
+    SharedComponent,
   ],
   imports: [
     CommonModule,

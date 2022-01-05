@@ -27,7 +27,7 @@ import {MatIconModule} from '@angular/material/icon';
 import { BasketballModule } from './modules/basketball/basketball.module';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { GameDetailsComponent } from './game-details/game-details.component';
-
+import { BasketballComponent } from './modules/basketball/components/basketball/basketball.component';
 
 
 
@@ -40,7 +40,8 @@ import { GameDetailsComponent } from './game-details/game-details.component';
     NcaawomenComponent,
     GLeagueComponent,
     WnbaComponent,
-    GameDetailsComponent
+    GameDetailsComponent,
+    BasketballComponent
   ],
   imports: [
     BrowserModule,

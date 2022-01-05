@@ -108,7 +108,6 @@ export class NcaawomenComponent implements OnInit {
         this.checkForRankings();
         this.shrinkLongSchoolNames();
         this.createArrayForFilter();
-        console.log(this.arrayForFilter);
         subscription.unsubscribe();
       });
   }
@@ -118,7 +117,7 @@ export class NcaawomenComponent implements OnInit {
   }
 
   createArrayForFilter() {
-    this.arrayForFilter = [''];
+    this.arrayForFilter = [];
     for (var i = 0; i < this.data.events.length; i++) {
       for (var j = 0; j < 2; j++) {
         this.arrayForFilter.push(
