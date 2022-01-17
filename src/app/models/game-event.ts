@@ -1,4 +1,5 @@
 import { Competition } from "./competition";
+import { Competitor } from "./competitor";
 import { Date } from "./date";
 import { GameName } from "./game-name";
 import { GameStatus } from "./game-status";
@@ -12,4 +13,5 @@ export interface GameEvent{
     links: Links[];
     status: GameStatus;
     name: GameName;
+    
 }

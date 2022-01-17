@@ -4,6 +4,8 @@ import {
   Injectable,
   OnInit,
   ChangeDetectorRef,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GameData } from '../../../../models/game-data';
@@ -11,9 +13,14 @@ import { MediaMatcher } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { BasketballService } from '../../basketball.service';
 import { ActivatedRoute } from '@angular/router';
-import { Router, Event, NavigationStart, NavigationEnd, NavigationError} from '@angular/router';
-import { ThisReceiver } from '@angular/compiler';
-
+import {
+  Router,
+  Event,
+  NavigationStart,
+  NavigationEnd,
+  NavigationError,
+} from '@angular/router';
+import { GameDetailsComponent } from 'src/app/game-details/game-details.component';
 
 @Component({
   selector: 'app-basketball',
@@ -76,36 +83,41 @@ export class BasketballComponent implements OnInit {
     changeDetectorRef: ChangeDetectorRef,
     media: MediaMatcher,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private details: GameDetailsComponent
   ) {
     this.form = new FormGroup({
       dateToCall: new FormControl(this.getTodaysDate(), [Validators.required]),
     });
     this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
-        this.leagueToFetch = event.url;
-        this.leagueToFetch = this.leagueToFetch.replace('/basketball/', '')
+        if (!event.url.includes('details')) {
+          this.leagueToFetch = event.url;
+          this.leagueToFetch = this.leagueToFetch.replace('/basketball/', '');
+        }
         this.correctLeagueNameParameter();
         this.isItCollegeOrPro();
         this.service.leagueToFetch = this.leagueToFetch;
+        this.details.leagueToFetch = this.leagueToFetch;
         this.service.urlSuffix = this.urlSuffix;
         this.getTheScores(this.makeDefaultDate());
         this.setIntrvl();
-        this.getTodaysDate();    
+        this.getTodaysDate();
       }
-    })
+    });
   }
-
 
   ngOnInit(): void {
     this.leagueToFetch = this.activatedRoute.snapshot.params['league'];
     this.correctLeagueNameParameter();
     this.isItCollegeOrPro();
     this.service.leagueToFetch = this.leagueToFetch;
+    this.details.leagueToFetch = this.leagueToFetch;
     this.service.urlSuffix = this.urlSuffix;
     this.getTheScores(this.makeDefaultDate());
     this.setIntrvl();
     this.getTodaysDate();
+    console.log('init!');
     // this.filteredOptions = this.myControl.valueChanges.pipe(
     //   startWith(''),
     //   map(value =>this._filter(value))
@@ -374,6 +386,11 @@ export class BasketballComponent implements OnInit {
               ].team.conferenceId = 'Southland';
               break;
             case '47':
+              this.data.events[g].competitions[0].competitors[
+                t
+              ].team.conferenceId = 'Summit';
+              break;
+            case '49':
               this.data.events[g].competitions[0].competitors[
                 t
               ].team.conferenceId = 'Summit';

@@ -41,7 +41,8 @@ export class BasketballService {
     gameId: string
   ): Observable<GameData> {
     return this.http.get<GameData>(
-      `${this.urlToFetch}/${this.leagueToFetch}/scoreboard/${gameId}`
+      `${this.urlToFetch}/${leagueToFetch}/scoreboard/${gameId}`
     );
+    console.log(this.leagueToFetch);
   }
 }

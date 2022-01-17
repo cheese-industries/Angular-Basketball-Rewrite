@@ -1,0 +1,67 @@
+<span class="echlHeader">
+  <p><i>Please note that, due to a limitation with the data provider, there is no date selector for cricket scores.</i>
+  </p>
+</span>
+<ng-container>
+  <div class="isNotMobile">
+    <mat-card-flat class="centerVertically" *ngIf="data" fxLayout="row wrap">
+
+      <ul class="notTinyUl" *ngFor="let event of events; let i = index">
+        <mat-card>
+          <mat-grid-list cols="20" rows="9">
+            <mat-grid-tile colspan="20" rowspan="1">
+              <span class="venue">
+                {{event.series.longName}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="20" rowspan="1">
+              <span class="venue">
+                {{event.ground.name}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="event.teams[0].team.image" colspan="3" rowspan="3">
+              <img class="teamLogo" src="{{event.teams[0].team.image.url}}">
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="!event.teams[0].team.image" colspan="3" rowspan="3">
+              &nbsp;
+            </mat-grid-tile>
+            <mat-grid-tile colspan="11" rowspan="3">
+              <span class="teamLocation">
+                {{event.teams[0].team.longName}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="6" rowspan="3">
+              <span class="teamScore">
+                {{event.teams[0].score}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="event.teams[1].team.image" colspan="3" rowspan="3">
+              <img class="teamLogo" src="{{event.teams[1].team.image.url}}">
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="!event.teams[1].team.image" colspan="3" rowspan="3">
+              &nbsp;
+            </mat-grid-tile>
+            <mat-grid-tile colspan="11" rowspan="3">
+              <span class="teamLocation">
+                {{event.teams[1].team.longName}}
+              </span>
+            </mat-grid-tile>
+              <mat-grid-tile colspan="6" rowspan="3">
+              <span class="teamScore">
+                {{event.teams[1].score}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="20" rowspan="1">
+              <span *ngIf="event.status == 'Stumps'">
+                {{event.status}}&nbsp;
+              </span>{{event.statusText}}
+            </mat-grid-tile>
+            <mat-grid-tile colspan="20" rowspan="1">
+              {{event.startDate}}
+            </mat-grid-tile>
+          </mat-grid-list>
+        </mat-card>
+      </ul>
+    </mat-card-flat>
+  </div>
+</ng-container>

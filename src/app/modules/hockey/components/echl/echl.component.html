@@ -1,0 +1,83 @@
+<span class="echlHeader"><p><i>Please note that, due to a limitation with the data provider, there is no date selector for ECHL scores.</i></p>
+</span>
+<ng-container>
+  <div class="isNotMobile">
+    <mat-card-flat class="centerVertically" *ngIf="data" fxLayout="row wrap">
+
+      <ul class="notTinyUl" *ngFor="let event of events; let i = index">
+        <mat-card>
+          <mat-grid-list cols="20" rows="8">
+            <mat-grid-tile colspan="20" rowspan="1">
+              <span class="venue">
+                {{event.venue.name}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="4" rowspan="4">
+              <img class="teamLogo" src="{{event.teams.away.logo.url}}">
+            </mat-grid-tile>
+            <mat-grid-tile colspan="12" rowspan="1">
+              <span class="teamLocation">
+                {{event.teams.away.city}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="event.results" colspan="3" rowspan="4">
+              <span class="teamScore">
+                {{event.results.scores.away}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="!event.results" colspan="3" rowspan="3">
+              <span class="teamScore">
+                &nbsp;
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="1" rowspan="3">
+              <!-- INTENTIONALLY LEFT BLANK -->
+            </mat-grid-tile>
+            <mat-grid-tile colspan="12" rowspan="3">
+              <span class="teamNickname">
+                {{event.teams.away.nickname}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="20" rowspan="1">
+              <span *ngIf="event.state" class="status">
+                {{event.state.name}}
+              </span>
+              <span *ngIf="!event.state" class="status">
+                &nbsp;
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="4" rowspan="4">
+              <img class="teamLogo" src="{{event.teams.home.logo.url}}">
+            </mat-grid-tile>
+            <mat-grid-tile colspan="12" rowspan="1">
+              <span class="teamLocation">
+                {{event.teams.home.city}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="event.results" colspan="3" rowspan="4">
+              <span class="teamScore">
+                {{event.results.scores.home}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="!event.results" colspan="3" rowspan="3">
+              <span class="teamScore">
+                &nbsp;
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="1" rowspan="3">
+              <!-- INTENTIONALLY LEFT BLANK -->
+            </mat-grid-tile>
+            <mat-grid-tile colspan="12" rowspan="3">
+              <span class="teamNickname">
+                {{event.teams.home.nickname}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile  colspan="20" rowspan="1">
+                {{event.startDate}}
+            </mat-grid-tile>
+          </mat-grid-list>
+        </mat-card>
+      </ul>
+    </mat-card-flat>
+  </div>
+</ng-container>
