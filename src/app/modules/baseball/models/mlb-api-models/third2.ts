@@ -1,0 +1,46 @@
+import { BatSide8 } from "./bat-side8";
+import { PitchHand8 } from "./pitch-hand8";
+import { PrimaryPosition8 } from "./primary-position8";
+
+export interface Third2 {
+    id: number;
+    fullName: string;
+    link: string;
+    firstName: string;
+    lastName: string;
+    primaryNumber: string;
+    birthDate: string;
+    currentAge: number;
+    birthCity: string;
+    birthCountry: string;
+    height: string;
+    weight: number;
+    active: boolean;
+    alternateCaptain: boolean;
+    captain: boolean;
+    rookie: boolean;
+    primaryPosition: PrimaryPosition8;
+    useName: string;
+    boxscoreName: string;
+    gender: string;
+    isPlayer: boolean;
+    isVerified: boolean;
+    draftYear: number;
+    batSide: BatSide8;
+    pitchHand: PitchHand8;
+    nameFirstLast: string;
+    nameSlug: string;
+    firstLastName: string;
+    lastFirstName: string;
+    lastInitName: string;
+    initLastName: string;
+    fullFMLName: string;
+    fullLFMName: string;
+    strikeZoneTop: number;
+    strikeZoneBottom: number;
+    birthStateProvince: string;
+    middleName: string;
+    nickName: string;
+    mlbDebutDate: string;
+    pronunciation: string;
+}

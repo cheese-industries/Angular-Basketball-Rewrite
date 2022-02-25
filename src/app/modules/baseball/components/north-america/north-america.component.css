@@ -1,0 +1,252 @@
+.datepicker-center {
+  text-align: center;
+  padding-top: 10px;
+}
+
+.team-container {
+  font-family: "Roboto Condensed";
+  display: flexbox;
+}
+
+.postgame-pitcher-info {
+  font-family: "Roboto Condensed";
+}
+
+.away-broadcast, .home-broadcast {
+    font-family: "Roboto Condensed";
+    font-size: 13px;
+  }
+  
+
+.notes {
+  font-family: "Roboto Condensed";
+  padding: 5px 0px 5px 0px;
+  text-align: center;
+}
+
+.delay-flag, .inning-div {
+  font-family: "Roboto Condensed";
+  font-weight: bold;
+}
+
+.inning-div {
+  display: inline-flex;
+  width: 100%;
+}
+
+.homers{
+  padding-left: 0;
+}
+
+.leftside {
+  width: 360px;
+  /* text-align: center; */
+margin-left: auto;
+margin-right: auto;
+}
+
+
+.doubleheader-flag {
+  font-family: "Roboto Condensed";
+  font-weight: bold;
+}
+
+.event-flag {
+  width: 50%;
+  font-weight: bold;
+  font-family: "Roboto Condensed";
+  display: flex;
+}
+
+.inning-span {
+  width: 50%;
+  font-weight: bold;
+  font-family: "Roboto Condensed";
+  justify-content: right;
+  display: flex;
+  margin-right: 15px;
+}
+
+.location {
+  width: 50%;
+  float: right;
+  margin-right: 15px;
+  text-align: right;
+  font-family: "Roboto Condensed";
+}
+
+.team-name {
+  font-size: 20px;
+  width: 200px;
+  display: inline-flex;
+}
+
+.team-runs,
+.team-hits,
+.team-errors {
+  font-size: 20px;
+  width: 40px;
+  justify-content: space-evenly;
+  display: inline-flex;
+}
+
+.desktop {
+  width: auto;
+}
+
+.desktop-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.rightside {
+  white-space: nowrap;
+  display: inline-block;
+  left: 400px;
+  width: 250px;
+
+}
+
+.diamond {
+  white-space: nowrap;
+  height: 250px;
+  width: 250px;
+  display: inline-block;
+  padding: 0px;
+  left: 400px;
+  background-image: url("./diamond.png");
+  background-size: 250px 250px;
+
+
+}
+
+.data-inside-diamond {
+  position: relative;
+}
+
+.ondeck {
+  white-space: nowrap;
+  width: 250px;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 13px;
+  width: 250px;
+  text-align: center;
+
+
+}
+
+.inthehole {
+  white-space: nowrap;
+  width: 250px;
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 13px;
+  text-align: center;
+
+
+}
+
+.batter {
+  white-space: nowrap;
+  display: flex;
+  font-family: "Roboto Condensed", sans-serif;
+  justify-content: center;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  width: 250px;
+  position: relative;
+  top: 200px;
+
+
+}
+
+.runner2 {
+  white-space: nowrap;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  font-family: "Roboto Condensed", sans-serif;
+  top: 40px;
+  left: 75px;
+  position: absolute;
+  font-size: 13px;
+  width: 100px;
+
+}
+
+.runner3 {
+  white-space: nowrap;
+  display: inline;
+  justify-content: center;
+  font-family: "Roboto Condensed", sans-serif;
+  text-align: center;
+  font-size: 13px;
+  width: 100px;
+  left: 0px;
+  top: 115px;
+  width: 100px !important;
+  position: absolute;
+
+
+}
+
+.runner1 {
+  font-family: "Roboto Condensed", sans-serif;
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
+  font-size: 13px;
+  position: absolute;
+  left: 145px;
+  top: 115px;
+  width: 100px;
+
+
+}
+
+.pitcher {
+  display: flex;
+  white-space: nowrap;
+  font-family: "Roboto Condensed", sans-serif;
+  justify-content: center;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  width: 250px;
+  top: 165px;
+  position: relative;
+
+
+}
+
+.balls, .strikes, .outs {
+  font-family: "Roboto Condensed";
+  /* font-weight: bold; */
+  font-size: 18px;
+  width: 33%;
+  text-align: center;
+}
+
+
+.card-container {
+  display: flex;
+}
+
+.lastplay {
+    width: 400px;
+    width: 400px;
+    padding-top: 15px;
+    font-family: "Roboto Condensed";
+}
+
+.homeruns {
+    width: auto;
+    padding-top: 15px;
+    font-family: "Roboto Condensed";
+}
+
+.balls-strikes-outs-inning {
+    padding-top: 10px;
+    display: flex;
+    width: 320px;
+}

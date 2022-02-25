@@ -16,7 +16,7 @@
   <a routerLink="/soccer"><button mat-menu-item><mat-icon>sports_soccer</mat-icon>Soccer</button></a>
   <button mat-menu-item [matMenuTriggerFor]="golf"><mat-icon>sports_golf</mat-icon>Golf</button>
   <button mat-menu-item [matMenuTriggerFor]="tennis"><mat-icon>sports_tennis</mat-icon>Tennis</button>
-  <button mat-menu-item [matMenuTriggerFor]="rugby"><mat-icon>sports_rugby</mat-icon>Rugby</button>
+  <a routerLink="/rugby"><button mat-menu-item><mat-icon>sports_rugby</mat-icon>Rugby</button></a>
   <a routerLink="/cricket"><button mat-menu-item><mat-icon>sports_cricket</mat-icon>Cricket</button></a>
   <a routerLink="/afl"><button mat-menu-item><mat-icon svgIcon="aus"></mat-icon>Aussie Rules Football</button></a>
   </mat-menu>
@@ -30,12 +30,7 @@
   </mat-menu>
 
   <mat-menu #baseball="matMenu">
-    <a routerLink="/mlb"><button mat-menu-item>MLB</button></a>
-    <a routerLink="/aaa"><button mat-menu-item>AAA</button></a>
-    <a routerLink="/aa"><button mat-menu-item>AA</button></a>
-    <a routerLink="/high-a"><button mat-menu-item>High A</button></a>
-    <a routerLink="/low-a"><button mat-menu-item>Low A</button></a>
-    <a routerLink="/rookieleague"><button mat-menu-item>Rookie League</button></a>
+    <a routerLink="/mlb"><button mat-menu-item>MLB and MiLB</button></a>
     <a routerLink="/ncaabaseball"><button mat-menu-item>NCAA Baseball</button></a>
     <a routerLink="/npb"><button mat-menu-item><mat-icon svgIcon="jpn"></mat-icon>NPB</button></a>
     <a routerLink="/kbo"><button mat-menu-item><mat-icon svgIcon="kor"></mat-icon>KBO</button></a>
@@ -46,6 +41,8 @@
   <mat-menu #football="matMenu">
     <a routerLink="/nfl"><button mat-menu-item>NFL</button></a>
     <a routerLink="/ncaaf"><button mat-menu-item>NCAA FBS</button></a>
+    <a routerLink="/fcs"><button mat-menu-item>NCAA FCS</button></a>
+    <a routerLink="/d23"><button mat-menu-item>NCAA D2/D3</button></a>
     <a routerLink="/cfl"><button mat-menu-item><mat-icon svgIcon="can"></mat-icon>CFL</button></a>
   </mat-menu>
 
@@ -59,6 +56,9 @@
   <mat-menu #golf="matMenu">
     <a routerLink="/pga"><button mat-menu-item>PGA</button></a>
     <a routerLink="/lpga"><button mat-menu-item>LPGA</button></a>
+    <a routerLink="/kornferry"><button mat-menu-item>Korn Ferry Tour</button></a>
+    <a routerLink="/european-tour"><button mat-menu-item>European Tour</button></a>
+    <a routerLink="/champions-tour"><button mat-menu-item>Champions Tour</button></a>
   </mat-menu>
 
   <mat-menu #tennis="matMenu">
@@ -66,7 +66,7 @@
     <a routerLink="/wta"><button mat-menu-item>WTA</button></a>
   </mat-menu>
 
-  <mat-menu #rugby="matMenu">
+  <!-- <mat-menu #rugby="matMenu">
   <a routerLink="/rugbyunion"><button mat-menu-item>Rugby Union</button></a>
   <a routerLink="/rugbyleague"><button mat-menu-item>Rugby League</button></a>
-</mat-menu>
+</mat-menu> -->

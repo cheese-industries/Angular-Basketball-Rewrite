@@ -117,7 +117,7 @@ export class BasketballComponent implements OnInit {
     this.getTheScores(this.makeDefaultDate());
     this.setIntrvl();
     this.getTodaysDate();
-    console.log('init!');
+  
     // this.filteredOptions = this.myControl.valueChanges.pipe(
     //   startWith(''),
     //   map(value =>this._filter(value))

@@ -1,0 +1,52 @@
+<mat-card class="golf-scoreboard">
+    <mat-card-title>{{data.events[0].name}}</mat-card-title>
+    <mat-card-content>
+      <div class="header-row">
+        <span class="name">Name</span>
+        <span class="score">Score</span>
+        <span class="total">Total</span>
+        <span class="round">Rd 1</span>
+        <span class="round">Rd 2</span>
+        <span class="round">Rd 3</span>
+        <span class="round">Rd 4</span>
+        <span class="round">Playoff</span>
+      </div>
+  
+      <ul class="notTinyUl" *ngFor="let competitor of data.events[0].competitions[0].competitors; let i = index">
+        <div *ngIf="i % 2 === 1" class="golfer-row">
+          <span class="name"><img class="flag" src="{{competitor.athlete.flag.href}}">
+            {{competitor.athlete.displayName}}</span>
+          <span *ngIf="competitor.score" class="score"> {{competitor.score.displayValue}}</span>
+          <span *ngIf="competitor.score" class="total">{{competitor.score.value}}</span>
+          <span *ngIf="competitor.linescores[0]" class="round">{{competitor.linescores[0].value}}</span>
+          <!-- <span *ngIf="!competitor.linescores[0]" class="round">&nbsp;</span> -->
+          <span *ngIf="competitor.linescores[1]" class="round">{{competitor.linescores[1].value}}</span>
+          <!-- <span *ngIf="!competitor.linescores[1]" class="round">&nbsp;</span> -->
+          <span *ngIf="competitor.linescores[2]" class="round">{{competitor.linescores[2].value}}</span>
+          <span *ngIf="!competitor.linescores[2]" class="round">&nbsp;</span>
+          <span *ngIf="competitor.linescores[3]" class="round">{{competitor.linescores[3].value}}</span>
+          <span *ngIf="!competitor.linescores[3]" class="round">&nbsp;</span>
+          <span *ngIf="competitor.linescores[4]" class="round">{{competitor.linescores[4].value}}</span>
+          <span *ngIf="!competitor.linescores[4]" class="round">&nbsp;</span>
+        </div>
+  
+        <div *ngIf="i % 2 === 0" class="golfer-row-gray">
+          <span class="name"><img class="flag" src="{{competitor.athlete.flag.href}}">
+            {{competitor.athlete.displayName}}</span>
+          <span *ngIf="competitor.score" class="score"> {{competitor.score.displayValue}}</span>
+          <span *ngIf="competitor.score" class="total">{{competitor.score.value}}</span>
+          <span *ngIf="competitor.linescores[0]" class="round">{{competitor.linescores[0].value}}</span>
+          <!-- <span *ngIf="!competitor.linescores[0]" class="round">&nbsp;</span> -->
+          <span *ngIf="competitor.linescores[1]" class="round">{{competitor.linescores[1].value}}</span>
+          <!-- <span *ngIf="!competitor.linescores[1]" class="round">&nbsp;</span> -->
+          <span *ngIf="competitor.linescores[2]" class="round">{{competitor.linescores[2].value}}</span>
+          <span *ngIf="!competitor.linescores[2]" class="round">&nbsp;</span>
+          <span *ngIf="competitor.linescores[3]" class="round">{{competitor.linescores[3].value}}</span>
+          <span *ngIf="!competitor.linescores[3]" class="round">&nbsp;</span>
+          <span *ngIf="competitor.linescores[4]" class="round">{{competitor.linescores[4].value}}</span>
+          <span *ngIf="!competitor.linescores[4]" class="round">&nbsp;</span>
+        </div>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+  

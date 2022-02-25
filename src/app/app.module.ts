@@ -27,9 +27,39 @@ import { NhlComponent } from './modules/hockey/components/nhl/nhl.component';
 import { NcaahComponent } from './modules/hockey/components/ncaah/ncaah.component';
 import { EchlComponent } from './modules/hockey/components/echl/echl.component';
 import { CricketComponent } from './modules/cricket/cricket.component';
+import { NflComponent } from './modules/football/components/nfl/nfl.component';
+import { NcaafComponent } from './modules/football/components/ncaaf/ncaaf.component';
+import { FcsComponent } from './modules/football/components/fcs/fcs.component';
+import { D23Component } from './modules/football/components/d23/d23.component';
+import { PgaComponent } from './modules/golf/components/pga/pga.component';
+import { LpgaComponent } from './modules/golf/components/lpga/lpga.component';
+import { KornFerryTourComponent } from './modules/golf/components/korn-ferry-tour/korn-ferry-tour.component';
+import { EuropeanTourComponent } from './modules/golf/components/european-tour/european-tour.component';
+import { ChampionsTourComponent } from './modules/golf/components/champions-tour/champions-tour.component';
+import { RugbyunionComponent } from './modules/rugbyunion/rugbyunion/rugbyunion.component';
+import { NorthAmericaComponent } from './modules/baseball/components/north-america/north-america.component';
 
 @NgModule({
-  declarations: [AppComponent, GameDetailsComponent, SoccerComponent, AhlComponent, NhlComponent, NcaahComponent, EchlComponent, CricketComponent],
+  declarations: [
+    AppComponent,
+    GameDetailsComponent,
+    SoccerComponent,
+    AhlComponent,
+    NhlComponent,
+    NcaahComponent,
+    EchlComponent,
+    CricketComponent,
+    NflComponent,
+    NcaafComponent,
+    FcsComponent,
+    D23Component,
+    PgaComponent,
+    LpgaComponent,
+    KornFerryTourComponent,
+    EuropeanTourComponent,
+    ChampionsTourComponent,
+    RugbyunionComponent, NorthAmericaComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

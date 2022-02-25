@@ -1,0 +1,224 @@
+<ng-container>
+  <div class="isNotMobile">
+
+    <mat-card-flat class="centerVertically" *ngIf="todayData" fxLayout="row wrap">
+      <span class="cardTitle" *ngIf="todayData">Today's Matches</span><br>
+      <ul class="notTinyUl" *ngFor="let event of todayData.Summary; let i = index">
+        <mat-card>
+          <mat-grid-list cols="20" rows="9">
+            <mat-grid-tile colspan="20" rowspan="1">
+              <span class="venue">
+                {{event.tour.name}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="20" rowspan="1">
+              <span class="venue">
+                {{event.venue.venueName}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="event.rugbyTeam.home.icon" colspan="3" rowspan="3">
+              <img class="teamLogo"
+                src="http://192.227.229.235:3000/fetch/https://supersport-cms-prod.azureedge.net/{{event.rugbyTeam.home.icon}}">
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="!event.rugbyTeam.home.icon" colspan="3" rowspan="3">
+              &nbsp;
+            </mat-grid-tile>
+            <mat-grid-tile colspan="11" rowspan="3">
+              <span class="teamLocation">
+                {{event.rugbyTeam.home.name}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="6" rowspan="3">
+              <span *ngIf="event.score.total.home !== null" class="teamScore">
+                {{event.score.total.home}}
+              </span>
+              <span *ngIf="event.score.total.home == null" class="teamScore">
+                &nbsp;
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="20" rowspan="1">
+                <span class="matchstatus" *ngIf="event.status.name !== 'Completed'">
+                    {{event.matchSubStatus}}
+                </span>
+                <span class="matchstatus" *ngIf="event.status.name === 'Completed'">
+                    Completed
+                </span>
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="event.rugbyTeam.away.icon" colspan="3" rowspan="3">
+              <img class="teamLogo"
+                src="http://192.227.229.235:3000/fetch/https://supersport-cms-prod.azureedge.net/{{event.rugbyTeam.away.icon}}">
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="!event.rugbyTeam.away.icon" colspan="3" rowspan="3">
+              &nbsp;
+            </mat-grid-tile>
+            <mat-grid-tile colspan="11" rowspan="3">
+              <span class="teamLocation">
+                {{event.rugbyTeam.away.name}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="6" rowspan="3">
+              <span *ngIf="event.score.total.away !== null" class="teamScore">
+                {{event.score.total.away}}
+              </span>
+              <span *ngIf="event.score.total.away == null" class="teamScore">
+                &nbsp;
+              </span>
+            </mat-grid-tile>
+            <!--       <mat-grid-tile colspan="20" rowspan="1">
+              <span *ngIf="event.status == 'Stumps'">
+                {{event.status}}&nbsp;
+              </span>{{event.statusText}}
+            </mat-grid-tile>
+            <mat-grid-tile colspan="20" rowspan="1">
+              {{event.startDate}}
+            </mat-grid-tile> -->
+          </mat-grid-list>
+        </mat-card>
+      </ul>
+    </mat-card-flat>
+<hr *ngIf="pastData">
+    <mat-card-flat class="centerVertically" *ngIf="pastData" fxLayout="row wrap">
+        <span class="cardTitle" *ngIf="pastData">Recent Completed Matches</span><br>
+        <ul class="notTinyUl" *ngFor="let event of pastData.Summary; let i = index">
+          <mat-card>
+            <mat-grid-list cols="20" rows="9">
+              <mat-grid-tile colspan="20" rowspan="1">
+                <span class="venue">
+                  {{event.tour.name}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="20" rowspan="1">
+                <span class="venue">
+                  {{event.venue.venueName}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile *ngIf="event.rugbyTeam.home.icon" colspan="3" rowspan="3">
+                <img class="teamLogo"
+                  src="http://192.227.229.235:3000/fetch/https://supersport-cms-prod.azureedge.net/{{event.rugbyTeam.home.icon}}">
+              </mat-grid-tile>
+              <mat-grid-tile *ngIf="!event.rugbyTeam.home.icon" colspan="3" rowspan="3">
+                &nbsp;
+              </mat-grid-tile>
+              <mat-grid-tile colspan="11" rowspan="3">
+                <span class="teamLocation">
+                  {{event.rugbyTeam.home.name}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="6" rowspan="3">
+                <span *ngIf="event.score.total.home !== null" class="teamScore">
+                  {{event.score.total.home}}
+                </span>
+                <span *ngIf="event.score.total.home == null" class="teamScore">
+                  &nbsp;
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="20" rowspan="1">
+                <span class="matchstatus" *ngIf="event.status.name !== 'Completed'">
+                    {{event.matchSubStatus}}
+                </span>
+                <span class="matchstatus" *ngIf="event.status.name === 'Completed'">
+                    Completed
+                </span>
+            </mat-grid-tile>
+              <mat-grid-tile *ngIf="event.rugbyTeam.away.icon" colspan="3" rowspan="3">
+                <img class="teamLogo"
+                  src="http://192.227.229.235:3000/fetch/https://supersport-cms-prod.azureedge.net/{{event.rugbyTeam.away.icon}}">
+              </mat-grid-tile>
+              <mat-grid-tile *ngIf="!event.rugbyTeam.away.icon" colspan="3" rowspan="3">
+                &nbsp;
+              </mat-grid-tile>
+              <mat-grid-tile colspan="11" rowspan="3">
+                <span class="teamLocation">
+                  {{event.rugbyTeam.away.name}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="6" rowspan="3">
+                <span *ngIf="event.score.total.away !== null" class="teamScore">
+                  {{event.score.total.away}}
+                </span>
+                <span *ngIf="event.score.total.away == null" class="teamScore">
+                  &nbsp;
+                </span>
+              </mat-grid-tile>
+              <!--       <mat-grid-tile colspan="20" rowspan="1">
+                <span *ngIf="event.status == 'Stumps'">
+                  {{event.status}}&nbsp;
+                </span>{{event.statusText}}
+              </mat-grid-tile>
+              <mat-grid-tile colspan="20" rowspan="1">
+                {{event.startDate}}
+              </mat-grid-tile> -->
+            </mat-grid-list>
+          </mat-card>
+        </ul>
+      </mat-card-flat>
+      <hr *ngIf="futureData">
+      <mat-card-flat class="centerVertically" *ngIf="futureData" fxLayout="row wrap">
+        <span class="cardTitle" *ngIf="futureData">Scheduled Matches</span><br>
+        <ul class="notTinyUl" *ngFor="let event of futureData.Summary; let i = index">
+          <mat-card>
+            <mat-grid-list cols="20" rows="9">
+              <mat-grid-tile colspan="20" rowspan="1">
+                <span class="venue">
+                  {{event.tour.name}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="20" rowspan="1">
+                <span class="venue">
+                  {{event.venue.venueName}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile *ngIf="event.rugbyTeam.home.icon" colspan="3" rowspan="3">
+                <img class="teamLogo"
+                  src="http://192.227.229.235:3000/fetch/https://supersport-cms-prod.azureedge.net/{{event.rugbyTeam.home.icon}}">
+              </mat-grid-tile>
+              <mat-grid-tile *ngIf="!event.rugbyTeam.home.icon" colspan="3" rowspan="3">
+                &nbsp;
+              </mat-grid-tile>
+              <mat-grid-tile colspan="11" rowspan="3">
+                <span class="teamLocation">
+                  {{event.rugbyTeam.home.name}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="6" rowspan="3">
+                <span class="teamScore">
+                    &nbsp;
+                  </span>
+                </mat-grid-tile>
+              <mat-grid-tile colspan="20" rowspan="1">
+                <span class="matchstatus">
+                    {{event.gameDate}}
+                </span>
+            </mat-grid-tile>
+              <mat-grid-tile *ngIf="event.rugbyTeam.away.icon" colspan="3" rowspan="3">
+                <img class="teamLogo"
+                  src="http://192.227.229.235:3000/fetch/https://supersport-cms-prod.azureedge.net/{{event.rugbyTeam.away.icon}}">
+              </mat-grid-tile>
+              <mat-grid-tile *ngIf="!event.rugbyTeam.away.icon" colspan="3" rowspan="3">
+                &nbsp;
+              </mat-grid-tile>
+              <mat-grid-tile colspan="11" rowspan="3">
+                <span class="teamLocation">
+                  {{event.rugbyTeam.away.name}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="6" rowspan="3">
+                <span class="teamScore">
+                  &nbsp;
+                </span>
+              </mat-grid-tile>
+              <!--       <mat-grid-tile colspan="20" rowspan="1">
+                <span *ngIf="event.status == 'Stumps'">
+                  {{event.status}}&nbsp;
+                </span>{{event.statusText}}
+              </mat-grid-tile>
+              <mat-grid-tile colspan="20" rowspan="1">
+                {{event.startDate}}
+              </mat-grid-tile> -->
+            </mat-grid-list>
+          </mat-card>
+        </ul>
+      </mat-card-flat>
+
+</div>
+</ng-container>

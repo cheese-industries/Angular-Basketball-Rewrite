@@ -1,1 +1,240 @@
-<p>nfl works!</p>
+<form [formGroup]="form" class="datepicker-center">
+    <mat-form-field appearance="fill">
+      <mat-label>Choose a date</mat-label>
+      <input formControlName="dateToCall" (dateChange)="handleDateChange()" matInput [matDatepicker]="picker">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </form>
+
+  <ng-container>
+    <div class="isNotMobile">
+      <mat-card-flat class="centerVertically" *ngIf="data" fxLayout="row wrap">
+        <ul class="notTinyUl" *ngFor="let event of data.events; let i = index">
+          <!-- <a [routerLink]="['/game-details', event.id]"> -->
+            <mat-card>
+              <mat-grid-list cols="20" rows="9">
+                <mat-grid-tile colspan="20" rowspan="2">
+                  <span class="venue">
+                    {{event.competitions[0].venue.fullName}} -
+                    {{event.competitions[0].venue.address.city}},
+                    {{event.competitions[0].venue.address.state}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="4" rowspan="4">
+                  <img class="teamLogo" src="{{event.competitions[0].competitors[1].team.logo}}"
+                    onerror="this.onerror=null;this.src='http://cheese-industries.com/img/basketball-icon.png';">
+                </mat-grid-tile>
+                <mat-grid-tile colspan="12" rowspan="1">
+                  <span class="teamLocation">
+                    <span
+                      *ngIf="event.competitions[0].competitors[1].curatedRank && event.competitions[0].competitors[1].curatedRank.current && (+event.competitions[0].competitors[1].curatedRank.current < 26)">
+                      {{event.competitions[0].competitors[1].curatedRank.current}}
+                    </span>
+                    {{event.competitions[0].competitors[1].team.location}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="3" rowspan="3">
+                  <span class="teamScore"
+                    *ngIf="event.status.type.state !== 'pre' && event.status.type.detail !== 'Canceled' && event.status.type.detail !=='Postponed'">
+                    {{event.competitions[0].competitors[1].score}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="1" rowspan="3">
+                  <!-- INTENTIONALLY LEFT BLANK -->
+                </mat-grid-tile>
+                <mat-grid-tile colspan="12" rowspan="2">
+                  <span class="teamNickname">
+                    {{event.competitions[0].competitors[1].team.name}}
+                  </span>
+                </mat-grid-tile>
+                <div *ngIf="event.competitions[0].competitors[1].records">
+                  <mat-grid-tile colspan="10" rowspan="1">
+                    <span class="teamRecord">
+                      <span
+                        *ngIf="event.competitions[0].competitors[1].records && event.competitions[0].competitors[1].records[0].summary">
+                        ({{event.competitions[0].competitors[1].records[0].summary}}<span
+                          *ngIf="event.competitions[0].competitors[1].records[3]">,
+                          {{event.competitions[0].competitors[1].records[3].summary}}
+                          {{event.competitions[0].competitors[1].team.conferenceId}}</span>)
+                      </span>
+                    </span>
+                  </mat-grid-tile>
+                </div>
+                <div *ngIf="!event.competitions[0].competitors[1].records">
+                  <mat-grid-tile colspan="10" rowspan="1">
+                    <span class="teamRecord">
+                      &nbsp;
+                    </span>
+                  </mat-grid-tile>
+                </div>
+                <mat-grid-tile colspan="6" rowspan="1">
+                  <!-- INTENTIONALLY LEFT BLANK -->
+                </mat-grid-tile>
+                <mat-grid-tile colspan="10" rowspan="1">
+                  <!-- INTENTIONALLY LEFT BLANK -->
+                </mat-grid-tile>
+                <mat-grid-tile colspan="10" rowspan="1">
+                  <span class="status">
+                    {{event.status.type.detail}}
+                  </span>
+                </mat-grid-tile>
+                <br>
+                <mat-grid-tile colspan="4" rowspan="4">
+                  <img class="teamLogo" src="{{event.competitions[0].competitors[0].team.logo}}">
+                </mat-grid-tile>
+                <mat-grid-tile colspan="12" rowspan="1">
+                  <span class="teamLocation">
+                    <span
+                    *ngIf="event.competitions[0].competitors[0].curatedRank && event.competitions[0].competitors[0].curatedRank.current && (+event.competitions[0].competitors[0].curatedRank.current < 26)">
+                      {{event.competitions[0].competitors[0].curatedRank.current}}
+                    </span>
+                    {{event.competitions[0].competitors[0].team.location}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="3" rowspan="3">
+                  <span class="teamScore"
+                    *ngIf="event.status.type.state !== 'pre' && event.status.type.detail !== 'Canceled' && event.status.type.detail !=='Postponed'">
+                    {{event.competitions[0].competitors[0].score}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="1" rowspan="3">
+                  <!-- INTENTIONALLY LEFT BLANK -->
+                </mat-grid-tile>
+                <mat-grid-tile colspan="12" rowspan="2">
+                  <span class="teamNickname">
+                    {{event.competitions[0].competitors[0].team.name}}
+                  </span>
+                </mat-grid-tile>
+                <div *ngIf="event.competitions[0].competitors[0].records">
+                  <mat-grid-tile colspan="10" rowspan="1">
+                    <span class="teamRecord">
+                      ({{event.competitions[0].competitors[0].records[0].summary}}<span
+                        *ngIf="event.competitions[0].competitors[0].records[3]">,
+                        {{event.competitions[0].competitors[0].records[3].summary}}
+                        {{event.competitions[0].competitors[0].team.conferenceId}}</span>)
+                    </span>
+                  </mat-grid-tile>
+                </div>
+                <mat-grid-tile colspan="6" rowspan="1">
+                  <!-- INTENTIONALLY LEFT BLANK -->
+                </mat-grid-tile>
+              </mat-grid-list>
+            </mat-card>
+          <!-- </a> -->
+        </ul>
+      </mat-card-flat>
+    </div>
+  </ng-container>
+
+  <ng-container>
+    <div class="isMobile">
+      <mat-card-flat class="xsContainer centerVertically" *ngIf="data" fxLayout="row wrap">
+        <ul class="tinyUl" *ngFor="let event of data.events; let i = index">
+          <!-- <a [routerLink]="['/game-details', event.id]"> -->
+
+            <mat-card>
+              <mat-grid-list cols="20" rows="9">
+                <mat-grid-tile colspan="20" rowspan="2">
+                  <span class="venue">
+                    {{event.competitions[0].venue.address.city}},
+                    {{event.competitions[0].venue.address.state}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="14" rowspan="1">
+                  <span class="xsTeamLocation">
+                   <span
+                   *ngIf="event.competitions[0].competitors[1].curatedRank && event.competitions[0].competitors[1].curatedRank.current && (+event.competitions[0].competitors[1].curatedRank.current < 26)">
+                     {{event.competitions[0].competitors[1].curatedRank.current}}
+                    </span>
+                    {{event.competitions[0].competitors[1].team.location}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="3" rowspan="3">
+                  <span class="xsTeamScore"
+                    *ngIf="event.status.type.state !== 'pre' && event.status.type.detail !== 'Canceled' && event.status.type.detail !=='Postponed'">
+                    {{event.competitions[0].competitors[1].score}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="3" rowspan="3">
+                  <!-- INTENTIONALLY LEFT BLANK -->
+                </mat-grid-tile>
+                <mat-grid-tile colspan="10" rowspan="2">
+                  <span class="xsTeamNickname">
+                    {{event.competitions[0].competitors[1].team.name}}
+                  </span>
+                </mat-grid-tile>
+                <div *ngIf="event.competitions[0].competitors[1].records">
+                  <mat-grid-tile colspan="10" rowspan="1">
+                    <span class="xsTeamRecord">
+                      <span
+                        *ngIf="event.competitions[0].competitors[1].records && event.competitions[0].competitors[1].records[0].summary">
+                        ({{event.competitions[0].competitors[1].records[0].summary}}<span
+                          *ngIf="event.competitions[0].competitors[1].records[3]">,
+                          {{event.competitions[0].competitors[1].records[3].summary}}
+                          {{event.competitions[0].competitors[1].team.conferenceId}}</span>)
+                      </span>
+                    </span>
+                  </mat-grid-tile>
+                </div>
+                <div *ngIf="!event.competitions[0].competitors[1].records">
+                  <mat-grid-tile colspan="10" rowspan="1">
+                    <span class="teamRecord">
+                      &nbsp;
+                    </span>
+                  </mat-grid-tile>
+                </div>
+                <mat-grid-tile colspan="6" rowspan="1">
+                  <!-- INTENTIONALLY LEFT BLANK -->
+                </mat-grid-tile>
+                <br>
+                <mat-grid-tile colspan="14" rowspan="1">
+                  <span class="xsTeamLocation">
+                   <span
+                   *ngIf="event.competitions[0].competitors[0].curatedRank && event.competitions[0].competitors[0].curatedRank.current && (+event.competitions[0].competitors[0].curatedRank.current < 26)">
+                     {{event.competitions[0].competitors[0].curatedRank.current}}
+                    </span>
+                    {{event.competitions[0].competitors[0].team.location}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="3" rowspan="3">
+                  <span class="xsTeamScore"
+                    *ngIf="event.status.type.state !== 'pre' && event.status.type.detail !== 'Canceled' && event.status.type.detail !=='Postponed'">
+                    {{event.competitions[0].competitors[0].score}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="3" rowspan="3">
+                  <!-- INTENTIONALLY LEFT BLANK -->
+                </mat-grid-tile>
+                <mat-grid-tile colspan="10" rowspan="2">
+                  <span class="xsTeamNickname">
+                    {{event.competitions[0].competitors[0].team.name}}
+                  </span>
+                </mat-grid-tile>
+                <div *ngIf="event.competitions[0].competitors[0].records">
+                  <mat-grid-tile colspan="10" rowspan="1">
+                    <span class="xsTeamRecord">
+                      ({{event.competitions[0].competitors[0].records[0].summary}}<span
+                        *ngIf="event.competitions[0].competitors[0].records[3]">,
+                        {{event.competitions[0].competitors[0].records[3].summary}}
+                        {{event.competitions[0].competitors[0].team.conferenceId}}</span>)
+                    </span>
+                  </mat-grid-tile>
+                </div>
+                <mat-grid-tile colspan="6" rowspan="1">
+                  <!-- INTENTIONALLY LEFT BLANK -->
+                </mat-grid-tile>
+                <br>
+                <mat-grid-tile colspan="20" rowspan="1">
+                  <span class="xsStatus">
+                    {{event.status.type.detail}}
+                  </span>
+                </mat-grid-tile>
+
+              </mat-grid-list>
+            </mat-card>
+          <!-- </a> -->
+        </ul>
+      </mat-card-flat>
+    </div>
+  </ng-container>

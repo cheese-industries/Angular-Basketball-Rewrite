@@ -1,0 +1,811 @@
+<form [formGroup]="form" class="datepicker-center">
+  <mat-form-field appearance="fill">
+    <mat-label>Choose a date</mat-label>
+    <input formControlName="dateToCall" (dateChange)="handleDateChange()" matInput [matDatepicker]="picker">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+</form>
+<ng-container>
+  <div *ngIf="mlbData" class="desktop-container">
+    <ul class="desktop" *ngFor="let game of mlbData.dates[0].games; let i = index">
+      <mat-card>
+        <mat-card-content>
+          <div class="card-container">
+            <div class="leftside">
+              <div *ngIf="game.gameUtils.isFinal && game.linescore.currentInning != 9" class="delay-flag">{{game.status.detailedState}} - {{game.linescore.currentInning}} Innings</div>
+              <div *ngIf="!game.gameUtils.isFinal || game.linescore.currentInning == 9" class="delay-flag">{{game.status.detailedState}}</div>
+              <div *ngIf="game.doubleHeader == 'Y' || game.doubleHeader == 'S'" class="doubleheader-flag">
+                <span class="doubleheader-flag">DOUBLEHEADER - GAME {{game.gameNumber}}</span>
+              </div>
+              <div *ngIf="game.flags && (game.flags.perfectGame || game.flags.noHitter || game.gameUtils.isLive)"
+                class="inning-div">
+                <span *ngIf="game.flags.perfectGame !== true && game.flags.noHitter !== true" class="event-flag"></span>
+                <span *ngIf="game.flags.perfectGame == true" class="event-flag">PERFECT GAME</span>
+                <span *ngIf="game.flags.noHitter == true" class="event-flag">NO-HITTER</span>
+                <span *ngIf="game.gameUtils.isLive" class="inning-span">{{game.linescore.inningState}}
+                  {{game.linescore.currentInning}}</span>
+              </div>
+              <div class="team-container">
+                <span class="team-name">
+                  {{game.teams.away.team.shortName}}
+                  ({{game.teams.away.leagueRecord.wins}}-{{game.teams.away.leagueRecord.losses}})
+                </span>
+                <span
+                  *ngIf="game.linescore.teams && (game.gameUtils.isFinal || game.gameUtils.isLive || game.gameUtils.isSuspended)"
+                  class="team-runs">
+                  {{game.linescore.teams.away.runs}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-hits">
+                  {{game.linescore.teams.away.hits}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-errors">
+                  {{game.linescore.teams.away.errors}}
+                </span>
+              </div>
+              <div class="team-container">
+                <span class="team-name">
+                  {{game.teams.home.team.shortName}}
+                  ({{game.teams.home.leagueRecord.wins}}-{{game.teams.home.leagueRecord.losses}})
+                </span>
+                <span
+                  *ngIf="game.linescore.teams && (game.gameUtils.isFinal || game.gameUtils.isLive || game.gameUtils.isSuspended)"
+                  class="team-runs">
+                  {{game.linescore.teams.home.runs}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-hits">
+                  {{game.linescore.teams.home.hits}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-errors">
+                  {{game.linescore.teams.home.errors}}
+                </span>
+              </div>
+              <div
+                *ngIf="game.gameDate && game.gameUtils.isPreview || game.gameUtils.isWarmup || game.gameUtils.isPreGameDelay"
+                class="game-time">
+                {{game.gameDate | date: 'shortTime'}}
+              </div>
+              <div *ngIf="game.description" class="notes">
+                <i>{{game.description}}</i>
+              </div>
+
+
+              <div
+                *ngIf="!game.gameUtils.isFinal && !game.gameUtils.isCancelled && !game.gameUtils.isPostponed && !game.gameUtils.isSuspended"
+                class="broadcasts">
+                <div class="away-broadcast">
+                  {{game.awayTVDiv}}
+                </div>
+                <div class="home-broadcast">
+                  {{game.homeTVDiv}}
+                </div>
+              </div>
+
+              <div
+                *ngIf="(game.teams.away.probablePitcher || game.teams.home.probablePitcher) && (game.gameUtils.isPreview || game.gameUtils.isWarmup || game.gameUtils.isPreGameDelay)"
+                class="probable-pitchers">
+                <div *ngIf="game.teams.away.probablePitcher" class="away-probable">
+                  {{game.teams.away.team.abbreviation}}: {{game.teams.away.probablePitcher.fullName}}
+                  ({{game.teams.away.probablePitcher.stats[3].stats.wins}}-{{game.teams.away.probablePitcher.stats[3].stats.losses}},
+                  {{game.teams.away.probablePitcher.stats[3].stats.era}})
+                </div>
+                <div *ngIf="game.teams.home.probablePitcher" class="home-probable">
+                  {{game.teams.home.team.abbreviation}}: {{game.teams.home.probablePitcher.fullName}}
+                  ({{game.teams.home.probablePitcher.stats[3].stats.wins}}-{{game.teams.home.probablePitcher.stats[3].stats.losses}},
+                  {{game.teams.home.probablePitcher.stats[3].stats.era}})
+                </div>
+              </div>
+
+              <div *ngIf="game.gameUtils.isLive && game.linescore.balls" class="balls-strikes-outs-inning">
+                <span *ngIf="game.linescore.balls || game.linescore.balls == 0" class="balls">Balls:
+                  {{game.linescore.balls}}</span>
+                <span *ngIf="game.linescore.strikes || game.linescore.strikes == 0" class="strikes">Strikes:
+                  {{game.linescore.strikes}}</span>
+                <span *ngIf="game.linescore.outs || game.linescore.outs == 0" class="outs">Outs:
+                  {{game.linescore.outs}}</span>
+              </div>
+
+              <!-- MIGHT HAVE TO DO SOMETHING FUNKY WITH PBP DATA OR SCRAP IT ALTOGETHER, WHICH WOULD SUCK.-->
+              <!--
+              <div *ngIf="game.pbp && game.pbp.last !== ''" class="lastplay"><b>Last play: </b>{{game.pbp.last}}</div> -->
+
+
+              <div *ngIf="game.decisions && game.decisions.winner && game.decisions.winner.fullName"
+                class="postgame-pitcher-info">
+                <div *ngIf="game.decisions.winner.fullName != ''" class="winning-pitcher"><b>W:
+                  </b>{{game.decisions.winner.fullName}}
+                  ({{game.decisions.winner.stats[3].stats.wins}}-{{game.decisions.winner.stats[3].stats.losses}},
+                  {{game.decisions.winner.stats[3].stats.era}})</div>
+                <div *ngIf="game.decisions.loser.fullName != ''" class="losing-pitcher"><b>L:
+                  </b>{{game.decisions.loser.fullName}}
+                  ({{game.decisions.loser.stats[3].stats.wins}}-{{game.decisions.loser.stats[3].stats.losses}},
+                  {{game.decisions.loser.stats[3].stats.era}})</div>
+                <div *ngIf="game.decisions.save && game.decisions.save.fullName != ''" class="saving-pitcher"><b>S:
+                  </b> {{game.decisions.save.fullName}}
+                  ({{game.decisions.save.stats[3].stats.wins}}-{{game.decisions.save.stats[3].stats.losses}},
+                  {{game.decisions.save.stats[3].stats.era}}, {{game.decisions.save.stats[3].stats.saves}} sv)</div>
+              </div>
+              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && !game.gameUtils.isPreGameDelay"
+                class="homeruns">
+                <span *ngIf="game.homeRuns && game.homeRuns.length > 0"><b>HR: </b></span>
+                <ul class="homers" *ngFor="let dinger of game.homeRuns; let i = index">
+                  {{dinger.matchup.batter.fullName}} {{dinger.matchup.batterTeam}}
+                  ({{dinger.matchup.batter.stats[2].stats.homeRuns}}) off {{dinger.matchup.pitcher.fullName}} in the
+                  {{dinger.matchup.ordinalInning}}
+                </ul>
+                <span *ngIf="game.homeRuns && game.homeRuns.length == 0"><b>HR: </b>None </span>
+              </div>
+            </div>
+            <div class="rightside" *ngIf="game.gameUtils.isLive">
+              <span class="diamond">
+                <div class="data-inside-diamond">
+                  <span *ngIf="game.linescore.defense.pitcher"
+                    class="pitcher">{{game.linescore.defense.pitcher.fullName}}
+                    ({{game.linescore.defense.pitcher.stats[3].stats.wins}}-{{game.linescore.defense.pitcher.stats[3].stats.losses}},
+                    {{game.linescore.defense.pitcher.stats[3].stats.era}})</span>
+                  <span *ngIf="game.linescore.offense.batter" class="batter">{{game.linescore.offense.batter.fullName}}
+                    ({{game.linescore.offense.batter.stats[2].stats.avg}}/{{game.linescore.offense.batter.stats[2].stats.obp}}/{{game.linescore.offense.batter.stats[2].stats.slg}})</span>
+                  <span *ngIf="game.linescore.offense.first"
+                    class="runner1">{{game.linescore.offense.first.fullName}}</span>
+                  <span *ngIf="game.linescore.offense.second"
+                    class="runner2">{{game.linescore.offense.second.fullName}}</span>
+                  <span *ngIf="game.linescore.offense.third"
+                    class="runner3">{{game.linescore.offense.third.fullName}}</span>
+                </div>
+              </span>
+              <div *ngIf="game.linescore.offense.onDeck" class="ondeck">
+                <b>On Deck: </b>{{game.linescore.offense.onDeck.fullName}}
+                ({{game.linescore.offense.onDeck.stats[2].stats.avg}}/{{game.linescore.offense.onDeck.stats[2].stats.obp}}/{{game.linescore.offense.onDeck.stats[2].stats.slg}})
+              </div>
+              <div *ngIf="game.linescore.offense.inHole" class="inthehole">
+                <b>In the Hole: </b>{{game.linescore.offense.inHole.fullName}}
+                ({{game.linescore.offense.inHole.stats[2].stats.avg}}/{{game.linescore.offense.inHole.stats[2].stats.obp}}/{{game.linescore.offense.inHole.stats[2].stats.slg}})
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </ul>
+  </div>
+  <hr *ngIf="aaaData">
+  <div *ngIf="aaaData" class="desktop-container">
+    <ul class="desktop" *ngFor="let game of aaaData.dates[0].games; let i = index">
+      <mat-card>
+        <mat-card-content>
+          <div class="card-container">
+            <div class="leftside">
+              <div class="delay-flag">{{game.status.detailedState}}</div>
+              <div *ngIf="game.doubleHeader == 'Y' || game.doubleHeader == 'S'" class="doubleheader-flag">
+                <span class="doubleheader-flag">DOUBLEHEADER - GAME {{game.gameNumber}}</span>
+              </div>
+              <div *ngIf="game.flags && (game.flags.perfectGame || game.flags.noHitter || game.gameUtils.isLive)"
+                class="inning-div">
+                <span *ngIf="game.flags.perfectGame !== true && game.flags.noHitter !== true" class="event-flag"></span>
+                <span *ngIf="game.flags.perfectGame == true" class="event-flag">PERFECT GAME</span>
+                <span *ngIf="game.flags.noHitter == true" class="event-flag">NO-HITTER</span>
+                <span *ngIf="game.gameUtils.isLive" class="inning-span">{{game.linescore.inningState}}
+                  {{game.linescore.currentInning}}</span>
+              </div>
+              <div class="team-container">
+                <span class="team-name">
+                  {{game.teams.away.team.shortName}}
+                  ({{game.teams.away.leagueRecord.wins}}-{{game.teams.away.leagueRecord.losses}})
+                </span>
+                <span
+                  *ngIf="game.linescore.teams && (game.gameUtils.isFinal || game.gameUtils.isLive || game.gameUtils.isSuspended)"
+                  class="team-runs">
+                  {{game.linescore.teams.away.runs}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-hits">
+                  {{game.linescore.teams.away.hits}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-errors">
+                  {{game.linescore.teams.away.errors}}
+                </span>
+              </div>
+              <div class="team-container">
+                <span class="team-name">
+                  {{game.teams.home.team.shortName}}
+                  ({{game.teams.home.leagueRecord.wins}}-{{game.teams.home.leagueRecord.losses}})
+                </span>
+                <span
+                  *ngIf="game.linescore.teams && (game.gameUtils.isFinal || game.gameUtils.isLive || game.gameUtils.isSuspended)"
+                  class="team-runs">
+                  {{game.linescore.teams.home.runs}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-hits">
+                  {{game.linescore.teams.home.hits}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-errors">
+                  {{game.linescore.teams.home.errors}}
+                </span>
+              </div>
+              <div
+                *ngIf="game.gameDate && game.gameUtils.isPreview || game.gameUtils.isWarmup || game.gameUtils.isPreGameDelay"
+                class="game-time">
+                {{game.gameDate | date: 'shortTime'}}
+              </div>
+              <div *ngIf="game.description" class="notes">
+                <i>{{game.description}}</i>
+              </div>
+
+
+              <div
+                *ngIf="!game.gameUtils.isFinal && !game.gameUtils.isCancelled && !game.gameUtils.isPostponed && !game.gameUtils.isSuspended"
+                class="broadcasts">
+                <div class="away-broadcast">
+                  {{game.awayTVDiv}}
+                </div>
+                <div class="home-broadcast">
+                  {{game.homeTVDiv}}
+                </div>
+              </div>
+
+              <div
+                *ngIf="(game.teams.away.probablePitcher || game.teams.home.probablePitcher) && (game.gameUtils.isPreview || game.gameUtils.isWarmup || game.gameUtils.isPreGameDelay)"
+                class="probable-pitchers">
+                <div *ngIf="game.teams.away.probablePitcher" class="away-probable">
+                  {{game.teams.away.team.abbreviation}}: {{game.teams.away.probablePitcher.fullName}}
+                  ({{game.teams.away.probablePitcher.stats[3].stats.wins}}-{{game.teams.away.probablePitcher.stats[3].stats.losses}},
+                  {{game.teams.away.probablePitcher.stats[3].stats.era}})
+                </div>
+                <div *ngIf="game.teams.home.probablePitcher" class="home-probable">
+                  {{game.teams.home.team.abbreviation}}: {{game.teams.home.probablePitcher.fullName}}
+                  ({{game.teams.home.probablePitcher.stats[3].stats.wins}}-{{game.teams.home.probablePitcher.stats[3].stats.losses}},
+                  {{game.teams.home.probablePitcher.stats[3].stats.era}})
+                </div>
+              </div>
+
+              <div *ngIf="game.gameUtils.isLive && game.linescore.balls" class="balls-strikes-outs-inning">
+                <span *ngIf="game.linescore.balls || game.linescore.balls == 0" class="balls">Balls:
+                  {{game.linescore.balls}}</span>
+                <span *ngIf="game.linescore.strikes || game.linescore.strikes == 0" class="strikes">Strikes:
+                  {{game.linescore.strikes}}</span>
+                <span *ngIf="game.linescore.outs || game.linescore.outs == 0" class="outs">Outs:
+                  {{game.linescore.outs}}</span>
+              </div>
+
+              <!-- MIGHT HAVE TO DO SOMETHING FUNKY WITH PBP DATA OR SCRAP IT ALTOGETHER, WHICH WOULD SUCK.-->
+              <!--
+              <div *ngIf="game.pbp && game.pbp.last !== ''" class="lastplay"><b>Last play: </b>{{game.pbp.last}}</div> -->
+
+
+              <div *ngIf="game.decisions && game.decisions.winner && game.decisions.winner.fullName"
+                class="postgame-pitcher-info">
+                <div *ngIf="game.decisions.winner.fullName != ''" class="winning-pitcher"><b>W:
+                  </b>{{game.decisions.winner.fullName}}
+                  ({{game.decisions.winner.stats[3].stats.wins}}-{{game.decisions.winner.stats[3].stats.losses}},
+                  {{game.decisions.winner.stats[3].stats.era}})</div>
+                <div *ngIf="game.decisions.loser.fullName != ''" class="losing-pitcher"><b>L:
+                  </b>{{game.decisions.loser.fullName}}
+                  ({{game.decisions.loser.stats[3].stats.wins}}-{{game.decisions.loser.stats[3].stats.losses}},
+                  {{game.decisions.loser.stats[3].stats.era}})</div>
+                <div *ngIf="game.decisions.save && game.decisions.save.fullName != ''" class="saving-pitcher"><b>S:
+                  </b> {{game.decisions.save.fullName}}
+                  ({{game.decisions.save.stats[3].stats.wins}}-{{game.decisions.save.stats[3].stats.losses}},
+                  {{game.decisions.save.stats[3].stats.era}}, {{game.decisions.save.stats[3].stats.saves}} sv)</div>
+              </div>
+              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && !game.gameUtils.isPreGameDelay"
+                class="homeruns">
+                <span *ngIf="game.homeRuns && game.homeRuns.length > 0"><b>HR: </b></span>
+                <ul class="homers" *ngFor="let dinger of game.homeRuns; let i = index">
+                  {{dinger.matchup.batter.fullName}} {{dinger.matchup.batterTeam}}
+                  ({{dinger.matchup.batter.stats[2].stats.homeRuns}}) off {{dinger.matchup.pitcher.fullName}} in the
+                  {{dinger.matchup.ordinalInning}}
+                </ul>
+                <span *ngIf="game.homeRuns && game.homeRuns.length == 0"><b>HR: </b>None </span>
+              </div>
+            </div>
+            <div class="rightside" *ngIf="game.gameUtils.isLive">
+              <span class="diamond">
+                <div class="data-inside-diamond">
+                  <span *ngIf="game.linescore.defense.pitcher"
+                    class="pitcher">{{game.linescore.defense.pitcher.fullName}}
+                    ({{game.linescore.defense.pitcher.stats[3].stats.wins}}-{{game.linescore.defense.pitcher.stats[3].stats.losses}},
+                    {{game.linescore.defense.pitcher.stats[3].stats.era}})</span>
+                  <span *ngIf="game.linescore.offense.batter" class="batter">{{game.linescore.offense.batter.fullName}}
+                    ({{game.linescore.offense.batter.stats[2].stats.avg}}/{{game.linescore.offense.batter.stats[2].stats.obp}}/{{game.linescore.offense.batter.stats[2].stats.slg}})</span>
+                  <span *ngIf="game.linescore.offense.first"
+                    class="runner1">{{game.linescore.offense.first.fullName}}</span>
+                  <span *ngIf="game.linescore.offense.second"
+                    class="runner2">{{game.linescore.offense.second.fullName}}</span>
+                  <span *ngIf="game.linescore.offense.third"
+                    class="runner3">{{game.linescore.offense.third.fullName}}</span>
+                </div>
+              </span>
+              <div *ngIf="game.linescore.offense.onDeck" class="ondeck">
+                <b>On Deck: </b>{{game.linescore.offense.onDeck.fullName}}
+                ({{game.linescore.offense.onDeck.stats[2].stats.avg}}/{{game.linescore.offense.onDeck.stats[2].stats.obp}}/{{game.linescore.offense.onDeck.stats[2].stats.slg}})
+              </div>
+              <div *ngIf="game.linescore.offense.inHole" class="inthehole">
+                <b>In the Hole: </b>{{game.linescore.offense.inHole.fullName}}
+                ({{game.linescore.offense.inHole.stats[2].stats.avg}}/{{game.linescore.offense.inHole.stats[2].stats.obp}}/{{game.linescore.offense.inHole.stats[2].stats.slg}})
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </ul>
+  </div>
+  <hr *ngIf="aaData">
+  <div *ngIf="aaData" class="desktop-container">
+    <ul class="desktop" *ngFor="let game of aaData.dates[0].games; let i = index">
+      <mat-card>
+        <mat-card-content>
+          <div class="card-container">
+            <div class="leftside">
+              <div class="delay-flag">{{game.status.detailedState}}</div>
+              <div *ngIf="game.doubleHeader == 'Y' || game.doubleHeader == 'S'" class="doubleheader-flag">
+                <span class="doubleheader-flag">DOUBLEHEADER - GAME {{game.gameNumber}}</span>
+              </div>
+              <div *ngIf="game.flags && (game.flags.perfectGame || game.flags.noHitter || game.gameUtils.isLive)"
+                class="inning-div">
+                <span *ngIf="game.flags.perfectGame !== true && game.flags.noHitter !== true" class="event-flag"></span>
+                <span *ngIf="game.flags.perfectGame == true" class="event-flag">PERFECT GAME</span>
+                <span *ngIf="game.flags.noHitter == true" class="event-flag">NO-HITTER</span>
+                <span *ngIf="game.gameUtils.isLive" class="inning-span">{{game.linescore.inningState}}
+                  {{game.linescore.currentInning}}</span>
+              </div>
+              <div class="team-container">
+                <span class="team-name">
+                  {{game.teams.away.team.shortName}}
+                  ({{game.teams.away.leagueRecord.wins}}-{{game.teams.away.leagueRecord.losses}})
+                </span>
+                <span
+                  *ngIf="game.linescore.teams && (game.gameUtils.isFinal || game.gameUtils.isLive || game.gameUtils.isSuspended)"
+                  class="team-runs">
+                  {{game.linescore.teams.away.runs}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-hits">
+                  {{game.linescore.teams.away.hits}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-errors">
+                  {{game.linescore.teams.away.errors}}
+                </span>
+              </div>
+              <div class="team-container">
+                <span class="team-name">
+                  {{game.teams.home.team.shortName}}
+                  ({{game.teams.home.leagueRecord.wins}}-{{game.teams.home.leagueRecord.losses}})
+                </span>
+                <span
+                  *ngIf="game.linescore.teams && (game.gameUtils.isFinal || game.gameUtils.isLive || game.gameUtils.isSuspended)"
+                  class="team-runs">
+                  {{game.linescore.teams.home.runs}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-hits">
+                  {{game.linescore.teams.home.hits}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-errors">
+                  {{game.linescore.teams.home.errors}}
+                </span>
+              </div>
+              <div
+                *ngIf="game.gameDate && game.gameUtils.isPreview || game.gameUtils.isWarmup || game.gameUtils.isPreGameDelay"
+                class="game-time">
+                {{game.gameDate | date: 'shortTime'}}
+              </div>
+              <div *ngIf="game.description" class="notes">
+                <i>{{game.description}}</i>
+              </div>
+
+
+              <div
+                *ngIf="!game.gameUtils.isFinal && !game.gameUtils.isCancelled && !game.gameUtils.isPostponed && !game.gameUtils.isSuspended"
+                class="broadcasts">
+                <div class="away-broadcast">
+                  {{game.awayTVDiv}}
+                </div>
+                <div class="home-broadcast">
+                  {{game.homeTVDiv}}
+                </div>
+              </div>
+
+              <div
+                *ngIf="(game.teams.away.probablePitcher || game.teams.home.probablePitcher) && (game.gameUtils.isPreview || game.gameUtils.isWarmup || game.gameUtils.isPreGameDelay)"
+                class="probable-pitchers">
+                <div *ngIf="game.teams.away.probablePitcher" class="away-probable">
+                  {{game.teams.away.team.abbreviation}}: {{game.teams.away.probablePitcher.fullName}}
+                  ({{game.teams.away.probablePitcher.stats[3].stats.wins}}-{{game.teams.away.probablePitcher.stats[3].stats.losses}},
+                  {{game.teams.away.probablePitcher.stats[3].stats.era}})
+                </div>
+                <div *ngIf="game.teams.home.probablePitcher" class="home-probable">
+                  {{game.teams.home.team.abbreviation}}: {{game.teams.home.probablePitcher.fullName}}
+                  ({{game.teams.home.probablePitcher.stats[3].stats.wins}}-{{game.teams.home.probablePitcher.stats[3].stats.losses}},
+                  {{game.teams.home.probablePitcher.stats[3].stats.era}})
+                </div>
+              </div>
+
+              <div *ngIf="game.gameUtils.isLive && game.linescore.balls" class="balls-strikes-outs-inning">
+                <span *ngIf="game.linescore.balls || game.linescore.balls == 0" class="balls">Balls:
+                  {{game.linescore.balls}}</span>
+                <span *ngIf="game.linescore.strikes || game.linescore.strikes == 0" class="strikes">Strikes:
+                  {{game.linescore.strikes}}</span>
+                <span *ngIf="game.linescore.outs || game.linescore.outs == 0" class="outs">Outs:
+                  {{game.linescore.outs}}</span>
+              </div>
+
+              <!-- MIGHT HAVE TO DO SOMETHING FUNKY WITH PBP DATA OR SCRAP IT ALTOGETHER, WHICH WOULD SUCK.-->
+              <!--
+              <div *ngIf="game.pbp && game.pbp.last !== ''" class="lastplay"><b>Last play: </b>{{game.pbp.last}}</div> -->
+
+
+              <div *ngIf="game.decisions && game.decisions.winner && game.decisions.winner.fullName"
+                class="postgame-pitcher-info">
+                <div *ngIf="game.decisions.winner.fullName != ''" class="winning-pitcher"><b>W:
+                  </b>{{game.decisions.winner.fullName}}
+                  ({{game.decisions.winner.stats[3].stats.wins}}-{{game.decisions.winner.stats[3].stats.losses}},
+                  {{game.decisions.winner.stats[3].stats.era}})</div>
+                <div *ngIf="game.decisions.loser.fullName != ''" class="losing-pitcher"><b>L:
+                  </b>{{game.decisions.loser.fullName}}
+                  ({{game.decisions.loser.stats[3].stats.wins}}-{{game.decisions.loser.stats[3].stats.losses}},
+                  {{game.decisions.loser.stats[3].stats.era}})</div>
+                <div *ngIf="game.decisions.save && game.decisions.save.fullName != ''" class="saving-pitcher"><b>S:
+                  </b> {{game.decisions.save.fullName}}
+                  ({{game.decisions.save.stats[3].stats.wins}}-{{game.decisions.save.stats[3].stats.losses}},
+                  {{game.decisions.save.stats[3].stats.era}}, {{game.decisions.save.stats[3].stats.saves}} sv)</div>
+              </div>
+              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && !game.gameUtils.isPreGameDelay"
+                class="homeruns">
+                <span *ngIf="game.homeRuns && game.homeRuns.length > 0"><b>HR: </b></span>
+                <ul class="homers" *ngFor="let dinger of game.homeRuns; let i = index">
+                  {{dinger.matchup.batter.fullName}} {{dinger.matchup.batterTeam}}
+                  ({{dinger.matchup.batter.stats[2].stats.homeRuns}}) off {{dinger.matchup.pitcher.fullName}} in the
+                  {{dinger.matchup.ordinalInning}}
+                </ul>
+                <span *ngIf="game.homeRuns && game.homeRuns.length == 0"><b>HR: </b>None </span>
+              </div>
+            </div>
+            <div class="rightside" *ngIf="game.gameUtils.isLive">
+              <span class="diamond">
+                <div class="data-inside-diamond">
+                  <span *ngIf="game.linescore.defense.pitcher"
+                    class="pitcher">{{game.linescore.defense.pitcher.fullName}}
+                    ({{game.linescore.defense.pitcher.stats[3].stats.wins}}-{{game.linescore.defense.pitcher.stats[3].stats.losses}},
+                    {{game.linescore.defense.pitcher.stats[3].stats.era}})</span>
+                  <span *ngIf="game.linescore.offense.batter" class="batter">{{game.linescore.offense.batter.fullName}}
+                    ({{game.linescore.offense.batter.stats[2].stats.avg}}/{{game.linescore.offense.batter.stats[2].stats.obp}}/{{game.linescore.offense.batter.stats[2].stats.slg}})</span>
+                  <span *ngIf="game.linescore.offense.first"
+                    class="runner1">{{game.linescore.offense.first.fullName}}</span>
+                  <span *ngIf="game.linescore.offense.second"
+                    class="runner2">{{game.linescore.offense.second.fullName}}</span>
+                  <span *ngIf="game.linescore.offense.third"
+                    class="runner3">{{game.linescore.offense.third.fullName}}</span>
+                </div>
+              </span>
+              <div *ngIf="game.linescore.offense.onDeck" class="ondeck">
+                <b>On Deck: </b>{{game.linescore.offense.onDeck.fullName}}
+                ({{game.linescore.offense.onDeck.stats[2].stats.avg}}/{{game.linescore.offense.onDeck.stats[2].stats.obp}}/{{game.linescore.offense.onDeck.stats[2].stats.slg}})
+              </div>
+              <div *ngIf="game.linescore.offense.inHole" class="inthehole">
+                <b>In the Hole: </b>{{game.linescore.offense.inHole.fullName}}
+                ({{game.linescore.offense.inHole.stats[2].stats.avg}}/{{game.linescore.offense.inHole.stats[2].stats.obp}}/{{game.linescore.offense.inHole.stats[2].stats.slg}})
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </ul>
+  </div>
+  <hr *ngIf="highAData">
+  <div *ngIf="highAData" class="desktop-container">
+    <ul class="desktop" *ngFor="let game of highAData.dates[0].games; let i = index">
+      <mat-card>
+        <mat-card-content>
+          <div class="card-container">
+            <div class="leftside">
+              <div class="delay-flag">{{game.status.detailedState}}</div>
+              <div *ngIf="game.doubleHeader == 'Y' || game.doubleHeader == 'S'" class="doubleheader-flag">
+                <span class="doubleheader-flag">DOUBLEHEADER - GAME {{game.gameNumber}}</span>
+              </div>
+              <div *ngIf="game.flags && (game.flags.perfectGame || game.flags.noHitter || game.gameUtils.isLive)"
+                class="inning-div">
+                <span *ngIf="game.flags.perfectGame !== true && game.flags.noHitter !== true" class="event-flag"></span>
+                <span *ngIf="game.flags.perfectGame == true" class="event-flag">PERFECT GAME</span>
+                <span *ngIf="game.flags.noHitter == true" class="event-flag">NO-HITTER</span>
+                <span *ngIf="game.gameUtils.isLive" class="inning-span">{{game.linescore.inningState}}
+                  {{game.linescore.currentInning}}</span>
+              </div>
+              <div class="team-container">
+                <span class="team-name">
+                  {{game.teams.away.team.shortName}}
+                  ({{game.teams.away.leagueRecord.wins}}-{{game.teams.away.leagueRecord.losses}})
+                </span>
+                <span
+                  *ngIf="game.linescore.teams && (game.gameUtils.isFinal || game.gameUtils.isLive || game.gameUtils.isSuspended)"
+                  class="team-runs">
+                  {{game.linescore.teams.away.runs}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-hits">
+                  {{game.linescore.teams.away.hits}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-errors">
+                  {{game.linescore.teams.away.errors}}
+                </span>
+              </div>
+              <div class="team-container">
+                <span class="team-name">
+                  {{game.teams.home.team.shortName}}
+                  ({{game.teams.home.leagueRecord.wins}}-{{game.teams.home.leagueRecord.losses}})
+                </span>
+                <span
+                  *ngIf="game.linescore.teams && (game.gameUtils.isFinal || game.gameUtils.isLive || game.gameUtils.isSuspended)"
+                  class="team-runs">
+                  {{game.linescore.teams.home.runs}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-hits">
+                  {{game.linescore.teams.home.hits}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-errors">
+                  {{game.linescore.teams.home.errors}}
+                </span>
+              </div>
+              <div
+                *ngIf="game.gameDate && game.gameUtils.isPreview || game.gameUtils.isWarmup || game.gameUtils.isPreGameDelay"
+                class="game-time">
+                {{game.gameDate | date: 'shortTime'}}
+              </div>
+              <div *ngIf="game.description" class="notes">
+                <i>{{game.description}}</i>
+              </div>
+
+
+              <div
+                *ngIf="!game.gameUtils.isFinal && !game.gameUtils.isCancelled && !game.gameUtils.isPostponed && !game.gameUtils.isSuspended"
+                class="broadcasts">
+                <div class="away-broadcast">
+                  {{game.awayTVDiv}}
+                </div>
+                <div class="home-broadcast">
+                  {{game.homeTVDiv}}
+                </div>
+              </div>
+
+              <div
+                *ngIf="(game.teams.away.probablePitcher || game.teams.home.probablePitcher) && (game.gameUtils.isPreview || game.gameUtils.isWarmup || game.gameUtils.isPreGameDelay)"
+                class="probable-pitchers">
+                <div *ngIf="game.teams.away.probablePitcher" class="away-probable">
+                  {{game.teams.away.team.abbreviation}}: {{game.teams.away.probablePitcher.fullName}}
+                  ({{game.teams.away.probablePitcher.stats[3].stats.wins}}-{{game.teams.away.probablePitcher.stats[3].stats.losses}},
+                  {{game.teams.away.probablePitcher.stats[3].stats.era}})
+                </div>
+                <div *ngIf="game.teams.home.probablePitcher" class="home-probable">
+                  {{game.teams.home.team.abbreviation}}: {{game.teams.home.probablePitcher.fullName}}
+                  ({{game.teams.home.probablePitcher.stats[3].stats.wins}}-{{game.teams.home.probablePitcher.stats[3].stats.losses}},
+                  {{game.teams.home.probablePitcher.stats[3].stats.era}})
+                </div>
+              </div>
+
+              <div *ngIf="game.gameUtils.isLive && game.linescore.balls" class="balls-strikes-outs-inning">
+                <span *ngIf="game.linescore.balls || game.linescore.balls == 0" class="balls">Balls:
+                  {{game.linescore.balls}}</span>
+                <span *ngIf="game.linescore.strikes || game.linescore.strikes == 0" class="strikes">Strikes:
+                  {{game.linescore.strikes}}</span>
+                <span *ngIf="game.linescore.outs || game.linescore.outs == 0" class="outs">Outs:
+                  {{game.linescore.outs}}</span>
+              </div>
+
+              <!-- MIGHT HAVE TO DO SOMETHING FUNKY WITH PBP DATA OR SCRAP IT ALTOGETHER, WHICH WOULD SUCK.-->
+              <!--
+              <div *ngIf="game.pbp && game.pbp.last !== ''" class="lastplay"><b>Last play: </b>{{game.pbp.last}}</div> -->
+
+
+              <div *ngIf="game.decisions && game.decisions.winner && game.decisions.winner.fullName"
+                class="postgame-pitcher-info">
+                <div *ngIf="game.decisions.winner.fullName != ''" class="winning-pitcher"><b>W:
+                  </b>{{game.decisions.winner.fullName}}
+                  ({{game.decisions.winner.stats[3].stats.wins}}-{{game.decisions.winner.stats[3].stats.losses}},
+                  {{game.decisions.winner.stats[3].stats.era}})</div>
+                <div *ngIf="game.decisions.loser.fullName != ''" class="losing-pitcher"><b>L:
+                  </b>{{game.decisions.loser.fullName}}
+                  ({{game.decisions.loser.stats[3].stats.wins}}-{{game.decisions.loser.stats[3].stats.losses}},
+                  {{game.decisions.loser.stats[3].stats.era}})</div>
+                <div *ngIf="game.decisions.save && game.decisions.save.fullName != ''" class="saving-pitcher"><b>S:
+                  </b> {{game.decisions.save.fullName}}
+                  ({{game.decisions.save.stats[3].stats.wins}}-{{game.decisions.save.stats[3].stats.losses}},
+                  {{game.decisions.save.stats[3].stats.era}}, {{game.decisions.save.stats[3].stats.saves}} sv)</div>
+              </div>
+              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && !game.gameUtils.isPreGameDelay"
+                class="homeruns">
+                <span *ngIf="game.homeRuns && game.homeRuns.length > 0"><b>HR: </b></span>
+                <ul class="homers" *ngFor="let dinger of game.homeRuns; let i = index">
+                  {{dinger.matchup.batter.fullName}} {{dinger.matchup.batterTeam}}
+                  ({{dinger.matchup.batter.stats[2].stats.homeRuns}}) off {{dinger.matchup.pitcher.fullName}} in the
+                  {{dinger.matchup.ordinalInning}}
+                </ul>
+                <span *ngIf="game.homeRuns && game.homeRuns.length == 0"><b>HR: </b>None </span>
+              </div>
+            </div>
+            <div class="rightside" *ngIf="game.gameUtils.isLive">
+              <span class="diamond">
+                <div class="data-inside-diamond">
+                  <span *ngIf="game.linescore.defense.pitcher"
+                    class="pitcher">{{game.linescore.defense.pitcher.fullName}}
+                    ({{game.linescore.defense.pitcher.stats[3].stats.wins}}-{{game.linescore.defense.pitcher.stats[3].stats.losses}},
+                    {{game.linescore.defense.pitcher.stats[3].stats.era}})</span>
+                  <span *ngIf="game.linescore.offense.batter" class="batter">{{game.linescore.offense.batter.fullName}}
+                    ({{game.linescore.offense.batter.stats[2].stats.avg}}/{{game.linescore.offense.batter.stats[2].stats.obp}}/{{game.linescore.offense.batter.stats[2].stats.slg}})</span>
+                  <span *ngIf="game.linescore.offense.first"
+                    class="runner1">{{game.linescore.offense.first.fullName}}</span>
+                  <span *ngIf="game.linescore.offense.second"
+                    class="runner2">{{game.linescore.offense.second.fullName}}</span>
+                  <span *ngIf="game.linescore.offense.third"
+                    class="runner3">{{game.linescore.offense.third.fullName}}</span>
+                </div>
+              </span>
+              <div *ngIf="game.linescore.offense.onDeck" class="ondeck">
+                <b>On Deck: </b>{{game.linescore.offense.onDeck.fullName}}
+                ({{game.linescore.offense.onDeck.stats[2].stats.avg}}/{{game.linescore.offense.onDeck.stats[2].stats.obp}}/{{game.linescore.offense.onDeck.stats[2].stats.slg}})
+              </div>
+              <div *ngIf="game.linescore.offense.inHole" class="inthehole">
+                <b>In the Hole: </b>{{game.linescore.offense.inHole.fullName}}
+                ({{game.linescore.offense.inHole.stats[2].stats.avg}}/{{game.linescore.offense.inHole.stats[2].stats.obp}}/{{game.linescore.offense.inHole.stats[2].stats.slg}})
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </ul>
+  </div>
+  <hr *ngIf="lowAData">
+  <div *ngIf="lowAData" class="desktop-container">
+    <ul class="desktop" *ngFor="let game of lowAData.dates[0].games; let i = index">
+      <mat-card>
+        <mat-card-content>
+          <div class="card-container">
+            <div class="leftside">
+              <div class="delay-flag">{{game.status.detailedState}}</div>
+              <div *ngIf="game.doubleHeader == 'Y' || game.doubleHeader == 'S'" class="doubleheader-flag">
+                <span class="doubleheader-flag">DOUBLEHEADER - GAME {{game.gameNumber}}</span>
+              </div>
+              <div *ngIf="game.flags && (game.flags.perfectGame || game.flags.noHitter || game.gameUtils.isLive)"
+                class="inning-div">
+                <span *ngIf="game.flags.perfectGame !== true && game.flags.noHitter !== true" class="event-flag"></span>
+                <span *ngIf="game.flags.perfectGame == true" class="event-flag">PERFECT GAME</span>
+                <span *ngIf="game.flags.noHitter == true" class="event-flag">NO-HITTER</span>
+                <span *ngIf="game.gameUtils.isLive" class="inning-span">{{game.linescore.inningState}}
+                  {{game.linescore.currentInning}}</span>
+              </div>
+              <div class="team-container">
+                <span class="team-name">
+                  {{game.teams.away.team.shortName}}
+                  ({{game.teams.away.leagueRecord.wins}}-{{game.teams.away.leagueRecord.losses}})
+                </span>
+                <span
+                  *ngIf="game.linescore.teams && (game.gameUtils.isFinal || game.gameUtils.isLive || game.gameUtils.isSuspended)"
+                  class="team-runs">
+                  {{game.linescore.teams.away.runs}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-hits">
+                  {{game.linescore.teams.away.hits}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-errors">
+                  {{game.linescore.teams.away.errors}}
+                </span>
+              </div>
+              <div class="team-container">
+                <span class="team-name">
+                  {{game.teams.home.team.shortName}}
+                  ({{game.teams.home.leagueRecord.wins}}-{{game.teams.home.leagueRecord.losses}})
+                </span>
+                <span
+                  *ngIf="game.linescore.teams && (game.gameUtils.isFinal || game.gameUtils.isLive || game.gameUtils.isSuspended)"
+                  class="team-runs">
+                  {{game.linescore.teams.home.runs}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-hits">
+                  {{game.linescore.teams.home.hits}}
+                </span>
+                <span *ngIf="game.linescore.teams" class="team-errors">
+                  {{game.linescore.teams.home.errors}}
+                </span>
+              </div>
+              <div
+                *ngIf="game.gameDate && game.gameUtils.isPreview || game.gameUtils.isWarmup || game.gameUtils.isPreGameDelay"
+                class="game-time">
+                {{game.gameDate | date: 'shortTime'}}
+              </div>
+              <div *ngIf="game.description" class="notes">
+                <i>{{game.description}}</i>
+              </div>
+
+
+              <div
+                *ngIf="!game.gameUtils.isFinal && !game.gameUtils.isCancelled && !game.gameUtils.isPostponed && !game.gameUtils.isSuspended"
+                class="broadcasts">
+                <div class="away-broadcast">
+                  {{game.awayTVDiv}}
+                </div>
+                <div class="home-broadcast">
+                  {{game.homeTVDiv}}
+                </div>
+              </div>
+
+              <div
+                *ngIf="(game.teams.away.probablePitcher || game.teams.home.probablePitcher) && (game.gameUtils.isPreview || game.gameUtils.isWarmup || game.gameUtils.isPreGameDelay)"
+                class="probable-pitchers">
+                <div *ngIf="game.teams.away.probablePitcher" class="away-probable">
+                  {{game.teams.away.team.abbreviation}}: {{game.teams.away.probablePitcher.fullName}}
+                  ({{game.teams.away.probablePitcher.stats[3].stats.wins}}-{{game.teams.away.probablePitcher.stats[3].stats.losses}},
+                  {{game.teams.away.probablePitcher.stats[3].stats.era}})
+                </div>
+                <div *ngIf="game.teams.home.probablePitcher" class="home-probable">
+                  {{game.teams.home.team.abbreviation}}: {{game.teams.home.probablePitcher.fullName}}
+                  ({{game.teams.home.probablePitcher.stats[3].stats.wins}}-{{game.teams.home.probablePitcher.stats[3].stats.losses}},
+                  {{game.teams.home.probablePitcher.stats[3].stats.era}})
+                </div>
+              </div>
+
+              <div *ngIf="game.gameUtils.isLive && game.linescore.balls" class="balls-strikes-outs-inning">
+                <span *ngIf="game.linescore.balls || game.linescore.balls == 0" class="balls">Balls:
+                  {{game.linescore.balls}}</span>
+                <span *ngIf="game.linescore.strikes || game.linescore.strikes == 0" class="strikes">Strikes:
+                  {{game.linescore.strikes}}</span>
+                <span *ngIf="game.linescore.outs || game.linescore.outs == 0" class="outs">Outs:
+                  {{game.linescore.outs}}</span>
+              </div>
+
+              <!-- MIGHT HAVE TO DO SOMETHING FUNKY WITH PBP DATA OR SCRAP IT ALTOGETHER, WHICH WOULD SUCK.-->
+              <!--
+              <div *ngIf="game.pbp && game.pbp.last !== ''" class="lastplay"><b>Last play: </b>{{game.pbp.last}}</div> -->
+
+
+              <div *ngIf="game.decisions && game.decisions.winner && game.decisions.winner.fullName"
+                class="postgame-pitcher-info">
+                <div *ngIf="game.decisions.winner.fullName != ''" class="winning-pitcher"><b>W:
+                  </b>{{game.decisions.winner.fullName}}
+                  ({{game.decisions.winner.stats[3].stats.wins}}-{{game.decisions.winner.stats[3].stats.losses}},
+                  {{game.decisions.winner.stats[3].stats.era}})</div>
+                <div *ngIf="game.decisions.loser.fullName != ''" class="losing-pitcher"><b>L:
+                  </b>{{game.decisions.loser.fullName}}
+                  ({{game.decisions.loser.stats[3].stats.wins}}-{{game.decisions.loser.stats[3].stats.losses}},
+                  {{game.decisions.loser.stats[3].stats.era}})</div>
+                <div *ngIf="game.decisions.save && game.decisions.save.fullName != ''" class="saving-pitcher"><b>S:
+                  </b> {{game.decisions.save.fullName}}
+                  ({{game.decisions.save.stats[3].stats.wins}}-{{game.decisions.save.stats[3].stats.losses}},
+                  {{game.decisions.save.stats[3].stats.era}}, {{game.decisions.save.stats[3].stats.saves}} sv)</div>
+              </div>
+              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && !game.gameUtils.isPreGameDelay"
+                class="homeruns">
+                <span *ngIf="game.homeRuns && game.homeRuns.length > 0"><b>HR: </b></span>
+                <ul class="homers" *ngFor="let dinger of game.homeRuns; let i = index">
+                  {{dinger.matchup.batter.fullName}} {{dinger.matchup.batterTeam}}
+                  ({{dinger.matchup.batter.stats[2].stats.homeRuns}}) off {{dinger.matchup.pitcher.fullName}} in the
+                  {{dinger.matchup.ordinalInning}}
+                </ul>
+                <span *ngIf="game.homeRuns && game.homeRuns.length == 0"><b>HR: </b>None </span>
+              </div>
+            </div>
+            <div class="rightside" *ngIf="game.gameUtils.isLive">
+              <span class="diamond">
+                <div class="data-inside-diamond">
+                  <span *ngIf="game.linescore.defense.pitcher"
+                    class="pitcher">{{game.linescore.defense.pitcher.fullName}}
+                    ({{game.linescore.defense.pitcher.stats[3].stats.wins}}-{{game.linescore.defense.pitcher.stats[3].stats.losses}},
+                    {{game.linescore.defense.pitcher.stats[3].stats.era}})</span>
+                  <span *ngIf="game.linescore.offense.batter" class="batter">{{game.linescore.offense.batter.fullName}}
+                    ({{game.linescore.offense.batter.stats[2].stats.avg}}/{{game.linescore.offense.batter.stats[2].stats.obp}}/{{game.linescore.offense.batter.stats[2].stats.slg}})</span>
+                  <span *ngIf="game.linescore.offense.first"
+                    class="runner1">{{game.linescore.offense.first.fullName}}</span>
+                  <span *ngIf="game.linescore.offense.second"
+                    class="runner2">{{game.linescore.offense.second.fullName}}</span>
+                  <span *ngIf="game.linescore.offense.third"
+                    class="runner3">{{game.linescore.offense.third.fullName}}</span>
+                </div>
+              </span>
+              <div *ngIf="game.linescore.offense.onDeck" class="ondeck">
+                <b>On Deck: </b>{{game.linescore.offense.onDeck.fullName}}
+                ({{game.linescore.offense.onDeck.stats[2].stats.avg}}/{{game.linescore.offense.onDeck.stats[2].stats.obp}}/{{game.linescore.offense.onDeck.stats[2].stats.slg}})
+              </div>
+              <div *ngIf="game.linescore.offense.inHole" class="inthehole">
+                <b>In the Hole: </b>{{game.linescore.offense.inHole.fullName}}
+                ({{game.linescore.offense.inHole.stats[2].stats.avg}}/{{game.linescore.offense.inHole.stats[2].stats.obp}}/{{game.linescore.offense.inHole.stats[2].stats.slg}})
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </ul>
+  </div>
+
+</ng-container>

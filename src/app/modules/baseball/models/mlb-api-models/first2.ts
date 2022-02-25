@@ -1,0 +1,46 @@
+import { BatSide7 } from "./bat-side7";
+import { PitchHand7 } from "./pitch-hand7";
+import { PrimaryPosition7 } from "./primary-position7";
+
+export interface First2 {
+    id: number;
+    fullName: string;
+    link: string;
+    firstName: string;
+    lastName: string;
+    primaryNumber: string;
+    birthDate: string;
+    currentAge: number;
+    birthCity: string;
+    birthStateProvince: string;
+    birthCountry: string;
+    height: string;
+    weight: number;
+    active: boolean;
+    alternateCaptain: boolean;
+    captain: boolean;
+    rookie: boolean;
+    primaryPosition: PrimaryPosition7;
+    useName: string;
+    middleName: string;
+    boxscoreName: string;
+    gender: string;
+    isPlayer: boolean;
+    isVerified: boolean;
+    draftYear: number;
+    batSide: BatSide7;
+    pitchHand: PitchHand7;
+    nameFirstLast: string;
+    nameSlug: string;
+    firstLastName: string;
+    lastFirstName: string;
+    lastInitName: string;
+    initLastName: string;
+    fullFMLName: string;
+    fullLFMName: string;
+    strikeZoneTop: number;
+    strikeZoneBottom: number;
+    mlbDebutDate: string;
+    nameMatrilineal: string;
+    pronunciation: string;
+}

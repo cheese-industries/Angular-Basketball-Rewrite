@@ -1,0 +1,71 @@
+.flag
+{
+	height: 14.667px;
+	width: auto;
+}
+.golfer-row
+{
+	font-size: 16px;
+	height: 20px;
+	margin: 4px;
+	/* padding: 0px; */
+    /* padding-right: -70px; */
+	width: 100%;
+}
+.golfer-row-gray
+{
+	background-color: #ddd;
+	font-size: 16px;
+	height: 20px;
+	margin: 4px;
+	/* padding: 0px; */
+    /* padding-right: -70px; */
+	width: 100%;
+}
+.golf-scoreboard
+{
+	left: 35%;
+	width: 650px;
+}
+.header-row
+{
+	font-size: 16px;
+	font-weight: bold;
+	height: 20px;
+	margin: 4px;
+	padding-left: 40px;
+    padding-right: 40px;
+	width: 100%;
+}
+.mat-card-title
+{
+	padding-left: 40px;
+	text-align: center;
+}
+.name
+{
+	width: 250px !important;
+}
+.round
+{
+	text-align: center;
+	width: 40px;
+}
+.score
+{
+	text-align: center;
+	width: 50px;
+}
+.total
+{
+	text-align: center;
+	width: 55px;
+}
+span
+{
+	display: inline-block;
+}
+ul
+{
+	margin: 0px;
+}

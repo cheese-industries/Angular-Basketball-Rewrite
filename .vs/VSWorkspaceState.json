@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\app",
+    "\\src\\app\\modules",
+    "\\src\\app\\modules\\basketball",
+    "\\src\\app\\modules\\basketball\\components",
+    "\\src\\app\\modules\\basketball\\components\\basketball"
+  ],
+  "SelectedNode": "\\src\\app\\modules\\basketball\\components\\basketball\\basketball.component.html",
+  "PreviewInSolutionExplorer": false
+}
