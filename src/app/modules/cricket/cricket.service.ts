@@ -8,8 +8,8 @@ import { HttpClient } from '@angular/common/http';
 })
 export class CricketService {
   urlToFetch: string =
-    'https://hidden-anchorage-20030.herokuapp.com/https://hs-consumer-api.espncricinfo.com/v1/pages/matches/current?lang=en&latest=true';
-  //    'https://hidden-anchorage-20030.herokuapp.com/https://www.echl.com/api/s3/live?q=live-events.json';
+    'https://danl.ee:3000/fetch/https://hs-consumer-api.espncricinfo.com/v1/pages/matches/current?lang=en&latest=true';
+  //    'https://danl.ee:3000/fetch/https://www.echl.com/api/s3/live?q=live-events.json';
 
   constructor(private http: HttpClient) {}
 

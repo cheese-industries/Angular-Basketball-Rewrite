@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class EchlService {
   urlToFetch: string =
-    'https://hidden-anchorage-20030.herokuapp.com/https://www.echl.com/api/s3/live?q=live-events.json';
+    'https://danl.ee:3000/fetch/https://www.echl.com/api/s3/live?q=live-events.json';
 
 
   constructor(private http: HttpClient) {}
@@ -17,7 +17,6 @@ export class EchlService {
   getGameData(): Observable<EchlData> {
     //REST request
     //Will return that data asynchronously
-//console.log(`${this.urlToFetch}${dateToFetch}`)
     return this.http.get<EchlData>(`${this.urlToFetch}`);
   }
 

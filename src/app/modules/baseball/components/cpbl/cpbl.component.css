@@ -1,0 +1,45 @@
+.team-name{
+  font-family: "Roboto Condensed", Arial, Helvetica, sans-serif;
+  width: 230px;
+}
+
+.team-data{
+  width: 20px;
+  font-family: "Roboto Condensed", Arial, Helvetica, sans-serif;
+  text-align: center;
+}
+
+.team {
+  font-family: "Roboto Condensed", Arial, Helvetica, sans-serif;
+  display: flex;
+}
+
+.mat-card {
+  font-family: "Roboto Condensed", Arial, Helvetica, sans-serif;
+  width: 600px;
+}
+
+.desktop-container {
+  display: flex;
+  font-family: "Roboto Condensed", Arial, Helvetica, sans-serif;
+  flex-wrap: wrap;
+}
+
+.start-time {
+  font-family: "Roboto Condensed", Arial, Helvetica, sans-serif;
+  text-align: center;
+  /* font-style: italic; */
+  font-size: 0.75em;
+  padding-bottom: 5px;
+}
+
+.no-games {
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 10px;
+  font-family: "Roboto Condensed", Arial, Helvetica, sans-serif;
+}
+
+html:not(.mat-icon):not(.material-icons){
+  font-family: "Roboto Condensed", Arial, Helvetica, sans-serif;
+}

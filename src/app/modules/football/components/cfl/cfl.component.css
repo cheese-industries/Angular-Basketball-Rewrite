@@ -1,0 +1,99 @@
+.notTinyUl {
+  width: 400px;
+}
+
+.tinyUl {
+  width: 300px;
+}
+
+.teamLogo {
+  width: 100%;
+  height: auto;
+}
+
+.mobile-team-location {
+  text-align: left;
+  font-size: 0.8rem;
+  position: absolute;
+  font-weight: medium;
+  left: 5px;
+}
+
+.mobile-team-nickname {
+  text-align: left;
+  font-size: 1.2rem;
+  position: absolute;
+  font-weight: bolder;
+  left: 5px;
+}
+
+.mobile-team-record {
+  text-align: left;
+  font-size: 0.8rem;
+  position: absolute;
+  font-weight: medium;
+  left: 5px;
+}
+
+.mobile-team-score {
+  font-size: 1.2rem;
+  font-weight: bolder;
+}
+
+.team-location {
+  text-align: left;
+  font-size: 1.15rem;
+  position: absolute;
+  font-weight: medium;
+  left: 5px;
+}
+
+.team-nickname {
+  text-align: left;
+  font-size: 1.8rem;
+  position: absolute;
+  font-weight: bolder;
+  left: 5px;
+}
+
+.team-record {
+  text-align: left;
+  font-size: 1rem;
+  position: absolute;
+  font-weight: medium;
+  left: 5px;
+}
+
+.team-score {
+  font-size: 1.6rem;
+  font-weight: bolder;
+}
+
+.week-dropdown {
+  text-align: center;
+}
+
+.centerVertically {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hidden {
+  height: 0px;
+  font-size: 10px;
+}
+
+
+@media only screen and (min-device-width: 0px) and (max-device-width: 430px) {
+    .desktop {
+      display: none;
+    }
+  }
+  
+  @media only screen and (min-device-width: 431px) {
+    .mobile {
+      display: none;
+    }
+  }
+  

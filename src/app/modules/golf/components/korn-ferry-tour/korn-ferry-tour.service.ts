@@ -16,7 +16,6 @@ export class KornFerryTourService {
   getGameData(): Observable<PgaData> {
     //REST request
     //Will return that data asynchronously
-    console.log(`${this.urlToFetch}`);
     return this.http.get<PgaData>(`${this.urlToFetch}`);
   }
 }

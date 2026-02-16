@@ -1,0 +1,34 @@
+export interface Batting3 {
+    gamesPlayed: number;
+    flyOuts: number;
+    groundOuts: number;
+    runs: number;
+    doubles: number;
+    triples: number;
+    homeRuns: number;
+    strikeOuts: number;
+    baseOnBalls: number;
+    intentionalWalks: number;
+    hits: number;
+    hitByPitch: number;
+    avg: string;
+    atBats: number;
+    obp: string;
+    slg: string;
+    ops: string;
+    caughtStealing: number;
+    stolenBases: number;
+    stolenBasePercentage: string;
+    groundIntoDoublePlay: number;
+    groundIntoTriplePlay: number;
+    plateAppearances: number;
+    totalBases: number;
+    rbi: number;
+    leftOnBase: number;
+    sacBunts: number;
+    sacFlies: number;
+    babip: string;
+    catchersInterference: number;
+    pickoffs: number;
+    atBatsPerHomeRun: string;
+}

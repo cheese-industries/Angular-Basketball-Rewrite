@@ -1,0 +1,251 @@
+<ng-container>
+  <div *ngIf="cpblData" class="desktop-container">
+    <div *ngIf="todaysGamesArray.length < 1" class="no-games">Sorry, there are no CPBL games scheduled today.</div>
+    <ul class="desktop" *ngFor="let game of todaysGamesArray; let i = index">
+      <mat-card>
+        <div class="start-time">{{game[1].start_time_local | date:'h:mm a - EEEE, MMMM d, y'}}</div>
+        <div class="team">
+          <div class="team-name">
+            <b>{{game[1].status_display_name}}</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[0]">
+            <b>{{game[1].game_periods[0].short_name}}</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[1]">
+            <b>{{game[1].game_periods[1].short_name}}</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[2]">
+            <b>{{game[1].game_periods[2].short_name}}</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[3]">
+            <b>{{game[1].game_periods[3].short_name}}</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[4]">
+            <b>{{game[1].game_periods[4].short_name}}</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[5]">
+            <b>{{game[1].game_periods[5].short_name}}</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[6]">
+            <b>{{game[1].game_periods[6].short_name}}</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[7]">
+            <b>{{game[1].game_periods[7].short_name}}</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[8]">
+            <b>{{game[1].game_periods[8].short_name}}</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[9]">
+            <b>{{game[1].game_periods[9].short_name}}</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[10]">
+            <b>{{game[1].game_periods[10].short_name}}</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[11]">
+            <b>{{game[1].game_periods[11].short_name}}</b>
+          </div>
+          <div class="team-data">
+            &nbsp;
+          </div>
+          <div *ngIf="game[1].away_team_stats" class="team-data">
+            <b>R</b>
+          </div>
+          <div *ngIf="game[1].away_team_stats" class="team-data">
+            <b>H</b>
+          </div>
+          <div *ngIf="game[1].away_team_stats" class="team-data">
+            <b>E</b>
+          </div>
+        </div>
+        <div class="team">
+          <div class="team-name">
+            <b>{{game[1].away_team_name}} ({{game[1].away_team_record}})</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[0]">
+            {{game[1].game_periods[0].away_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[1]">
+            {{game[1].game_periods[1].away_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[2]">
+            {{game[1].game_periods[2].away_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[3]">
+            {{game[1].game_periods[3].away_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[4]">
+            {{game[1].game_periods[4].away_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[5]">
+            {{game[1].game_periods[5].away_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[6]">
+            {{game[1].game_periods[6].away_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[7]">
+            {{game[1].game_periods[7].away_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[8]">
+            {{game[1].game_periods[8].away_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[9]">
+            {{game[1].game_periods[9].away_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[10]">
+            {{game[1].game_periods[10].away_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[11]">
+            {{game[1].game_periods[11].away_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[0] && !game[1].game_periods[0].away_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[1] && !game[1].game_periods[1].away_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[2] && !game[1].game_periods[2].away_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[3] && !game[1].game_periods[3].away_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[4] && !game[1].game_periods[4].away_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[5] && !game[1].game_periods[5].away_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[6] && !game[1].game_periods[6].away_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[7] && !game[1].game_periods[7].away_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[8] && !game[1].game_periods[8].away_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[9] && !game[1].game_periods[9].away_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[10] && !game[1].game_periods[10].away_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[11] && !game[1].game_periods[11].away_points">
+            &nbsp;
+          </div>
+          <div class="team-data">
+            &nbsp;
+          </div>
+          <div *ngIf="game[1].away_team_stats" class="team-data">
+            <b>{{game[1].away_team_stats[0].runs}}</b>
+          </div>
+          <div *ngIf="game[1].away_team_stats" class="team-data">
+            <b>{{game[1].away_team_stats[1].hits}}</b>
+          </div>
+          <div *ngIf="game[1].away_team_stats" class="team-data">
+            <b>{{game[1].away_team_stats[2].errors}}</b>
+          </div>
+        </div>
+        <div class="team">
+          <div class="team-name">
+            <b>{{game[1].home_team_name}} ({{game[1].home_team_record}})</b>
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[0]">
+            {{game[1].game_periods[0].home_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[1]">
+            {{game[1].game_periods[1].home_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[2]">
+            {{game[1].game_periods[2].home_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[3]">
+            {{game[1].game_periods[3].home_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[4]">
+            {{game[1].game_periods[4].home_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[5]">
+            {{game[1].game_periods[5].home_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[6]">
+            {{game[1].game_periods[6].home_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[7]">
+            {{game[1].game_periods[7].home_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[8]">
+            {{game[1].game_periods[8].home_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[9]">
+            {{game[1].game_periods[9].home_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[10]">
+            {{game[1].game_periods[10].home_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[11]">
+            {{game[1].game_periods[11].home_points}}
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[0] && !game[1].game_periods[0].home_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[1] && !game[1].game_periods[1].home_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[2] && !game[1].game_periods[2].home_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[3] && !game[1].game_periods[3].home_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[4] && !game[1].game_periods[4].home_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[5] && !game[1].game_periods[5].home_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[6] && !game[1].game_periods[6].home_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[7] && !game[1].game_periods[7].home_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[8] && !game[1].game_periods[8].home_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[9] && !game[1].game_periods[9].home_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[10] && !game[1].game_periods[10].home_points">
+            &nbsp;
+          </div>
+          <div class="team-data" *ngIf="game[1].game_periods[11] && !game[1].game_periods[11].home_points">
+            &nbsp;
+          </div>
+          <div class="team-data">
+            &nbsp;
+          </div>
+          <div *ngIf="game[1].home_team_stats" class="team-data">
+            <b>{{game[1].home_team_stats[0].runs}}</b>
+          </div>
+          <div *ngIf="game[1].home_team_stats" class="team-data">
+            <b>{{game[1].home_team_stats[1].hits}}</b>
+          </div>
+          <div *ngIf="game[1].home_team_stats" class="team-data">
+            <b>{{game[1].home_team_stats[2].errors}}</b>
+          </div>
+        </div>
+        <br>
+        <div *ngIf="game[1].winning_pitcher" class="game-info">
+          {{game[1].winning_pitcher}}
+        </div>
+        <div *ngIf="game[1].losing_pitcher" class="game-info">
+          {{game[1].losing_pitcher}}
+        </div>
+        <div *ngIf="game[1].saving_pitcher" class="game-info">
+          {{game[1].saving_pitcher}}
+        </div>
+      </mat-card>
+    </ul>
+  </div>
+</ng-container>

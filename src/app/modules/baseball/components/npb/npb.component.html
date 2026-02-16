@@ -1,0 +1,47 @@
+<ng-container>
+  <div *ngIf="npbData" class="desktop-container">
+    <ul class="desktop" *ngFor="let game of npbData[0]; let i = index">
+      <mat-card>
+        <div class="team">
+          <div class="team-name">
+            <b>{{game[0][0]}}</b>
+          </div>
+          <span *ngFor="let inning of game[0]; let j = index">
+            <div *ngIf="j != 0" class="team-data">
+              <b>{{game[0][j]}}</b>
+            </div>
+          </span>
+        </div>
+        <div class="team">
+          <div class="team-name">
+            <b>{{game[1][0]}}</b>
+          </div>
+          <span *ngFor="let inning of game[1]; let j = index">
+            <div *ngIf="j != 0" class="team-data">
+              {{game[1][j]}}
+            </div>
+          </span>
+        </div>
+        <div class="team">
+          <div class="team-name">
+            <b>{{game[2][0]}}</b>
+          </div>
+          <span *ngFor="let inning of game[2]; let j = index">
+            <div *ngIf="j != 0" class="team-data">
+              {{game[2][j]}}
+            </div>
+          </span>
+        </div>
+        <br>
+        <div [innerHTML]="game[3][0]" *ngIf="game[3]" class="game-info">
+        </div>
+        <div [innerHTML]="game[4][0]" *ngIf="game[4]" class="game-info">
+        </div>
+        <div [innerHTML]="game[5][0]" *ngIf="game[5]" class="game-info">
+        </div>
+        <div [innerHTML]="game[6][0]" *ngIf="game[6]" class="game-info">
+        </div>
+      </mat-card>
+    </ul>
+  </div>
+</ng-container>

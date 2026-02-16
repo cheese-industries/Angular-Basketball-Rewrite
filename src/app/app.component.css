@@ -18,3 +18,7 @@ a:hover, a:visited, a:link, a:active
     text-decoration: none;
 }
 
+html:not(.mat-icon):not(.material-icons){
+    font-family: "Roboto Condensed", Arial, Helvetica, sans-serif;
+}
+

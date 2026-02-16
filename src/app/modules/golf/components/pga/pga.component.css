@@ -22,7 +22,7 @@
     /* padding-right: -70px; */
 	width: 100%;
 }
-.golf-scoreboard
+.desktop-golf-scoreboard
 {
 	left: 35%;
 	width: 650px;
@@ -68,4 +68,51 @@ span
 ul
 {
 	margin: 0px;
+}
+
+.tinyUl
+{
+	margin: 0px;
+}
+.mobile-header-row {
+	margin-left: 40px;
+}
+
+.mobile-event-name {
+	font-size: 14px;
+}
+
+.mobile-golf-scoreboard {
+	width: 300px;
+}
+
+.mobile-name
+{
+	font-size: 14px;
+	margin-left: 0px;
+	width: 180px !important;
+}
+
+.mobile-score
+{
+	font-size: 14px;
+	width: 40px !important;
+}
+
+.mobile-total
+{
+	font-size: 14px;
+	width: 40px !important;
+}
+
+@media only screen and (max-device-width: 699px) {
+	.desktop-golf-scoreboard {
+		display: none;
+	}
+}
+
+@media only screen and (min-device-width: 700px) {
+	.mobile-golf-scoreboard {
+		display: none;
+	}
 }

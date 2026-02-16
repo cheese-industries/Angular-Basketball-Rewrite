@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { NorthAmericaService } from '../../north-america.service';
-import { DatePipe, formatDate } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { mlbApiReturn } from '../../models/mlb-api-models/mlb-api-return';
+import { WinProb } from '../../models/baseball-pbp/win-prob';
+import { firstValueFrom } from 'rxjs';
+import { WeatherAPIReturn } from 'src/app/models/weather-api-return';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { OrgNumbers } from '../../models/mlb-api-models/org-numbers';
+import { DateTime } from 'luxon';
 
 @Component({
   selector: 'app-north-america',
@@ -10,1107 +15,460 @@ import { mlbApiReturn } from '../../models/mlb-api-models/mlb-api-return';
   styleUrls: ['./north-america.component.css'],
 })
 export class NorthAmericaComponent implements OnInit {
+  showOneOrganization: boolean = false;
+  filteredGames!: any[];
+  liveGamesNow!: any[];
+  liveGamesOnly: boolean = false;
+  orgToFetch!: number;
   todaysDate!: Date;
+  todayGamesFlag: boolean = true;
   todaysDateArray!: any[];
   baseballDataArray!: any[];
+  weather!: WeatherAPIReturn;
+  everyGame?: mlbApiReturn;
+  everyGameForMLBToggle?: mlbApiReturn;
+  everyGameForAAAToggle?: mlbApiReturn;
+  everyGameForAAToggle?: mlbApiReturn;
+  everyGameForHighAToggle?: mlbApiReturn;
+  everyGameForLowAToggle?: mlbApiReturn;
+  everyGameForLiveOnlyToggle?: mlbApiReturn;
+  everyGameWithWeather?: mlbApiReturn;
+  everyGameAfterFilters?: any[];
+  everyGameGamePks?: number[] | string[];
+  mlbGamePks?: number[] | string[];
+  aaaGamePks?: number[] | string[];
+  aaGamePks?: number[] | string[];
+  highAGamePks?: number[] | string[];
+  lowAGamePks?: number[] | string[];
   mlbData?: mlbApiReturn;
   aaaData?: mlbApiReturn;
   aaData?: mlbApiReturn;
   lowAData?: mlbApiReturn;
   highAData?: mlbApiReturn;
   rookieData?: mlbApiReturn;
+  pbpData!: WinProb[];
+  pbpDataArray: any[] = [];
+  lastPlayArray: any[] = [];
+  lastPlay: string = '';
+  stringifiedPbpData?: string;
+  JSONifiedPbpData?: any;
   yearNum!: number;
   monthNumBeforeSlice!: string;
   monthNum!: string;
   dayNum!: number;
   defaultDate!: string;
-  form: FormGroup;
+  form!: FormGroup;
   data!: mlbApiReturn;
+  interval: any;
+  weatherInterval: any;
+  org: string | null;
+  orgNumber!: number | null;
+  mlbIsChecked: boolean = true;
+  aaaIsChecked: boolean = true;
+  aaIsChecked: boolean = true;
+  highAIsChecked: boolean = true;
+  lowAIsChecked: boolean = true;
+  liveOnlyIsChecked: boolean = false;
+  sortByStartTimeIsChecked: boolean = false;
+  filterByOrg: boolean = false;
+  filterByLevel: boolean = false;
+  hasOrgFilter: boolean = false;
+  initialState: boolean = true;
 
-  constructor(private service: NorthAmericaService) {
+  orgOptions: any[] = [
+    { value: '', label: 'Show all scores' },
+    { value: 'ARI', label: 'Arizona Diamondbacks' },
+    { value: 'ATL', label: 'Atlanta Braves' },
+    { value: 'BAL', label: 'Baltimore Orioles' },
+    { value: 'BOS', label: 'Boston Red Sox' },
+    { value: 'CHW', label: 'Chicago White Sox' },
+    { value: 'CHC', label: 'Chicago Cubs' },
+    { value: 'CIN', label: 'Cincinnati Reds' },
+    { value: 'CLE', label: 'Cleveland Guardians' },
+    { value: 'COL', label: 'Colorado Rockies' },
+    { value: 'DET', label: 'Detroit Tigers' },
+    { value: 'HOU', label: 'Houston Astros' },
+    { value: 'KC', label: 'Kansas City Royals' },
+    { value: 'LAA', label: 'Los Angeles Angels' },
+    { value: 'LAD', label: 'Los Angeles Dodgers' },
+    { value: 'MIA', label: 'Miami Marlins' },
+    { value: 'MIL', label: 'Milwaukee Brewers' },
+    { value: 'MIN', label: 'Minnesota Twins' },
+    { value: 'NYY', label: 'New York Yankees' },
+    { value: 'NYM', label: 'New York Mets' },
+    { value: 'OAK', label: 'Oakland Athletics' },
+    { value: 'PHI', label: 'Philadelphia Phillies' },
+    { value: 'PIT', label: 'Pittsburgh Pirates' },
+    { value: 'SD', label: 'San Diego Padres' },
+    { value: 'SF', label: 'San Francisco Giants' },
+    { value: 'SEA', label: 'Seattle Mariners' },
+    { value: 'STL', label: 'St. Louis Cardinals' },
+    { value: 'TB', label: 'Tampa Bay Rays' },
+    { value: 'TEX', label: 'Texas Rangers' },
+    { value: 'TOR', label: 'Toronto Blue Jays' },
+    { value: 'WAS', label: 'Washington Nationals' },
+  ];
+
+  levelOptions: any[] = [
+    { value: 'MLB', label: 'MLB' },
+    { value: 'AAA', label: 'Triple A' },
+    { value: 'AA', label: 'Double A' },
+    { value: 'HighA', label: 'High A' },
+    { value: 'LowA', label: 'Low A' },
+  ];
+
+  constructor(
+    private service: NorthAmericaService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    this.org = this.route.snapshot.queryParamMap.get('org');
+    if (this.org && this.org?.length > 0) {
+      this.hasOrgFilter = true;
+    }
+  }
+
+  async ngOnInit(): Promise<void> {
     this.form = new FormGroup({
       dateToCall: new FormControl(this.setTodayDate(), [Validators.required]),
     });
-  }
+    this.route.queryParamMap.subscribe((data: ParamMap) => {
+      this.org = data.get('org');
+      this.orgSwitchCase();
 
-  ngOnInit(): void {
+      this.getTheScores(
+        this.getYearToCall(),
+        this.getMonthToCall(),
+        this.getDayToCall()
+      );
+    });
+
     this.setTodayDate();
     this.getTheScores(
       this.todaysDateArray[0],
       this.todaysDateArray[1],
       this.todaysDateArray[2]
     );
+    await this.getTheWeather();
+    this.setIntrvl();
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.interval);
+    clearInterval(this.weatherInterval);
+  }
+
+  setIntrvl() {
+    this.interval = setInterval(() => {
+      this.getTheScores(
+        this.getYearToCall(),
+        this.getMonthToCall(),
+        this.getDayToCall()
+      );
+      this.applyFilters();
+    }, 30000);
   }
 
   setTodayDate() {
-    this.todaysDate = new Date();
-    this.todaysDateArray = [, ,];
-    this.todaysDateArray[0] = this.todaysDate.getFullYear().toString();
-    this.todaysDateArray[1] = this.todaysDate.getMonth() + 1;
-    this.todaysDateArray[2] = this.todaysDate.getDate().toString();
-    if (this.todaysDateArray[1] < 10) {
-      this.todaysDateArray[1] = '0' + this.todaysDateArray[1];
+    const date = new Date(
+      new Date().toLocaleString('en-US', { timeZone: 'Pacific/Honolulu' })
+    );
+    this.todaysDateArray = [
+      date.getFullYear().toString(),
+      (date.getMonth() + 1).toString().padStart(2, '0'),
+      date.getDate().toString().padStart(2, '0'),
+    ];
+  }
+
+  async getTheWeather() {
+    let response = await firstValueFrom(this.service.getWeather());
+    if (this.everyGame) {
+      for (var i = 0; i < this.everyGame.dates[0].games.length; i++) {
+        this.everyGame.dates[0].games[i].weather =
+          response[this.everyGame.dates[0].games[i].gamePk];
+      }
     }
-    this.todaysDateArray[1] = this.todaysDateArray[1].toString();
   }
 
-  getTheMlbScores(
-    yearToFetch: string,
-    monthToFetch: string,
-    dayToFetch: string
-  ) {
-    const subscription = this.service
-      .getMlbData(yearToFetch, monthToFetch, dayToFetch)
-      .subscribe((response) => {
-        this.mlbData = response;
-        this.makeTheMLBHomeRunObjects();
-        this.makeTheMLBBroadcastDivs();
-        this.calculateMLBSlg();
-        console.log('mlb ', response);
-        subscription.unsubscribe();
-      });
+  async getEveryGameOnEveryLevel(
+    year: number,
+    month: number,
+    day: number
+  ): Promise<void> {
+    let levelsToCall = '';
+    if (Boolean(this.mlbIsChecked) == true) {
+      levelsToCall += '1,';
+    }
+    if (Boolean(this.aaaIsChecked) == true) {
+      levelsToCall += '11,';
+    }
+    if (Boolean(this.aaIsChecked) == true) {
+      levelsToCall += '12,';
+    }
+    if (Boolean(this.highAIsChecked) == true) {
+      levelsToCall += '13,';
+    }
+    if (Boolean(this.lowAIsChecked) == true) {
+      levelsToCall += '14';
+    }
+    let response = await firstValueFrom(
+      this.service.getEveryGameOnEveryLevel(
+        this.getYearToCall(),
+        this.getMonthToCall(),
+        this.getDayToCall(),
+        levelsToCall
+      )
+    );
+    if (this.liveOnlyIsChecked) {
+      let liveOnlyGames = response.dates[0].games;
+      liveOnlyGames = liveOnlyGames.filter(
+        (game) => game.gameUtils.isLive == true
+      );
+      response.dates[0].games = liveOnlyGames;
+    }
+    let games = response.dates[0].games;
+    games.sort(
+      (a, b) => a.teams.away.team.sport.id - b.teams.away.team.sport.id
+    );
+    response.dates[0].games = games;
+    if (this.sortByStartTimeIsChecked) {
+      let sortedByStartTime = response.dates[0].games;
+      sortedByStartTime.map(
+        (game) => (game.dateTime = new Date(game.gameDate))
+      );
+      sortedByStartTime.sort(
+        (a, b) => a.dateTime.getTime() - b.dateTime.getTime()
+      );
+      games = sortedByStartTime;
+    }
+
+    this.everyGame = { ...response, dates: [{ ...response.dates[0], games }] };
+
+    this.applyFilters();
+
+    await Promise.all([
+      this.makeTheHomeRunObjects(),
+      this.makeMobileHRObject(),
+      this.makeTheBroadcastDivs(),
+      this.calculateSlg(),
+      this.getLastPlay(),
+      this.getTheWeather(),
+    ]);
   }
 
-  getTheAaaScores(
-    yearToFetch: string,
-    monthToFetch: string,
-    dayToFetch: string
-  ) {
-    const subscription = this.service
-      .getAaaData(yearToFetch, monthToFetch, dayToFetch)
-      .subscribe((response) => {
-        this.aaaData = response;
-        this.makeTheAAAHomeRunObjects();
-        this.makeTheAAABroadcastDivs();
-        this.calculateAAASlg();
-        console.log('aaa ', response);
-        subscription.unsubscribe();
-      });
+  applyFilters() {
+    if (this.everyGame && (this.orgNumber || this.org == '')) {
+      let filteredGames = this.everyGame.dates[0].games.filter(
+        (game) =>
+          game.teams.away.team.id == this.orgNumber ||
+          game.teams.away.team.parentOrgId == this.orgNumber ||
+          game.teams.home.team.id == this.orgNumber ||
+          game.teams.home.team.parentOrgId == this.orgNumber
+      );
+      this.everyGame.dates[0].games = filteredGames;
+    }
   }
 
-  getTheAaScores(
-    yearToFetch: string,
-    monthToFetch: string,
-    dayToFetch: string
-  ) {
-    const subscription = this.service
-      .getAaData(yearToFetch, monthToFetch, dayToFetch)
-      .subscribe((response) => {
-        this.aaData = response;
-        this.makeTheAAHomeRunObjects();
-        this.makeTheAABroadcastDivs();
-        this.calculateAASlg();
-        console.log('aa ', response);
-        subscription.unsubscribe();
-      });
-  }
-
-  getTheHighAScores(
-    yearToFetch: string,
-    monthToFetch: string,
-    dayToFetch: string
-  ) {
-    const subscription = this.service
-      .getHighAData(yearToFetch, monthToFetch, dayToFetch)
-      .subscribe((response) => {
-        this.highAData = response;
-        this.makeTheHighAHomeRunObjects();
-        this.makeTheHighABroadcastDivs();
-        this.calculateHighASlg();
-        console.log('high a ', response);
-        subscription.unsubscribe();
-      });
-  }
-
-  getTheLowAScores(
-    yearToFetch: string,
-    monthToFetch: string,
-    dayToFetch: string
-  ) {
-    const subscription = this.service
-      .getLowAData(yearToFetch, monthToFetch, dayToFetch)
-      .subscribe((response) => {
-        this.lowAData = response;
-        this.makeTheLowAHomeRunObjects();
-        this.makeTheLowABroadcastDivs();
-        this.calculateLowASlg();
-        console.log('low a ', response);
-        subscription.unsubscribe();
-      });
-  }
-
-  getTheRookieScores(
-    yearToFetch: string,
-    monthToFetch: string,
-    dayToFetch: string
-  ) {
-    const subscription = this.service
-      .getRookieData(yearToFetch, monthToFetch, dayToFetch)
-      .subscribe((response) => {
-        this.rookieData = response;
-        console.log('rookie league ', response);
-        subscription.unsubscribe();
-      });
+  onSliderChange() {
+    if (
+      !this.mlbIsChecked ||
+      !this.aaaIsChecked ||
+      !this.aaIsChecked ||
+      !this.highAIsChecked ||
+      !this.lowAIsChecked ||
+      this.liveOnlyIsChecked
+    ) {
+      this.filterByOrg = false;
+      this.filterByLevel = true;
+      this.initialState = false;
+    }
+    this.getTheScores(
+      this.getYearToCall(),
+      this.getMonthToCall(),
+      this.getDayToCall()
+    );
   }
 
   getTheScores(yearToFetch: string, monthToFetch: string, dayToFetch: string) {
-    this.getTheMlbScores(yearToFetch, monthToFetch, dayToFetch);
-    this.getTheAaaScores(yearToFetch, monthToFetch, dayToFetch);
-    this.getTheAaScores(yearToFetch, monthToFetch, dayToFetch);
-    this.getTheHighAScores(yearToFetch, monthToFetch, dayToFetch);
-    this.getTheLowAScores(yearToFetch, monthToFetch, dayToFetch);
-    // this.getTheRookieScores(yearToFetch, monthToFetch, dayToFetch);
+    this.getEveryGameOnEveryLevel(+yearToFetch, +monthToFetch, +dayToFetch);
   }
 
-  makeTheMLBBroadcastDivs() {
-    if (this.mlbData) {
-      for (var i = 0; i < this.mlbData.dates[0].games.length; i++) {
-        this.mlbData.dates[0].games[i].homeTVArray = [];
-        this.mlbData.dates[0].games[i].awayTVArray = [];
-        this.mlbData.dates[0].games[i].awayTVDiv = '';
-        this.mlbData.dates[0].games[i].homeTVDiv = '';
-        if (this.mlbData.dates[0].games[i].broadcasts) {
-          for (
-            var j = 0;
-            j < this.mlbData.dates[0].games[i].broadcasts.length;
-            j++
-          ) {
-            if (
-              this.mlbData.dates[0].games[i].broadcasts[j].type == 'TV' &&
-              this.mlbData.dates[0].games[i].broadcasts[j].homeAway == 'home'
-            ) {
-              this.mlbData.dates[0].games[i].homeTVArray.push(
-                this.mlbData.dates[0].games[i].broadcasts[j].name
-              );
-            }
-            if (
-              this.mlbData.dates[0].games[i].broadcasts[j].type == 'TV' &&
-              this.mlbData.dates[0].games[i].broadcasts[j].homeAway == 'away'
-            ) {
-              this.mlbData.dates[0].games[i].awayTVArray.push(
-                this.mlbData.dates[0].games[i].broadcasts[j].name
-              );
-            }
+  async getLastPlay() {
+    if (!this.everyGame) return;
+    for (let i = 0; i < this.everyGame.dates[0].games.length; i++) {
+      const game = this.everyGame.dates[0].games[i];
+      if (!game.gameUtils.isLive) {
+        this.pbpDataArray[i] = '';
+        continue;
+      }
+      const response = await firstValueFrom(
+        this.service.getPBPData(game.gamePk)
+      );
+      const lastPlayIndex = response.length - 1;
+      const lastPlay = response[lastPlayIndex].result.description
+        ? response[lastPlayIndex]
+        : response[lastPlayIndex - 1];
+      this.everyGame.dates[0].games[i].lastPlay = lastPlay.result.description;
+      this.everyGame.dates[0].games[i].leverageIndex = lastPlay.leverageIndex;
+      this.everyGame.dates[0].games[i].homeWinProb =
+        Math.round(lastPlay.homeTeamWinProbability * 10) / 10;
+    }
+  }
+
+  makeTheBroadcastDivs() {
+    if (!this.everyGame) return;
+    this.everyGame.dates[0].games.forEach((game) => {
+      game.homeTVArray =
+        game.broadcasts
+          ?.filter((b) => b.type === 'TV' && b.homeAway === 'home')
+          .map((b) => b.name) || [];
+      game.awayTVArray =
+        game.broadcasts
+          ?.filter((b) => b.type === 'TV' && b.homeAway === 'away')
+          .map((b) => b.name) || [];
+      game.homeTVDiv =
+        game.homeTVArray.length > 0
+          ? `${game.teams.home.team.abbreviation} TV: ${game.homeTVArray.join(
+              ', '
+            )}`
+          : '';
+      game.awayTVDiv =
+        game.awayTVArray.length > 0
+          ? `${game.teams.away.team.abbreviation} TV: ${game.awayTVArray.join(
+              ', '
+            )}`
+          : '';
+    });
+  }
+
+  calculateSlg() {
+    if (!this.everyGame) {
+      return;
+    }
+
+    const { games } = this.everyGame.dates[0];
+
+    games.forEach((game) => {
+      ['offense.batter', 'offense.onDeck', 'offense.inHole'].forEach(
+        (position) => {
+          const player = game.linescore.position;
+          if (player && +player.stats[2].stats.atBats > 0) {
+            const slg = (
+              (player.stats[2].stats.hits +
+                player.stats[2].stats.doubles * 2 +
+                player.stats[2].stats.triples * 3 +
+                player.stats[2].stats.homeRuns * 4) /
+              player.stats[2].stats.atBats
+            ).toFixed(3);
+            player.stats[2].stats.slg = slg[0] === '0' ? slg.substring(1) : slg;
+          } else if (player) {
+            player.stats[2].stats.slg = '.000';
           }
-          if (this.mlbData.dates[0].games[i].awayTVArray.length > 0) {
-            this.mlbData.dates[0].games[i].awayTVDiv =
-              this.mlbData.dates[0].games[i].teams.away.team.abbreviation +
-              ' TV: ';
+        }
+      );
+    });
+  }
+
+  makeTheHomeRunObjects() {
+    if (!this.everyGame) {
+      return;
+    }
+
+    this.everyGame.dates[0].games.forEach((game) => {
+      if (game.homeRuns && game.homeRuns.length > 0) {
+        game.homeRuns.forEach((homeRun) => {
+          const inning = homeRun.about.inning;
+          const halfInning = homeRun.about.halfInning;
+          const batterTeam =
+            halfInning === 'bottom'
+              ? game.teams.home.team.abbreviation
+              : game.teams.away.team.abbreviation;
+          let ordinalInning;
+
+          if (inning % 10 === 1 && inning !== 11) {
+            ordinalInning = `${inning}st Inning`;
+          } else if (inning % 10 === 2 && inning !== 12) {
+            ordinalInning = `${inning}nd Inning`;
+          } else if (inning % 10 === 3 && inning !== 13) {
+            ordinalInning = `${inning}rd Inning`;
+          } else {
+            ordinalInning = `${inning}th Inning`;
           }
-          if (this.mlbData.dates[0].games[i].homeTVArray.length > 0) {
-            this.mlbData.dates[0].games[i].homeTVDiv =
-              this.mlbData.dates[0].games[i].teams.home.team.abbreviation +
-              ' TV: ';
-          }
-          for (
-            var k = 0;
-            k < this.mlbData.dates[0].games[i].awayTVArray.length;
-            k++
-          ) {
-            this.mlbData.dates[0].games[i].awayTVDiv +=
-              this.mlbData.dates[0].games[i].awayTVArray[k] + ', ';
-          }
-          for (
-            var m = 0;
-            m < this.mlbData.dates[0].games[i].homeTVArray.length;
-            m++
-          ) {
-            this.mlbData.dates[0].games[i].homeTVDiv +=
-              this.mlbData.dates[0].games[i].homeTVArray[m] + ', ';
-          }
-          this.mlbData.dates[0].games[i].homeTVDiv =
-            this.mlbData.dates[0].games[i].homeTVDiv.substring(
-              0,
-              this.mlbData.dates[0].games[i].homeTVDiv.length - 2
+
+          homeRun.matchup.batterTeam = batterTeam;
+          homeRun.matchup.ordinalInning = ordinalInning;
+          homeRun.homeRunNumber = homeRun.result.description.replace(/\D/g, '');
+        });
+      }
+    });
+  }
+
+  makeMobileHRObject() {
+    if (!this.everyGame) {
+      return;
+    }
+
+    this.everyGame.dates[0].games.forEach((game) => {
+      let mobileHRList = '';
+      let homers: any[] = [];
+      if (!game.homeRuns || (game.homeRuns && game.homeRuns.length == 0)){
+        mobileHRList = 'None'
+      }
+      if (game.homeRuns && game.homeRuns.length > 0) {
+        game.homeRuns.forEach((homeRun) => {
+          let homerObject = {
+            name: homeRun.matchup.batter.fullName,
+            team: homeRun.about.halfInning === 'bottom'
+            ? game.teams.home.team.abbreviation
+            : game.teams.away.team.abbreviation,
+            boxScoreName: homeRun.matchup.batter.boxscoreName,
+            totalHR: homeRun.result.description.replace(/\D/g, ''),
+          };
+          homers.push(homerObject);
+        });
+        const playerStats: Record<string, {name: string, team: string, appearances: number, totalHR: number}> = {};
+
+        for (const player of homers) {
+          if (!(player.boxScoreName in playerStats)) {
+            playerStats[player.boxScoreName] = {
+              name: player.name,
+              team: player.team,
+              appearances: 1,
+              totalHR: parseInt(player.totalHR)
+            };
+          } else {
+            playerStats[player.boxScoreName].appearances++;
+            playerStats[player.boxScoreName].totalHR = Math.max(
+              playerStats[player.boxScoreName].totalHR,
+              parseInt(player.totalHR)
             );
-          this.mlbData.dates[0].games[i].awayTVDiv =
-            this.mlbData.dates[0].games[i].awayTVDiv.substring(
-              0,
-              this.mlbData.dates[0].games[i].awayTVDiv.length - 2
-            );
+          }
         }
+        
+        for (const [playerName, stats] of Object.entries(playerStats)) {
+          if (stats.appearances === 1) {
+            mobileHRList += `${playerName} ${stats.team} (${stats.totalHR}), `
+          } else {
+            mobileHRList += `${playerName} ${stats.team} ${stats.appearances} (${stats.totalHR}), `;
+          }
+        }        
       }
-    }
-  }
-
-  makeTheAAABroadcastDivs() {
-    if (this.aaaData) {
-      for (var i = 0; i < this.aaaData.dates[0].games.length; i++) {
-        this.aaaData.dates[0].games[i].homeTVArray = [];
-        this.aaaData.dates[0].games[i].awayTVArray = [];
-        this.aaaData.dates[0].games[i].awayTVDiv = '';
-        this.aaaData.dates[0].games[i].homeTVDiv = '';
-        if (this.aaaData.dates[0].games[i].broadcasts) {
-          for (
-            var j = 0;
-            j < this.aaaData.dates[0].games[i].broadcasts.length;
-            j++
-          ) {
-            if (
-              this.aaaData.dates[0].games[i].broadcasts[j].type == 'TV' &&
-              this.aaaData.dates[0].games[i].broadcasts[j].homeAway == 'home'
-            ) {
-              this.aaaData.dates[0].games[i].homeTVArray.push(
-                this.aaaData.dates[0].games[i].broadcasts[j].name
-              );
-            }
-            if (
-              this.aaaData.dates[0].games[i].broadcasts[j].type == 'TV' &&
-              this.aaaData.dates[0].games[i].broadcasts[j].homeAway == 'away'
-            ) {
-              this.aaaData.dates[0].games[i].awayTVArray.push(
-                this.aaaData.dates[0].games[i].broadcasts[j].name
-              );
-            }
-          }
-          if (this.aaaData.dates[0].games[i].awayTVArray.length > 0) {
-            this.aaaData.dates[0].games[i].awayTVDiv =
-              this.aaaData.dates[0].games[i].teams.away.team.abbreviation +
-              ' TV: ';
-          }
-          if (this.aaaData.dates[0].games[i].homeTVArray.length > 0) {
-            this.aaaData.dates[0].games[i].homeTVDiv =
-              this.aaaData.dates[0].games[i].teams.home.team.abbreviation +
-              ' TV: ';
-          }
-          for (
-            var k = 0;
-            k < this.aaaData.dates[0].games[i].awayTVArray.length;
-            k++
-          ) {
-            this.aaaData.dates[0].games[i].awayTVDiv +=
-              this.aaaData.dates[0].games[i].awayTVArray[k] + ', ';
-          }
-          for (
-            var m = 0;
-            m < this.aaaData.dates[0].games[i].homeTVArray.length;
-            m++
-          ) {
-            this.aaaData.dates[0].games[i].homeTVDiv +=
-              this.aaaData.dates[0].games[i].homeTVArray[m] + ', ';
-          }
-          this.aaaData.dates[0].games[i].homeTVDiv =
-            this.aaaData.dates[0].games[i].homeTVDiv.substring(
-              0,
-              this.aaaData.dates[0].games[i].homeTVDiv.length - 2
-            );
-          this.aaaData.dates[0].games[i].awayTVDiv =
-            this.aaaData.dates[0].games[i].awayTVDiv.substring(
-              0,
-              this.aaaData.dates[0].games[i].awayTVDiv.length - 2
-            );
-        }
+      if (mobileHRList.endsWith(", ")) {
+        mobileHRList = mobileHRList.slice(0, -2); // remove the last two characters
       }
-    }
-  }
-
-  makeTheAABroadcastDivs() {
-    if (this.aaData) {
-      for (var i = 0; i < this.aaData.dates[0].games.length; i++) {
-        this.aaData.dates[0].games[i].homeTVArray = [];
-        this.aaData.dates[0].games[i].awayTVArray = [];
-        this.aaData.dates[0].games[i].awayTVDiv = '';
-        this.aaData.dates[0].games[i].homeTVDiv = '';
-        if (this.aaData.dates[0].games[i].broadcasts) {
-          for (
-            var j = 0;
-            j < this.aaData.dates[0].games[i].broadcasts.length;
-            j++
-          ) {
-            if (
-              this.aaData.dates[0].games[i].broadcasts[j].type == 'TV' &&
-              this.aaData.dates[0].games[i].broadcasts[j].homeAway == 'home'
-            ) {
-              this.aaData.dates[0].games[i].homeTVArray.push(
-                this.aaData.dates[0].games[i].broadcasts[j].name
-              );
-            }
-            if (
-              this.aaData.dates[0].games[i].broadcasts[j].type == 'TV' &&
-              this.aaData.dates[0].games[i].broadcasts[j].homeAway == 'away'
-            ) {
-              this.aaData.dates[0].games[i].awayTVArray.push(
-                this.aaData.dates[0].games[i].broadcasts[j].name
-              );
-            }
-          }
-          if (this.aaData.dates[0].games[i].awayTVArray.length > 0) {
-            this.aaData.dates[0].games[i].awayTVDiv =
-              this.aaData.dates[0].games[i].teams.away.team.abbreviation +
-              ' TV: ';
-          }
-          if (this.aaData.dates[0].games[i].homeTVArray.length > 0) {
-            this.aaData.dates[0].games[i].homeTVDiv =
-              this.aaData.dates[0].games[i].teams.home.team.abbreviation +
-              ' TV: ';
-          }
-          for (
-            var k = 0;
-            k < this.aaData.dates[0].games[i].awayTVArray.length;
-            k++
-          ) {
-            this.aaData.dates[0].games[i].awayTVDiv +=
-              this.aaData.dates[0].games[i].awayTVArray[k] + ', ';
-          }
-          for (
-            var m = 0;
-            m < this.aaData.dates[0].games[i].homeTVArray.length;
-            m++
-          ) {
-            this.aaData.dates[0].games[i].homeTVDiv +=
-              this.aaData.dates[0].games[i].homeTVArray[m] + ', ';
-          }
-          this.aaData.dates[0].games[i].homeTVDiv = this.aaData.dates[0].games[
-            i
-          ].homeTVDiv.substring(
-            0,
-            this.aaData.dates[0].games[i].homeTVDiv.length - 2
-          );
-          this.aaData.dates[0].games[i].awayTVDiv = this.aaData.dates[0].games[
-            i
-          ].awayTVDiv.substring(
-            0,
-            this.aaData.dates[0].games[i].awayTVDiv.length - 2
-          );
-        }
-      }
-    }
-  }
-
-  makeTheHighABroadcastDivs() {
-    if (this.highAData) {
-      for (var i = 0; i < this.highAData.dates[0].games.length; i++) {
-        this.highAData.dates[0].games[i].homeTVArray = [];
-        this.highAData.dates[0].games[i].awayTVArray = [];
-        this.highAData.dates[0].games[i].awayTVDiv = '';
-        this.highAData.dates[0].games[i].homeTVDiv = '';
-        if (this.highAData.dates[0].games[i].broadcasts) {
-          for (
-            var j = 0;
-            j < this.highAData.dates[0].games[i].broadcasts.length;
-            j++
-          ) {
-            if (
-              this.highAData.dates[0].games[i].broadcasts[j].type == 'TV' &&
-              this.highAData.dates[0].games[i].broadcasts[j].homeAway == 'home'
-            ) {
-              this.highAData.dates[0].games[i].homeTVArray.push(
-                this.highAData.dates[0].games[i].broadcasts[j].name
-              );
-            }
-            if (
-              this.highAData.dates[0].games[i].broadcasts[j].type == 'TV' &&
-              this.highAData.dates[0].games[i].broadcasts[j].homeAway == 'away'
-            ) {
-              this.highAData.dates[0].games[i].awayTVArray.push(
-                this.highAData.dates[0].games[i].broadcasts[j].name
-              );
-            }
-          }
-          if (this.highAData.dates[0].games[i].awayTVArray.length > 0) {
-            this.highAData.dates[0].games[i].awayTVDiv =
-              this.highAData.dates[0].games[i].teams.away.team.abbreviation +
-              ' TV: ';
-          }
-          if (this.highAData.dates[0].games[i].homeTVArray.length > 0) {
-            this.highAData.dates[0].games[i].homeTVDiv =
-              this.highAData.dates[0].games[i].teams.home.team.abbreviation +
-              ' TV: ';
-          }
-          for (
-            var k = 0;
-            k < this.highAData.dates[0].games[i].awayTVArray.length;
-            k++
-          ) {
-            this.highAData.dates[0].games[i].awayTVDiv +=
-              this.highAData.dates[0].games[i].awayTVArray[k] + ', ';
-          }
-          for (
-            var m = 0;
-            m < this.highAData.dates[0].games[i].homeTVArray.length;
-            m++
-          ) {
-            this.highAData.dates[0].games[i].homeTVDiv +=
-              this.highAData.dates[0].games[i].homeTVArray[m] + ', ';
-          }
-          this.highAData.dates[0].games[i].homeTVDiv =
-            this.highAData.dates[0].games[i].homeTVDiv.substring(
-              0,
-              this.highAData.dates[0].games[i].homeTVDiv.length - 2
-            );
-          this.highAData.dates[0].games[i].awayTVDiv =
-            this.highAData.dates[0].games[i].awayTVDiv.substring(
-              0,
-              this.highAData.dates[0].games[i].awayTVDiv.length - 2
-            );
-        }
-      }
-    }
-  }
-
-  makeTheLowABroadcastDivs() {
-    if (this.lowAData) {
-      for (var i = 0; i < this.lowAData.dates[0].games.length; i++) {
-        this.lowAData.dates[0].games[i].homeTVArray = [];
-        this.lowAData.dates[0].games[i].awayTVArray = [];
-        this.lowAData.dates[0].games[i].awayTVDiv = '';
-        this.lowAData.dates[0].games[i].homeTVDiv = '';
-        if (this.lowAData.dates[0].games[i].broadcasts) {
-          for (
-            var j = 0;
-            j < this.lowAData.dates[0].games[i].broadcasts.length;
-            j++
-          ) {
-            if (
-              this.lowAData.dates[0].games[i].broadcasts[j].type == 'TV' &&
-              this.lowAData.dates[0].games[i].broadcasts[j].homeAway == 'home'
-            ) {
-              this.lowAData.dates[0].games[i].homeTVArray.push(
-                this.lowAData.dates[0].games[i].broadcasts[j].name
-              );
-            }
-            if (
-              this.lowAData.dates[0].games[i].broadcasts[j].type == 'TV' &&
-              this.lowAData.dates[0].games[i].broadcasts[j].homeAway == 'away'
-            ) {
-              this.lowAData.dates[0].games[i].awayTVArray.push(
-                this.lowAData.dates[0].games[i].broadcasts[j].name
-              );
-            }
-          }
-          if (this.lowAData.dates[0].games[i].awayTVArray.length > 0) {
-            this.lowAData.dates[0].games[i].awayTVDiv =
-              this.lowAData.dates[0].games[i].teams.away.team.abbreviation +
-              ' TV: ';
-          }
-          if (this.lowAData.dates[0].games[i].homeTVArray.length > 0) {
-            this.lowAData.dates[0].games[i].homeTVDiv =
-              this.lowAData.dates[0].games[i].teams.home.team.abbreviation +
-              ' TV: ';
-          }
-          for (
-            var k = 0;
-            k < this.lowAData.dates[0].games[i].awayTVArray.length;
-            k++
-          ) {
-            this.lowAData.dates[0].games[i].awayTVDiv +=
-              this.lowAData.dates[0].games[i].awayTVArray[k] + ', ';
-          }
-          for (
-            var m = 0;
-            m < this.lowAData.dates[0].games[i].homeTVArray.length;
-            m++
-          ) {
-            this.lowAData.dates[0].games[i].homeTVDiv +=
-              this.lowAData.dates[0].games[i].homeTVArray[m] + ', ';
-          }
-          this.lowAData.dates[0].games[i].homeTVDiv =
-            this.lowAData.dates[0].games[i].homeTVDiv.substring(
-              0,
-              this.lowAData.dates[0].games[i].homeTVDiv.length - 2
-            );
-          this.lowAData.dates[0].games[i].awayTVDiv =
-            this.lowAData.dates[0].games[i].awayTVDiv.substring(
-              0,
-              this.lowAData.dates[0].games[i].awayTVDiv.length - 2
-            );
-        }
-      }
-    }
-  }
-
-  calculateMLBSlg() {
-    if (this.mlbData) {
-      for (var i = 0; i < this.mlbData.dates[0].games.length; i++) {
-        let batter = this.mlbData.dates[0].games[i].linescore.offense.batter;
-        let onDeck = this.mlbData.dates[0].games[i].linescore.offense.onDeck;
-        let inHole = this.mlbData.dates[0].games[i].linescore.offense.inHole;
-        if (batter) {
-          if (batter.stats[2].stats.atBats == 0) {
-            batter.stats[2].stats.slg = '.000';
-          }
-          if (batter.stats[2].stats.atBats > 0) {
-            batter.stats[2].stats.slg = (
-              (batter.stats[2].stats.hits +
-                batter.stats[2].stats.doubles +
-                2 * batter.stats[2].stats.triples +
-                3 * batter.stats[2].stats.homeRuns) /
-              batter.stats[2].stats.atBats
-            ).toFixed(3);
-            if (batter.stats[2].stats.slg[0] == '0') {
-              batter.stats[2].stats.slg =
-                batter.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-        if (onDeck) {
-          if (+onDeck.stats[2].stats.atBats == 0) {
-            onDeck.stats[2].stats.slg = '.000';
-          }
-          if (+onDeck.stats[2].stats.atBats > 0) {
-            onDeck.stats[2].stats.slg = (
-              (onDeck.stats[2].stats.hits +
-                onDeck.stats[2].stats.doubles +
-                2 * onDeck.stats[2].stats.triples +
-                3 * onDeck.stats[2].stats.homeRuns) /
-              onDeck.stats[2].stats.atBats
-            ).toFixed(3);
-            if (onDeck.stats[2].stats.slg[0] == '0') {
-              onDeck.stats[2].stats.slg =
-                onDeck.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-        if (inHole) {
-          if (+inHole.stats[2].stats.atBats == 0) {
-            inHole.stats[2].stats.slg = '.000';
-          }
-          if (+inHole.stats[2].stats.atBats > 0) {
-            inHole.stats[2].stats.slg = (
-              (inHole.stats[2].stats.hits +
-                inHole.stats[2].stats.doubles +
-                2 * inHole.stats[2].stats.triples +
-                3 * inHole.stats[2].stats.homeRuns) /
-              inHole.stats[2].stats.atBats
-            ).toFixed(3);
-            if (inHole.stats[2].stats.slg[0] == '0') {
-              inHole.stats[2].stats.slg =
-                inHole.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  calculateAAASlg() {
-    if (this.aaaData) {
-      for (var i = 0; i < this.aaaData.dates[0].games.length; i++) {
-        let batter = this.aaaData.dates[0].games[i].linescore.offense.batter;
-        let onDeck = this.aaaData.dates[0].games[i].linescore.offense.onDeck;
-        let inHole = this.aaaData.dates[0].games[i].linescore.offense.inHole;
-        if (batter) {
-          if (batter.stats[2].stats.atBats == 0) {
-            batter.stats[2].stats.slg = '.000';
-          }
-          if (batter.stats[2].stats.atBats > 0) {
-            batter.stats[2].stats.slg = (
-              (batter.stats[2].stats.hits +
-                batter.stats[2].stats.doubles +
-                2 * batter.stats[2].stats.triples +
-                3 * batter.stats[2].stats.homeRuns) /
-              batter.stats[2].stats.atBats
-            ).toFixed(3);
-            if (batter.stats[2].stats.slg[0] == '0') {
-              batter.stats[2].stats.slg =
-                batter.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-        if (onDeck) {
-          if (+onDeck.stats[2].stats.atBats == 0) {
-            onDeck.stats[2].stats.slg = '.000';
-          }
-          if (+onDeck.stats[2].stats.atBats > 0) {
-            onDeck.stats[2].stats.slg = (
-              (onDeck.stats[2].stats.hits +
-                onDeck.stats[2].stats.doubles +
-                2 * onDeck.stats[2].stats.triples +
-                3 * onDeck.stats[2].stats.homeRuns) /
-              onDeck.stats[2].stats.atBats
-            ).toFixed(3);
-            if (onDeck.stats[2].stats.slg[0] == '0') {
-              onDeck.stats[2].stats.slg =
-                onDeck.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-        if (inHole) {
-          if (+inHole.stats[2].stats.atBats == 0) {
-            inHole.stats[2].stats.slg = '.000';
-          }
-          if (+inHole.stats[2].stats.atBats > 0) {
-            inHole.stats[2].stats.slg = (
-              (inHole.stats[2].stats.hits +
-                inHole.stats[2].stats.doubles +
-                2 * inHole.stats[2].stats.triples +
-                3 * inHole.stats[2].stats.homeRuns) /
-              inHole.stats[2].stats.atBats
-            ).toFixed(3);
-            if (inHole.stats[2].stats.slg[0] == '0') {
-              inHole.stats[2].stats.slg =
-                inHole.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  calculateAASlg() {
-    if (this.aaData) {
-      for (var i = 0; i < this.aaData.dates[0].games.length; i++) {
-        let batter = this.aaData.dates[0].games[i].linescore.offense.batter;
-        let onDeck = this.aaData.dates[0].games[i].linescore.offense.onDeck;
-        let inHole = this.aaData.dates[0].games[i].linescore.offense.inHole;
-        if (batter) {
-          if (batter.stats[2].stats.atBats == 0) {
-            batter.stats[2].stats.slg = '.000';
-          }
-          if (batter.stats[2].stats.atBats > 0) {
-            batter.stats[2].stats.slg = (
-              (batter.stats[2].stats.hits +
-                batter.stats[2].stats.doubles +
-                2 * batter.stats[2].stats.triples +
-                3 * batter.stats[2].stats.homeRuns) /
-              batter.stats[2].stats.atBats
-            ).toFixed(3);
-            if (batter.stats[2].stats.slg[0] == '0') {
-              batter.stats[2].stats.slg =
-                batter.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-        if (onDeck) {
-          if (+onDeck.stats[2].stats.atBats == 0) {
-            onDeck.stats[2].stats.slg = '.000';
-          }
-          if (+onDeck.stats[2].stats.atBats > 0) {
-            onDeck.stats[2].stats.slg = (
-              (onDeck.stats[2].stats.hits +
-                onDeck.stats[2].stats.doubles +
-                2 * onDeck.stats[2].stats.triples +
-                3 * onDeck.stats[2].stats.homeRuns) /
-              onDeck.stats[2].stats.atBats
-            ).toFixed(3);
-            if (onDeck.stats[2].stats.slg[0] == '0') {
-              onDeck.stats[2].stats.slg =
-                onDeck.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-        if (inHole) {
-          if (+inHole.stats[2].stats.atBats == 0) {
-            inHole.stats[2].stats.slg = '.000';
-          }
-          if (+inHole.stats[2].stats.atBats > 0) {
-            inHole.stats[2].stats.slg = (
-              (inHole.stats[2].stats.hits +
-                inHole.stats[2].stats.doubles +
-                2 * inHole.stats[2].stats.triples +
-                3 * inHole.stats[2].stats.homeRuns) /
-              inHole.stats[2].stats.atBats
-            ).toFixed(3);
-            if (inHole.stats[2].stats.slg[0] == '0') {
-              inHole.stats[2].stats.slg =
-                inHole.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  calculateHighASlg() {
-    if (this.highAData) {
-      for (var i = 0; i < this.highAData.dates[0].games.length; i++) {
-        let batter = this.highAData.dates[0].games[i].linescore.offense.batter;
-        let onDeck = this.highAData.dates[0].games[i].linescore.offense.onDeck;
-        let inHole = this.highAData.dates[0].games[i].linescore.offense.inHole;
-        if (batter) {
-          if (batter.stats[2].stats.atBats == 0) {
-            batter.stats[2].stats.slg = '.000';
-          }
-          if (batter.stats[2].stats.atBats > 0) {
-            batter.stats[2].stats.slg = (
-              (batter.stats[2].stats.hits +
-                batter.stats[2].stats.doubles +
-                2 * batter.stats[2].stats.triples +
-                3 * batter.stats[2].stats.homeRuns) /
-              batter.stats[2].stats.atBats
-            ).toFixed(3);
-            if (batter.stats[2].stats.slg[0] == '0') {
-              batter.stats[2].stats.slg =
-                batter.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-        if (onDeck) {
-          if (+onDeck.stats[2].stats.atBats == 0) {
-            onDeck.stats[2].stats.slg = '.000';
-          }
-          if (+onDeck.stats[2].stats.atBats > 0) {
-            onDeck.stats[2].stats.slg = (
-              (onDeck.stats[2].stats.hits +
-                onDeck.stats[2].stats.doubles +
-                2 * onDeck.stats[2].stats.triples +
-                3 * onDeck.stats[2].stats.homeRuns) /
-              onDeck.stats[2].stats.atBats
-            ).toFixed(3);
-            if (onDeck.stats[2].stats.slg[0] == '0') {
-              onDeck.stats[2].stats.slg =
-                onDeck.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-        if (inHole) {
-          if (+inHole.stats[2].stats.atBats == 0) {
-            inHole.stats[2].stats.slg = '.000';
-          }
-          if (+inHole.stats[2].stats.atBats > 0) {
-            inHole.stats[2].stats.slg = (
-              (inHole.stats[2].stats.hits +
-                inHole.stats[2].stats.doubles +
-                2 * inHole.stats[2].stats.triples +
-                3 * inHole.stats[2].stats.homeRuns) /
-              inHole.stats[2].stats.atBats
-            ).toFixed(3);
-            if (inHole.stats[2].stats.slg[0] == '0') {
-              inHole.stats[2].stats.slg =
-                inHole.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  calculateLowASlg() {
-    if (this.lowAData) {
-      for (var i = 0; i < this.lowAData.dates[0].games.length; i++) {
-        let batter = this.lowAData.dates[0].games[i].linescore.offense.batter;
-        let onDeck = this.lowAData.dates[0].games[i].linescore.offense.onDeck;
-        let inHole = this.lowAData.dates[0].games[i].linescore.offense.inHole;
-        if (batter) {
-          if (batter.stats[2].stats.atBats == 0) {
-            batter.stats[2].stats.slg = '.000';
-          }
-          if (batter.stats[2].stats.atBats > 0) {
-            batter.stats[2].stats.slg = (
-              (batter.stats[2].stats.hits +
-                batter.stats[2].stats.doubles +
-                2 * batter.stats[2].stats.triples +
-                3 * batter.stats[2].stats.homeRuns) /
-              batter.stats[2].stats.atBats
-            ).toFixed(3);
-            if (batter.stats[2].stats.slg[0] == '0') {
-              batter.stats[2].stats.slg =
-                batter.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-        if (onDeck) {
-          if (+onDeck.stats[2].stats.atBats == 0) {
-            onDeck.stats[2].stats.slg = '.000';
-          }
-          if (+onDeck.stats[2].stats.atBats > 0) {
-            onDeck.stats[2].stats.slg = (
-              (onDeck.stats[2].stats.hits +
-                onDeck.stats[2].stats.doubles +
-                2 * onDeck.stats[2].stats.triples +
-                3 * onDeck.stats[2].stats.homeRuns) /
-              onDeck.stats[2].stats.atBats
-            ).toFixed(3);
-            if (onDeck.stats[2].stats.slg[0] == '0') {
-              onDeck.stats[2].stats.slg =
-                onDeck.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-        if (inHole) {
-          if (+inHole.stats[2].stats.atBats == 0) {
-            inHole.stats[2].stats.slg = '.000';
-          }
-          if (+inHole.stats[2].stats.atBats > 0) {
-            inHole.stats[2].stats.slg = (
-              (inHole.stats[2].stats.hits +
-                inHole.stats[2].stats.doubles +
-                2 * inHole.stats[2].stats.triples +
-                3 * inHole.stats[2].stats.homeRuns) /
-              inHole.stats[2].stats.atBats
-            ).toFixed(3);
-            if (inHole.stats[2].stats.slg[0] == '0') {
-              inHole.stats[2].stats.slg =
-                inHole.stats[2].stats.slg.substring(1);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  makeTheMLBHomeRunObjects() {
-    if (this.mlbData) {
-      for (var i = 0; i < this.mlbData.dates[0].games.length; i++) {
-        if (
-          this.mlbData.dates[0].games[i].homeRuns &&
-          this.mlbData.dates[0].games[i].homeRuns.length > 0
-        ) {
-          for (
-            var j = 0;
-            j < this.mlbData.dates[0].games[i].homeRuns.length;
-            j++
-          ) {
-            if (
-              this.mlbData.dates[0].games[i].homeRuns[j].about.halfInning ==
-              'bottom'
-            ) {
-              this.mlbData.dates[0].games[i].homeRuns[j].matchup.batterTeam =
-                this.mlbData.dates[0].games[i].teams.home.team.abbreviation;
-            }
-            if (
-              this.mlbData.dates[0].games[i].homeRuns[j].about.halfInning ==
-              'top'
-            ) {
-              this.mlbData.dates[0].games[i].homeRuns[j].matchup.batterTeam =
-                this.mlbData.dates[0].games[i].teams.away.team.abbreviation;
-            }
-            if (this.mlbData.dates[0].games[i].homeRuns[j].about.inning == 1) {
-              this.mlbData.dates[0].games[i].homeRuns[j].matchup.ordinalInning =
-                '1st Inning';
-            }
-            if (this.mlbData.dates[0].games[i].homeRuns[j].about.inning == 2) {
-              this.mlbData.dates[0].games[i].homeRuns[j].matchup.ordinalInning =
-                '2nd Inning';
-            }
-            if (this.mlbData.dates[0].games[i].homeRuns[j].about.inning == 3) {
-              this.mlbData.dates[0].games[i].homeRuns[j].matchup.ordinalInning =
-                '3rd Inning';
-            }
-            if (this.mlbData.dates[0].games[i].homeRuns[j].about.inning > 3) {
-              this.mlbData.dates[0].games[i].homeRuns[j].matchup.ordinalInning =
-                this.mlbData.dates[0].games[i].homeRuns[j].about.inning +
-                'th Inning';
-            }
-          }
-        }
-      }
-    }
-  }
-
-  makeTheAAAHomeRunObjects() {
-    if (this.aaaData) {
-      for (var i = 0; i < this.aaaData.dates[0].games.length; i++) {
-        if (
-          this.aaaData.dates[0].games[i].homeRuns &&
-          this.aaaData.dates[0].games[i].homeRuns.length > 0
-        ) {
-          for (
-            var j = 0;
-            j < this.aaaData.dates[0].games[i].homeRuns.length;
-            j++
-          ) {
-            if (
-              this.aaaData.dates[0].games[i].homeRuns[j].about.halfInning ==
-              'bottom'
-            ) {
-              this.aaaData.dates[0].games[i].homeRuns[j].matchup.batterTeam =
-                this.aaaData.dates[0].games[i].teams.home.team.abbreviation;
-            }
-            if (
-              this.aaaData.dates[0].games[i].homeRuns[j].about.halfInning ==
-              'top'
-            ) {
-              this.aaaData.dates[0].games[i].homeRuns[j].matchup.batterTeam =
-                this.aaaData.dates[0].games[i].teams.away.team.abbreviation;
-            }
-            if (this.aaaData.dates[0].games[i].homeRuns[j].about.inning == 1) {
-              this.aaaData.dates[0].games[i].homeRuns[j].matchup.ordinalInning =
-                '1st Inning';
-            }
-            if (this.aaaData.dates[0].games[i].homeRuns[j].about.inning == 2) {
-              this.aaaData.dates[0].games[i].homeRuns[j].matchup.ordinalInning =
-                '2nd Inning';
-            }
-            if (this.aaaData.dates[0].games[i].homeRuns[j].about.inning == 3) {
-              this.aaaData.dates[0].games[i].homeRuns[j].matchup.ordinalInning =
-                '3rd Inning';
-            }
-            if (this.aaaData.dates[0].games[i].homeRuns[j].about.inning > 3) {
-              this.aaaData.dates[0].games[i].homeRuns[j].matchup.ordinalInning =
-                this.aaaData.dates[0].games[i].homeRuns[j].about.inning +
-                'th Inning';
-            }
-          }
-        }
-      }
-    }
-  }
-
-  makeTheAAHomeRunObjects() {
-    if (this.aaData) {
-      for (var i = 0; i < this.aaData.dates[0].games.length; i++) {
-        if (
-          this.aaData.dates[0].games[i].homeRuns &&
-          this.aaData.dates[0].games[i].homeRuns.length > 0
-        ) {
-          for (
-            var j = 0;
-            j < this.aaData.dates[0].games[i].homeRuns.length;
-            j++
-          ) {
-            if (
-              this.aaData.dates[0].games[i].homeRuns[j].about.halfInning ==
-              'bottom'
-            ) {
-              this.aaData.dates[0].games[i].homeRuns[j].matchup.batterTeam =
-                this.aaData.dates[0].games[i].teams.home.team.abbreviation;
-            }
-            if (
-              this.aaData.dates[0].games[i].homeRuns[j].about.halfInning ==
-              'top'
-            ) {
-              this.aaData.dates[0].games[i].homeRuns[j].matchup.batterTeam =
-                this.aaData.dates[0].games[i].teams.away.team.abbreviation;
-            }
-            if (this.aaData.dates[0].games[i].homeRuns[j].about.inning == 1) {
-              this.aaData.dates[0].games[i].homeRuns[j].matchup.ordinalInning =
-                '1st Inning';
-            }
-            if (this.aaData.dates[0].games[i].homeRuns[j].about.inning == 2) {
-              this.aaData.dates[0].games[i].homeRuns[j].matchup.ordinalInning =
-                '2nd Inning';
-            }
-            if (this.aaData.dates[0].games[i].homeRuns[j].about.inning == 3) {
-              this.aaData.dates[0].games[i].homeRuns[j].matchup.ordinalInning =
-                '3rd Inning';
-            }
-            if (this.aaData.dates[0].games[i].homeRuns[j].about.inning > 3) {
-              this.aaData.dates[0].games[i].homeRuns[j].matchup.ordinalInning =
-                this.aaData.dates[0].games[i].homeRuns[j].about.inning +
-                'th Inning';
-            }
-          }
-        }
-      }
-    }
-  }
-
-  makeTheHighAHomeRunObjects() {
-    if (this.highAData) {
-      for (var i = 0; i < this.highAData.dates[0].games.length; i++) {
-        if (
-          this.highAData.dates[0].games[i].homeRuns &&
-          this.highAData.dates[0].games[i].homeRuns.length > 0
-        ) {
-          for (
-            var j = 0;
-            j < this.highAData.dates[0].games[i].homeRuns.length;
-            j++
-          ) {
-            if (
-              this.highAData.dates[0].games[i].homeRuns[j].about.halfInning ==
-              'bottom'
-            ) {
-              this.highAData.dates[0].games[i].homeRuns[j].matchup.batterTeam =
-                this.highAData.dates[0].games[i].teams.home.team.abbreviation;
-            }
-            if (
-              this.highAData.dates[0].games[i].homeRuns[j].about.halfInning ==
-              'top'
-            ) {
-              this.highAData.dates[0].games[i].homeRuns[j].matchup.batterTeam =
-                this.highAData.dates[0].games[i].teams.away.team.abbreviation;
-            }
-            if (
-              this.highAData.dates[0].games[i].homeRuns[j].about.inning == 1
-            ) {
-              this.highAData.dates[0].games[i].homeRuns[
-                j
-              ].matchup.ordinalInning = '1st Inning';
-            }
-            if (
-              this.highAData.dates[0].games[i].homeRuns[j].about.inning == 2
-            ) {
-              this.highAData.dates[0].games[i].homeRuns[
-                j
-              ].matchup.ordinalInning = '2nd Inning';
-            }
-            if (
-              this.highAData.dates[0].games[i].homeRuns[j].about.inning == 3
-            ) {
-              this.highAData.dates[0].games[i].homeRuns[
-                j
-              ].matchup.ordinalInning = '3rd Inning';
-            }
-            if (this.highAData.dates[0].games[i].homeRuns[j].about.inning > 3) {
-              this.highAData.dates[0].games[i].homeRuns[
-                j
-              ].matchup.ordinalInning =
-                this.highAData.dates[0].games[i].homeRuns[j].about.inning +
-                'th Inning';
-            }
-          }
-        }
-      }
-    }
-  }
-
-  makeTheLowAHomeRunObjects() {
-    if (this.lowAData) {
-      for (var i = 0; i < this.lowAData.dates[0].games.length; i++) {
-        if (
-          this.lowAData.dates[0].games[i].homeRuns &&
-          this.lowAData.dates[0].games[i].homeRuns.length > 0
-        ) {
-          for (
-            var j = 0;
-            j < this.lowAData.dates[0].games[i].homeRuns.length;
-            j++
-          ) {
-            if (
-              this.lowAData.dates[0].games[i].homeRuns[j].about.halfInning ==
-              'bottom'
-            ) {
-              this.lowAData.dates[0].games[i].homeRuns[j].matchup.batterTeam =
-                this.lowAData.dates[0].games[i].teams.home.team.abbreviation;
-            }
-            if (
-              this.lowAData.dates[0].games[i].homeRuns[j].about.halfInning ==
-              'top'
-            ) {
-              this.lowAData.dates[0].games[i].homeRuns[j].matchup.batterTeam =
-                this.lowAData.dates[0].games[i].teams.away.team.abbreviation;
-            }
-            if (this.lowAData.dates[0].games[i].homeRuns[j].about.inning == 1) {
-              this.lowAData.dates[0].games[i].homeRuns[
-                j
-              ].matchup.ordinalInning = '1st Inning';
-            }
-            if (this.lowAData.dates[0].games[i].homeRuns[j].about.inning == 2) {
-              this.lowAData.dates[0].games[i].homeRuns[
-                j
-              ].matchup.ordinalInning = '2nd Inning';
-            }
-            if (this.lowAData.dates[0].games[i].homeRuns[j].about.inning == 3) {
-              this.lowAData.dates[0].games[i].homeRuns[
-                j
-              ].matchup.ordinalInning = '3rd Inning';
-            }
-            if (this.lowAData.dates[0].games[i].homeRuns[j].about.inning > 3) {
-              this.lowAData.dates[0].games[i].homeRuns[
-                j
-              ].matchup.ordinalInning =
-                this.lowAData.dates[0].games[i].homeRuns[j].about.inning +
-                'th Inning';
-            }
-          }
-        }
-      }
-    }
+      game.mobileHomeRunList = mobileHRList;
+    });
   }
 
   getYearToCall(): string {
     let dateForTransform =
       (this.form.get('dateToCall')?.value as Date) ?? new Date();
-    console.log(dateForTransform.getFullYear());
     return dateForTransform.getFullYear().toString();
   }
 
   getMonthToCall(): string {
     let dateForTransform =
       (this.form.get('dateToCall')?.value as Date) ?? new Date();
-    console.log(dateForTransform.getMonth() + 1);
     let monthToPass = dateForTransform.getMonth() + 1;
     let monthString;
     if (monthToPass < 10) {
@@ -1118,14 +476,12 @@ export class NorthAmericaComponent implements OnInit {
     } else {
       monthString = monthToPass.toString();
     }
-    console.log(monthString);
     return monthString;
   }
 
   getDayToCall(): string {
     let dateForTransform =
       (this.form.get('dateToCall')?.value as Date) ?? new Date();
-    console.log(dateForTransform.getDate());
     return dateForTransform.getDate().toString();
   }
 
@@ -1135,5 +491,87 @@ export class NorthAmericaComponent implements OnInit {
       this.getMonthToCall(),
       this.getDayToCall()
     );
+  }
+
+  addOrgFilter(event: any) {
+    this.filterByOrg = true;
+    this.filterByLevel = false;
+    this.initialState = false;
+    this.org = event.target.value;
+    this.orgSwitchCase();
+    this.router.navigate(['/'], { queryParams: { org: this.org } });
+    this.getTheScores(
+      this.getYearToCall(),
+      this.getMonthToCall(),
+      this.getDayToCall()
+    );
+    this.applyFilters();
+  }
+
+  reloadThePage() {
+    this.router.navigate(['/']).then(() => {
+      window.location.reload();
+    });
+  }
+
+  orgSwitchCase() {
+    const orgNumberMap: OrgNumbers = {
+      LAA: 108,
+      ARI: 109,
+      AZ: 109,
+      ARZ: 109,
+      BAL: 110,
+      BOS: 111,
+      CHC: 112,
+      CHN: 112,
+      CIN: 113,
+      CLE: 114,
+      COL: 115,
+      DET: 116,
+      HOU: 117,
+      KC: 118,
+      KCR: 118,
+      KCA: 118,
+      LAD: 119,
+      LAN: 119,
+      WSH: 120,
+      WAS: 120,
+      NYM: 121,
+      NYN: 121,
+      OAK: 133,
+      PIT: 134,
+      SDP: 135,
+      SDN: 135,
+      SD: 135,
+      SDG: 135,
+      SEA: 136,
+      SF: 137,
+      SFG: 137,
+      SFN: 137,
+      SFR: 137,
+      STL: 138,
+      SL: 138,
+      SLC: 138,
+      SLN: 138,
+      TBR: 139,
+      TAM: 139,
+      TB: 139,
+      TBA: 139,
+      TEX: 140,
+      TOR: 141,
+      MIN: 142,
+      PHI: 143,
+      ATL: 144,
+      CHA: 145,
+      CHW: 145,
+      MIA: 146,
+      NYA: 147,
+      NYY: 147,
+      MIL: 158,
+    };
+
+    if (this.org !== null) {
+      this.orgNumber = orgNumberMap[this.org] || null;
+    }
   }
 }

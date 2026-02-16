@@ -1,1 +1,148 @@
-<p>cfl works!</p>
+<div class="week-dropdown">
+  <select name="week" id="week" (change)="onChange()">
+    <option value="">Select a Week</option>
+  </select></div>
+
+<ng-container>
+  <div class="desktop">
+    <mat-card-flat class="centerVertically" *ngIf="gameData" fxLayout="row wrap">
+      <ul class="notTinyUl" *ngFor="let game of gameData; let i = index">
+        <mat-card>
+          <mat-grid-list cols="20" rows="12">
+            <mat-grid-tile colspan="20" rowspan="2">
+              <div class="venue">
+                {{game.venue}}
+              </div>
+            </mat-grid-tile>
+            <div class="team-row-container">
+              <mat-grid-tile colspan="4" rowspan="4">
+                <img class="teamLogo"
+                  src="https://tsnimages.tsn.ca/ImageProvider/TeamLogo?seoId={{game.awayEventResult.competitor.seoIdentifier}}">
+              </mat-grid-tile>
+              <mat-grid-tile colspan="12" rowspan="1">
+                <span class="team-location">
+                  {{game.awayEventResult.competitor.location}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="4" rowspan="4">
+                <span class="team-score">
+                  {{game.awayEventResult.competitor.score}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="12" rowspan="2">
+                <span class="team-nickname">
+                  {{game.awayEventResult.competitor.club}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="12" rowspan="1">
+                <span class="team-record">
+                  ({{game.awayEventResult.competitor.recordOverall}}, {{game.awayEventResult.competitor.ranking}})
+                </span>
+              </mat-grid-tile>
+            </div>
+            <div class="team-row-container">
+              <mat-grid-tile colspan="4" rowspan="4">
+                <img class="teamLogo"
+                  src="https://tsnimages.tsn.ca/ImageProvider/TeamLogo?seoId={{game.homeEventResult.competitor.seoIdentifier}}">
+              </mat-grid-tile>
+              <mat-grid-tile colspan="12" rowspan="1">
+                <span class="team-location">
+                  {{game.homeEventResult.competitor.location}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="4" rowspan="4">
+                <span class="team-score">
+                  {{game.homeEventResult.competitor.score}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="12" rowspan="2">
+                <span class="team-nickname">
+                  {{game.homeEventResult.competitor.club}}
+                </span>
+              </mat-grid-tile>
+              <mat-grid-tile colspan="12" rowspan="1">
+                <span class="team-record">
+                  ({{game.homeEventResult.competitor.recordOverall}}, {{game.homeEventResult.competitor.ranking}})
+                </span>
+              </mat-grid-tile>
+            </div>
+            <div class="time-and-date">
+              <mat-grid-tile colspan="20" rowspan="2">
+                {{game.dateET | date:'MMM d, y, h:mm a' }} ET
+              </mat-grid-tile>
+            </div>
+          </mat-grid-list>
+        </mat-card>
+      </ul>
+    </mat-card-flat>
+  </div>
+</ng-container>
+
+
+<ng-container>
+    <div class="mobile">
+      <mat-card-flat class="centerVertically" *ngIf="gameData" fxLayout="row wrap">
+        <ul class="tinyUl" *ngFor="let game of gameData; let i = index">
+          <mat-card class="mobile-mat-card">
+            <mat-grid-list cols="20" rows="12">
+              <mat-grid-tile colspan="20" rowspan="1">
+                <div class="tinyVenue">
+                  {{game.venue}}
+                </div>
+              </mat-grid-tile>
+              <div class="team-row-container">
+                <mat-grid-tile colspan="15" rowspan="1">
+                  <span class="mobile-team-location">
+                    {{game.awayEventResult.competitor.location}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="5" rowspan="4">
+                  <span class="mobile-team-score">
+                    {{game.awayEventResult.competitor.score}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="15" rowspan="2">
+                  <span class="mobile-team-nickname">
+                    {{game.awayEventResult.competitor.club}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="15" rowspan="1">
+                  <span class="mobile-team-record">
+                    ({{game.awayEventResult.competitor.recordOverall}}, {{game.awayEventResult.competitor.ranking}})
+                  </span>
+                </mat-grid-tile>
+              </div>
+              <div class="team-row-container">
+                <mat-grid-tile colspan="15" rowspan="1">
+                  <span class="mobile-team-location">
+                    {{game.homeEventResult.competitor.location}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="5" rowspan="4">
+                  <span class="mobile-team-score">
+                    {{game.homeEventResult.competitor.score}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="15" rowspan="2">
+                  <span class="mobile-team-nickname">
+                    {{game.homeEventResult.competitor.club}}
+                  </span>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="15" rowspan="1">
+                  <span class="mobile-team-record">
+                    ({{game.homeEventResult.competitor.recordOverall}}, {{game.homeEventResult.competitor.ranking}})
+                  </span>
+                </mat-grid-tile>
+              </div>
+              <div class="time-and-date">
+                <mat-grid-tile colspan="20" rowspan="2">
+                  {{game.dateET | date:'MMM d, y, h:mm a' }} ET
+                </mat-grid-tile>
+              </div>
+            </mat-grid-list>
+          </mat-card>
+        </ul>
+      </mat-card-flat>
+    </div>
+  </ng-container>
+  

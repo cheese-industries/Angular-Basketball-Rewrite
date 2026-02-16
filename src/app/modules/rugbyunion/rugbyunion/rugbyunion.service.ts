@@ -7,11 +7,11 @@ import { RugbyData } from '../models/rugby-data';
   providedIn: 'root',
 })
 export class RugbyunionService {
-  todayGamesUrl: string = 'http://192.227.229.235:3000/fetch/https://supersport.com/api/rugby/v4/feed/today';
+  todayGamesUrl: string = 'https://danl.ee:3000/fetch/https://supersport.com/api/rugby/v4/feed/today';
   futureGamesUrl: string =
-    'http://192.227.229.235:3000/fetch/https://supersport.com/api/rugby/v4/feed/score/summary?eventStatus=1&pageSize=25&orderAscending=true&region=za';
+    'https://danl.ee:3000/fetch/https://supersport.com/api/rugby/v4/feed/score/summary?eventStatus=1&pageSize=25&orderAscending=true&region=za';
   pastGamesUrl: string =
-    'http://192.227.229.235:3000/fetch/https://supersport.com/api/rugby/v4/feed/score/summary?eventStatus=3&pageSize=25&orderAscending=false&region=za';
+    'https://danl.ee:3000/fetch/https://supersport.com/api/rugby/v4/feed/score/summary?eventStatus=3&pageSize=25&orderAscending=false&region=za';
 
   constructor(private http: HttpClient) {}
   

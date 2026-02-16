@@ -25,7 +25,6 @@ export class CricketComponent implements OnInit {
     const subscription = this.service.getGameData().subscribe((response) => {
       this.data = response;
       this.events = this.data.matches;
-      console.log(this.events);
       this.convertDateFormat();
       this.setLogoUrl();
       this.fixScheduledMatchStatus();

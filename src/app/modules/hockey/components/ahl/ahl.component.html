@@ -99,3 +99,78 @@
     </mat-card-flat>
   </div>
 </ng-container>
+
+<ng-container>
+  <div class="isMobile">
+    <mat-card-flat class="centerVertically" *ngIf="data" fxLayout="row wrap">
+      <ul class="tinyUl" *ngFor="let event of data.events; let i = index">
+        <mat-card>
+          <mat-grid-list cols="20" rows="9">
+
+            <mat-grid-tile colspan="15" rowspan="1">
+              <span class="xsTeamLocation">
+                {{event.awayEventResult.competitor.location}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="5" rowspan="3">
+              <span class="teamScore">
+                {{event.awayEventResult.score}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="15" rowspan="2">
+              <span class="xsTeamNickname">
+                {{event.awayEventResult.competitor.club}}
+              </span>
+            </mat-grid-tile>
+            <div>
+              <mat-grid-tile colspan="10" rowspan="1">
+                <span class="xsTeamRecord">
+                  ({{event.awayEventResult.competitor.recordOverall}})
+                </span>
+              </mat-grid-tile>
+            </div>
+            <div>
+              <mat-grid-tile colspan="10" rowspan="1">
+                <span class="teamRecord">
+                  &nbsp;
+                </span>
+              </mat-grid-tile>
+            </div>
+            <mat-grid-tile colspan="10" rowspan="1">
+              <!-- INTENTIONALLY LEFT BLANK -->
+            </mat-grid-tile>
+            <mat-grid-tile colspan="10" rowspan="1">
+              <span class="status">
+                {{event.gameStatus}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="15" rowspan="1">
+              <span class="xsTeamLocation">
+                {{event.homeEventResult.competitor.location}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="5" rowspan="3">
+              <span class="teamScore">
+                {{event.homeEventResult.score}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="15" rowspan="2">
+              <span class="xsTeamNickname">
+                {{event.homeEventResult.competitor.club}} </span>
+            </mat-grid-tile>
+            <div>
+              <mat-grid-tile colspan="10" rowspan="1">
+                <span class="xsTeamRecord">
+                  ({{event.homeEventResult.competitor.recordOverall}})
+                </span>
+              </mat-grid-tile>
+            </div>
+            <mat-grid-tile colspan="10" rowspan="1">
+              <!-- INTENTIONALLY LEFT BLANK -->
+            </mat-grid-tile>
+          </mat-grid-list>
+        </mat-card>
+      </ul>
+    </mat-card-flat>
+  </div>
+</ng-container>

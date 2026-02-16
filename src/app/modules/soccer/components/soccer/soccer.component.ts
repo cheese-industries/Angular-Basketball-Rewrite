@@ -55,8 +55,6 @@ export class SoccerComponent implements OnInit {
   }
 
   getTheScores(dateToFetch: string) {
-    console.log('the date to fetch is ');
-    console.log(dateToFetch);
     const subscription = this.service
       .getGameData(dateToFetch)
       .subscribe((response) => {
@@ -64,7 +62,6 @@ export class SoccerComponent implements OnInit {
         this.sbData = this.data.content.sbData;
         this.scores = this.sbData.scores;
         this.addMissingLogos();
-        console.log(this.scores);
         subscription.unsubscribe();
       });
   }
@@ -94,7 +91,6 @@ export class SoccerComponent implements OnInit {
   }
 
   handleDateChange() {
-    console.log(this.getDateToCall());
     this.getTheScores(this.getDateToCall());
   }
 

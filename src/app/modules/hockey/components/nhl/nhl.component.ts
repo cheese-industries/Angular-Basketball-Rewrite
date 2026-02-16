@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { GameDetailsComponent } from 'src/app/game-details/game-details.component';
 import { GameData } from 'src/app/models/game-data';
 import { NhlService } from './nhl.service';
+import { NHLGameData } from 'src/app/models/hockey/nhl/nhl-game-data';
 
 @Component({
   selector: 'app-nhl',
@@ -13,15 +14,10 @@ import { NhlService } from './nhl.service';
   styleUrls: ['./nhl.component.css'],
 })
 export class NhlComponent implements OnInit {
-  data!: GameData;
-  events = this.data?.events;
+  data!: NHLGameData;
   form: FormGroup;
-  leagueToFetch: string = '';
-  pipe = new DatePipe('en-us');
   totalLength: any;
   page: number = 1;
-  view: string = 'main';
-  urlSuffix: string = '';
   myControl: FormControl = new FormControl();
   filteredOptions: Observable<string[]> | undefined;
   constructor(
@@ -50,7 +46,7 @@ export class NhlComponent implements OnInit {
       .getGameData(dateToFetch)
       .subscribe((response) => {
         this.data = response;
-        this.totalLength = this.data.events.length;
+        this.totalLength = this.data.games.length;
         subscription.unsubscribe();
       });
   }
@@ -62,7 +58,7 @@ export class NhlComponent implements OnInit {
   getDateToCall(): string {
     let dateForTransform =
       (this.form.get('dateToCall')?.value as Date) ?? new Date();
-    return formatDate(dateForTransform, 'yyyyMMdd', 'en-US');
+    return formatDate(dateForTransform, 'yyyy-MM-dd', 'en-US');
   }
 
   makeDefaultDate(): string {

@@ -1,0 +1,476 @@
+<div class="boxscore-container">
+    <div class="batters">
+
+
+        <!-- .............AWAY BATTERS............ -->
+        <div class="team-batters">
+            <!-- .............BATTER HEADERS............ -->
+            <div class="team-header">
+                <div class="batter-line">
+                    <span class="stat">
+            &nbsp;
+          </span>
+                    <span class="batter-name">
+            {{data.teams.away.team.name}}
+          </span>
+                    <span class="position">
+            POS
+          </span>
+                    <span class="stat">
+            AB
+          </span>
+                    <span class="stat">
+            R
+          </span>
+                    <span class="stat">
+            H
+          </span>
+                    <span class="stat">
+            2B
+          </span>
+                    <span class="stat">
+            3B
+          </span>
+                    <span class="stat">
+            HR
+          </span>
+                    <span class="stat">
+            RBI
+          </span>
+                    <span class="stat">
+            BB
+          </span>
+                    <span class="stat">
+            SO
+          </span>
+                    <span class="stat">
+            SB
+          </span>
+                    <span class="stat">
+            CS
+          </span>
+                    <span class="stat">
+            LOB
+          </span>
+                    <span class="average">
+            AVG
+          </span>
+                    <span class="average">
+            OBP
+          </span>
+                    <span class="average">
+            SLG
+          </span>
+                    <span class="average">
+            OPS
+          </span>
+                </div>
+            </div>
+
+            <div *ngFor="let batter of awayBatterArray; let i = index" class="batter-line">
+                <span class="stat" *ngIf="+(batter.battingOrder) % 100 == 0">
+          {{+batter.battingOrder/100}}
+        </span>
+                <span class="stat" *ngIf="+(batter.battingOrder) % 100 !== 0">
+          &nbsp;
+        </span>
+                <span class="batter-name">
+          <span *ngIf="batter.stats.batting.note">{{batter.stats.batting.note}}</span>{{batter.person.fullName}}
+                </span>
+                <span class="position">
+          <span *ngFor="let position of batter.allPositions; let i = index">
+            <span *ngIf="batter.allPositions.length == 1">{{position.abbreviation}}</span>
+                <span *ngIf="batter.allPositions.length > 1 && i < batter.allPositions.length - 1">{{position.abbreviation}}-</span>
+                <span *ngIf="batter.allPositions.length > 1 && i == batter.allPositions.length - 1">{{position.abbreviation}}</span>
+                </span>
+                </span>
+                <span class="stat">
+          {{batter.stats.batting.atBats}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.runs}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.hits}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.doubles}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.triples}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.homeRuns}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.rbi}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.baseOnBalls}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.strikeOuts}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.stolenBases}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.caughtStealing}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.leftOnBase}}
+        </span>
+                <span class="average">
+          {{batter.seasonStats.batting.avg}}
+        </span>
+                <span class="average">
+          {{batter.seasonStats.batting.obp}}
+        </span>
+                <span class="average">
+          {{batter.seasonStats.batting.slg}}
+        </span>
+                <span class="average">
+          {{batter.seasonStats.batting.ops}}
+        </span>
+            </div>
+            <div class="batting-notes" *ngIf="data.teams.away.note && data.teams.away.note.length > 0">
+                <div *ngFor="let note of data.teams.away.note">
+                    {{note.label}}-{{note.value}}
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- .............HOME BATTERS............ -->
+        <div class="team-batters">
+            <!-- .............BATTER HEADERS............ -->
+            <div class="team-header">
+                <div class="batter-line">
+                    <span class="stat">
+          &nbsp;
+        </span>
+                    <span class="batter-name">
+          {{data.teams.home.team.name}}
+        </span>
+                    <span class="position">
+          POS
+        </span>
+                    <span class="stat">
+          AB
+        </span>
+                    <span class="stat">
+          R
+        </span>
+                    <span class="stat">
+          H
+        </span>
+                    <span class="stat">
+          2B
+        </span>
+                    <span class="stat">
+          3B
+        </span>
+                    <span class="stat">
+          HR
+        </span>
+                    <span class="stat">
+          RBI
+        </span>
+                    <span class="stat">
+          BB
+        </span>
+                    <span class="stat">
+          SO
+        </span>
+                    <span class="stat">
+          SB
+        </span>
+                    <span class="stat">
+          CS
+        </span>
+                    <span class="stat">
+          LOB
+        </span>
+                    <span class="average">
+          AVG
+        </span>
+                    <span class="average">
+          OBP
+        </span>
+                    <span class="average">
+          SLG
+        </span>
+                    <span class="average">
+          OPS
+        </span>
+                </div>
+            </div>
+            <div class="batter-line" *ngFor="let batter of homeBatterArray; let i = index">
+                <span class="stat" *ngIf="+(batter.battingOrder) % 100 == 0">
+          {{+batter.battingOrder/100}}
+        </span>
+                <span class="stat" *ngIf="+(batter.battingOrder) % 100 !== 0">
+          &nbsp;
+        </span>
+                <span class="batter-name">
+          {{batter.person.fullName}}
+        </span>
+                <span class="position">
+          <span *ngFor="let position of batter.allPositions; let i = index">
+            <span *ngIf="batter.allPositions.length == 1">{{position.abbreviation}}</span>
+                <span *ngIf="batter.allPositions.length > 1 && i < batter.allPositions.length - 1">{{position.abbreviation}}-</span>
+                <span *ngIf="batter.allPositions.length > 1 && i == batter.allPositions.length - 1">{{position.abbreviation}}</span>
+                </span>
+                </span>
+                <span class="stat">
+          {{batter.stats.batting.atBats}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.runs}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.hits}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.doubles}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.triples}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.homeRuns}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.rbi}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.baseOnBalls}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.strikeOuts}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.stolenBases}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.caughtStealing}}
+        </span>
+                <span class="stat">
+          {{batter.stats.batting.leftOnBase}}
+        </span>
+                <span class="average">
+          {{batter.seasonStats.batting.avg}}
+        </span>
+                <span class="average">
+          {{batter.seasonStats.batting.obp}}
+        </span>
+                <span class="average">
+          {{batter.seasonStats.batting.slg}}
+        </span>
+                <span class="average">
+          {{batter.seasonStats.batting.ops}}
+        </span>
+            </div>
+            <div class="batting-notes" *ngIf="data.teams.home.note && data.teams.home.note.length > 0">
+                <div *ngFor="let note of data.teams.home.note">
+                    {{note.label}}-{{note.value}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- .............PITCHER HEADERS............ -->
+    <div class="pitchers">
+        <div class="team-pitchers">
+            <div class="team-header">
+                <div class="pitcher-line">
+                    <span class="pitcher-name">
+            {{data.teams.away.team.name}}
+          </span>
+                    <span class="innings">
+            IP
+          </span>
+                    <span class="stat">
+            H
+          </span>
+                    <span class="stat">
+            R
+          </span>
+                    <span class="stat">
+            ER
+          </span>
+                    <span class="stat">
+            BB
+          </span>
+                    <span class="stat">
+            SO
+          </span>
+                    <span class="stat">
+            HR
+          </span>
+                    <span class="stat">
+            BF
+          </span>
+                    <span class="era">
+            ERA
+          </span>
+                    <span class="pitches">
+            PIT
+          </span>
+                    <span class="pitches">
+            STR
+          </span>
+                </div>
+            </div>
+
+
+            <!-- .............AWAY PITCHERS............ -->
+
+            <div class="pitcher-line" *ngFor="let pitcher of awayPitcherArray; let i = index">
+                <span *ngIf="pitcher.stats.pitching.note" class="pitcher-name">
+          {{pitcher.person.fullName}} {{pitcher.stats.pitching.note}}
+        </span>
+                <span *ngIf="!pitcher.stats.pitching.note" class="pitcher-name">
+          {{pitcher.person.fullName}}&nbsp;
+        </span>
+                <span class="innings">
+          {{pitcher.stats.pitching.inningsPitched}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.hits}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.runs}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.earnedRuns}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.baseOnBalls}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.strikeOuts}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.homeRuns}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.battersFaced}}
+        </span>
+                <span class="era">
+          {{pitcher.seasonStats.pitching.era}}
+        </span>
+                <span class="pitches">
+          {{pitcher.stats.pitching.pitchesThrown}}
+        </span>
+                <span class="pitches">
+          {{pitcher.stats.pitching.strikes}}
+        </span>
+            </div>
+        </div>
+
+        <!-- .............PITCHER HEADERS............ -->
+        <div class="team-pitchers">
+            <div class="team-header">
+                <div class="pitcher-line">
+                    <span class="pitcher-name">
+            {{data.teams.home.team.name}}
+          </span>
+                    <span class="innings">
+            IP
+          </span>
+                    <span class="stat">
+            H
+          </span>
+                    <span class="stat">
+            R
+          </span>
+                    <span class="stat">
+            ER
+          </span>
+                    <span class="stat">
+            BB
+          </span>
+                    <span class="stat">
+            SO
+          </span>
+                    <span class="stat">
+            HR
+          </span>
+                    <span class="stat">
+            BF
+          </span>
+                    <span class="era">
+            ERA
+          </span>
+                    <span class="pitches">
+            PIT
+          </span>
+                    <span class="pitches">
+            STR
+          </span>
+                </div>
+            </div>
+
+            <!-- .............HOME PITCHERS............ -->
+            <div class="pitcher-line" *ngFor="let pitcher of homePitcherArray; let i = index">
+                <span *ngIf="pitcher.stats.pitching.note" class="pitcher-name">
+          {{pitcher.person.fullName}} {{pitcher.stats.pitching.note}}
+        </span>
+                <span *ngIf="!pitcher.stats.pitching.note" class="pitcher-name">
+          {{pitcher.person.fullName}}&nbsp;
+        </span>
+                <span class="innings">
+          {{pitcher.stats.pitching.inningsPitched}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.hits}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.runs}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.earnedRuns}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.baseOnBalls}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.strikeOuts}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.homeRuns}}
+        </span>
+                <span class="stat">
+          {{pitcher.stats.pitching.battersFaced}}
+        </span>
+                <span class="era">
+          {{pitcher.seasonStats.pitching.era}}
+        </span>
+                <span class="pitches">
+          {{pitcher.stats.pitching.pitchesThrown}}
+        </span>
+                <span class="pitches">
+          {{pitcher.stats.pitching.strikes}}
+        </span>
+            </div>
+        </div>
+    </div>
+    <!-- .............PITCHING NOTES............ -->
+    <div class="pitching-notes" *ngIf="data.pitchingNotes && data.pitchingNotes.length > 0">
+        <b>Pitching Notes:</b>
+        <div *ngFor="let note of data.pitchingNotes">
+            {{note}}
+        </div>
+    </div>
+
+    <!-- .............GAME ERRATA............ -->
+    <div class="game-errata" *ngIf="data.info && data.info.length > 0">
+        <div class="individual-game-note " *ngFor="let info of data.info">
+            <span><b>{{info.label}}: </b></span>
+            <span>{{info.value}}</span>
+        </div>
+    </div>
+</div>

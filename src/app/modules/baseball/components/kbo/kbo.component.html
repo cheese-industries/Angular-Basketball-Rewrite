@@ -1,0 +1,117 @@
+<ng-container>
+  <div *ngIf="kboLinescoreData" class="desktop-container">
+    <div *ngIf="kboLinescoreData.length < 1" class="no-games">Sorry, there are no KBO games scheduled today.</div>
+    <ul class="desktop" *ngFor="let game of kboLinescoreData; let i = index">
+      <mat-card>
+        <!-- <div class="start-time">{{game[1].start_time_local | date:'h:mm a - EEEE, MMMM d, y'}}</div> -->
+        <div class="team">
+          <div class="team-name">
+            <b>&nbsp;</b>
+          </div>
+          <div class="team-data">
+            <b>1</b>
+          </div>
+          <div class="team-data">
+            <b>2</b>
+          </div>
+          <div class="team-data">
+            <b>3</b>
+          </div>
+          <div class="team-data">
+            <b>4</b>
+          </div>
+          <div class="team-data">
+            <b>5</b>
+          </div>
+          <div class="team-data">
+            <b>6</b>
+          </div>
+          <div class="team-data">
+            <b>7</b>
+          </div>
+          <div class="team-data">
+            <b>8</b>
+          </div>
+          <div class="team-data">
+            <b>9</b>
+          </div>
+          <div class="team-data">
+            <b>10</b>
+          </div>
+          <div class="team-data">
+            <b>11</b>
+          </div>
+          <div class="team-data">
+            <b>12</b>
+          </div>
+          <div class="team-data">
+            &nbsp;
+          </div>
+          <div class="team-data">
+            <b>R</b>
+          </div>
+          <div class="team-data">
+            <b>H</b>
+          </div>
+          <div class="team-data">
+            <b>E</b>
+          </div>
+        </div>
+        <div class="team">
+          <div class="team-name">
+            <b>{{game.AWAY_NM}} ({{game.A_W_CN}}-{{game.A_L_CN}}-{{game.A_D_CN}})</b>
+          </div>
+          <div *ngIf="game.awayScoresByInning" class="team">
+            <div *ngFor="let inning of game.awayScoresByInning" class="team-data">
+              {{inning}}
+            </div>
+            <div class="team-data">
+              &nbsp;
+            </div>
+            <div *ngIf="game.awayRHE" class="team-data">
+              <b>{{game.awayRHE[0]}}</b>
+            </div>
+            <div *ngIf="game.awayRHE" class="team-data">
+              <b>{{game.awayRHE[1]}}</b>
+            </div>
+            <div *ngIf="game.awayRHE" class="team-data">
+              <b>{{game.awayRHE[2]}}</b>
+            </div>
+          </div>
+        </div>
+        <div class="team">
+          <div class="team-name">
+            <b>{{game.HOME_NM}} ({{game.H_W_CN}}-{{game.H_L_CN}}-{{game.H_D_CN}})</b>
+          </div>
+          <div *ngIf="game.awayScoresByInning" class="team">
+            <div *ngFor="let inning of game.homeScoresByInning" class="team-data">
+              {{inning}}
+            </div>
+            <div class="team-data">
+              &nbsp;
+            </div>
+            <div *ngIf="game.homeRHE" class="team-data">
+              <b>{{game.homeRHE[0]}}</b>
+            </div>
+            <div *ngIf="game.homeRHE" class="team-data">
+              <b>{{game.homeRHE[1]}}</b>
+            </div>
+            <div *ngIf="game.homeRHE" class="team-data">
+              <b>{{game.homeRHE[2]}}</b>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div *ngIf="winningPitcherArray[i] != ''" class="game-info">
+          <b>W: </b>{{winningPitcherArray[i]}}
+        </div>
+        <div *ngIf="losingPitcherArray[i] != ''" class="game-info">
+          <b>L: </b>{{losingPitcherArray[i]}}
+        </div>
+        <div *ngIf="savingPitcherArray[i] != ''" class="game-info">
+         <b>SV:</b> {{savingPitcherArray[i]}}
+        </div>
+      </mat-card>
+    </ul>
+  </div>
+</ng-container>

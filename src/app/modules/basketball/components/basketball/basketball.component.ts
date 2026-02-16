@@ -10,7 +10,15 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GameData } from '../../../../models/game-data';
 import { MediaMatcher } from '@angular/cdk/layout';
-import { Observable } from 'rxjs';
+import {
+  delay,
+  mergeMap,
+  Observable,
+  of,
+  repeat,
+  Subscription,
+  timer,
+} from 'rxjs';
 import { BasketballService } from '../../basketball.service';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -31,6 +39,8 @@ import { GameDetailsComponent } from 'src/app/game-details/game-details.componen
   providedIn: 'root',
 })
 export class BasketballComponent implements OnInit {
+  // interval!: Timeout;
+  subscription!: Subscription;
   data!: GameData;
   events = this.data?.events;
   form: FormGroup;
@@ -101,7 +111,6 @@ export class BasketballComponent implements OnInit {
         this.details.leagueToFetch = this.leagueToFetch;
         this.service.urlSuffix = this.urlSuffix;
         this.getTheScores(this.makeDefaultDate());
-        this.setIntrvl();
         this.getTodaysDate();
       }
     });
@@ -115,23 +124,11 @@ export class BasketballComponent implements OnInit {
     this.details.leagueToFetch = this.leagueToFetch;
     this.service.urlSuffix = this.urlSuffix;
     this.getTheScores(this.makeDefaultDate());
-    this.setIntrvl();
     this.getTodaysDate();
-  
-    // this.filteredOptions = this.myControl.valueChanges.pipe(
-    //   startWith(''),
-    //   map(value =>this._filter(value))
-    // )
   }
 
-  // private _filter(value: any): any[] {
-  //   const filterValue = value.toLowerCase();
-
-  //   return this.arrayForFilter.filter(option => option.toLowerCase().includes(filterValue));
-  // }
-
-  setIntrvl() {
-    setInterval(() => this.getTheScores(this.getDateToCall()), 30000);
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   //Without a defined groups parameter in the URL for college games, the API only returns games involving the Top 25. "groups=50" displays every Division I game.
@@ -166,8 +163,13 @@ export class BasketballComponent implements OnInit {
   }
 
   getTheScores(dateToFetch: string) {
-    const subscription = this.service
-      .getGameData(this.leagueToFetch, dateToFetch, false)
+    this.subscription?.unsubscribe();
+    this.subscription = timer(0, 30000)
+      .pipe(
+        mergeMap(() =>
+          this.service.getGameData(this.leagueToFetch, dateToFetch, false)
+        )
+      )
       .subscribe((response) => {
         this.data = response;
         this.totalLength = this.data.events.length;
@@ -175,7 +177,6 @@ export class BasketballComponent implements OnInit {
         this.checkForRankings();
         this.shrinkLongSchoolNames();
         this.createArrayForFilter();
-        subscription.unsubscribe();
       });
   }
 

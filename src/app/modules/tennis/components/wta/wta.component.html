@@ -1,0 +1,94 @@
+<div class="tournament-dropdown">
+    <select name="tournament" id="tournament" (change)="onChange($event)">
+      <option value="">Select a Week</option>
+    </select></div>
+  
+  <div class="tournament-name">{{tournamentInfo.data.name}}</div>
+  <div class="tournament-city">{{tournamentInfo.data.city}}, {{tournamentInfo.data.country}}</div>
+  <div class="centerVertically" fxLayout="row wrap">
+    <ul *ngFor="let match of tournamentInfo.data.matches" class="desktop">
+      <mat-card>
+        <div class="round">{{match.round}} - {{match.status}}</div>
+        <div class="player">
+          <div *ngIf="match.player_one.tournament_rank" class="seed">{{match.player_one.tournament_rank}}</div>
+          <div *ngIf="!match.player_one.tournament_rank" class="seed">&nbsp;</div>
+          <div *ngIf="match.player_one.winner" class="name-and-flag">
+            <span ><b>{{match.player_one.first_name}}
+                {{match.player_one.last_name}}&nbsp;&nbsp;</b></span><span><img width="19px" height="auto" src="{{match.player_one.country_flag}}"></span>
+          </div>
+          <div *ngIf="!match.player_one.winner" class="name-and-flag">
+            <span >{{match.player_one.first_name}}
+              {{match.player_one.last_name}}&nbsp;&nbsp;</span><span class="player-flag"><img width="19px" height="auto" src="{{match.player_one.country_flag}}"></span>
+          </div>
+          <div class="set" *ngIf="match.player_one.line_score && match.player_one.line_score[0]">
+            {{match.player_one.line_score[0]}}</div>
+          <div class="tiebreak"
+            *ngIf="match.player_one.tie_break_score && match.player_one.tie_break_score[0] && (match.player_one.tie_break_score[0] > 0 || match.player_two.tie_break_score[0] > 0)">
+            ({{match.player_one.tie_break_score[0]}})</div>
+          <div class="set" *ngIf="match.player_one.line_score && match.player_one.line_score[1]">
+            {{match.player_one.line_score[1]}}</div>
+          <div class="tiebreak"
+            *ngIf="match.player_one.tie_break_score && match.player_one.tie_break_score[1] && (match.player_one.tie_break_score[1] > 0 || match.player_two.tie_break_score[1] > 0)">
+            ({{match.player_one.tie_break_score[1]}})</div>
+          <div class="set" *ngIf="match.player_one.line_score && match.player_one.line_score[2]">
+            {{match.player_one.line_score[2]}}</div>
+          <div class="tiebreak"
+            *ngIf="match.player_one.tie_break_score && match.player_one.tie_break_score[2] && (match.player_one.tie_break_score[2] > 0 || match.player_two.tie_break_score[2] > 0)">
+            ({{match.player_one.tie_break_score[2]}})</div>
+          <div class="set" *ngIf="match.player_one.line_score && match.player_one.line_score[3]">
+            {{match.player_one.line_score[3]}}</div>
+          <div class="tiebreak"
+            *ngIf="match.player_one.tie_break_score && match.player_one.tie_break_score[3] && (match.player_one.tie_break_score[3] > 0 || match.player_two.tie_break_score[3] > 0)">
+            ({{match.player_one.tie_break_score[3]}})</div>
+          <div class="set" *ngIf="match.player_one.line_score && match.player_one.line_score[4]">
+            {{match.player_one.line_score[4]}}</div>
+          <div class="tiebreak"
+            *ngIf="match.player_one.tie_break_score && match.player_one.tie_break_score[4] && (match.player_one.tie_break_score[4] > 0 || match.player_two.tie_break_score[4] > 0)">
+            ({{match.player_one.tie_break_score[4]}})</div>
+        </div>
+        <div class="player">
+          <div *ngIf="match.player_two.tournament_rank" class="seed">{{match.player_two.tournament_rank}}</div>
+          <div *ngIf="!match.player_two.tournament_rank" class="seed">&nbsp;</div>
+          <div *ngIf="match.player_two.winner" class="name-and-flag">
+            <span ><b>{{match.player_two.first_name}}
+                {{match.player_two.last_name}}&nbsp;&nbsp;</b></span><span><img width="19px" height="auto" src="{{match.player_two.country_flag}}"></span>
+          </div>
+          <div *ngIf="!match.player_two.winner" class="name-and-flag">
+            <span >{{match.player_two.first_name}}
+              {{match.player_two.last_name}}&nbsp;&nbsp;</span><span class="player-flag"><img width="19px" height="auto" src="{{match.player_two.country_flag}}"></span>
+          </div>
+          <div class="set" *ngIf="match.player_two.line_score && match.player_two.line_score[0]">
+            {{match.player_two.line_score[0]}}</div>
+          <div class="tiebreak"
+            *ngIf="match.player_two.tie_break_score && match.player_two.tie_break_score[0] && (match.player_one.tie_break_score[0] > 0 || match.player_two.tie_break_score[0] > 0)">
+            ({{match.player_two.tie_break_score[0]}})</div>
+          <div class="set" *ngIf="match.player_two.line_score && match.player_two.line_score[1]">
+            {{match.player_two.line_score[1]}}</div>
+          <div class="tiebreak"
+            *ngIf="match.player_two.tie_break_score && match.player_two.tie_break_score[1] && (match.player_one.tie_break_score[1] > 0 || match.player_two.tie_break_score[1] > 0)">
+            ({{match.player_two.tie_break_score[1]}})</div>
+          <div class="set" *ngIf="match.player_two.line_score && match.player_two.line_score[2]">
+            {{match.player_two.line_score[2]}}</div>
+          <div class="tiebreak"
+            *ngIf="match.player_two.tie_break_score && match.player_two.tie_break_score[2] && (match.player_one.tie_break_score[2] > 0 || match.player_two.tie_break_score[2] > 0)">
+            ({{match.player_two.tie_break_score[2]}})</div>
+          <div class="set" *ngIf="match.player_two.line_score && match.player_two.line_score[3]">
+            {{match.player_two.line_score[3]}}</div>
+          <div class="tiebreak"
+            *ngIf="match.player_two.tie_break_score && match.player_two.tie_break_score[3] && (match.player_one.tie_break_score[3] > 0 || match.player_two.tie_break_score[3] > 0)">
+            ({{match.player_two.tie_break_score[3]}})</div>
+          <div class="set" *ngIf="match.player_two.line_score && match.player_two.line_score[4]">
+            {{match.player_two.line_score[4]}}</div>
+          <div class="tiebreak"
+            *ngIf="match.player_two.tie_break_score && match.player_two.tie_break_score[4] && (match.player_one.tie_break_score[4] > 0 || match.player_two.tie_break_score[4] > 0)">
+            ({{match.player_two.tie_break_score[4]}})</div>
+        </div>
+        <div class="start-time">{{match.startForDisplay}}</div>
+        <div class="withdrawal" *ngIf="match.loser_withdraw == 'true' && match.player_one.winner">{{match.player_two.first_name}}
+          {{match.player_two.last_name}} withdraws.</div>
+        <div class="withdrawal" *ngIf="match.loser_withdraw == 'true' && match.player_two.winner">{{match.player_one.first_name}}
+          {{match.player_one.last_name}} withdraws.</div>
+      </mat-card>
+    </ul>
+  </div>
+  

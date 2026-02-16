@@ -15,4 +15,5 @@ export interface Offense {
     first: First2;
     third: Third2;
     second: Second2;
+    position: any;
 }

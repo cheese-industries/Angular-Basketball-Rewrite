@@ -1,0 +1,24 @@
+.team-name{
+  width: 200px;
+}
+
+.team-data{
+  width: 20px;
+  text-align: center;
+}
+
+.team {
+  display: flex;
+}
+
+.mat-card {
+  width: 500px;
+}
+
+.desktop-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+html:not(.mat-icon):not(.material-icons){
+  font-family: "Roboto Condensed", Arial, Helvetica, sans-serif;
+}

@@ -38,4 +38,5 @@ export interface GameUtils {
     hasFavorites: boolean;
     hasMostFavorite: boolean;
     hasFollowed: boolean;
+    isGameOver: boolean;
 }

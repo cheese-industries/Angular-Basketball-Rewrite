@@ -5,4 +5,5 @@ export interface Status {
     statusCode: string;
     startTimeTBD: boolean;
     abstractGameCode: string;
+    reason: string;
 }

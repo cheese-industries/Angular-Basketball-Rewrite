@@ -75,6 +75,6 @@ export class AppComponent {
 
 setLeague(league: string) {
   this.league = league;
-  console.log(this.league);
+  // console.log(this.league);
 }
 }

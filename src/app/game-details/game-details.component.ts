@@ -38,7 +38,6 @@ export class GameDetailsComponent implements OnInit {
       .getIndividualGame(this.leagueToFetch, this.gameId)
       .subscribe((response) => {
         this.data = response;
-        console.log(this.data);
         subscription.unsubscribe();
       });
   }

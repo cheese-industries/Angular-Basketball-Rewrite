@@ -6,6 +6,7 @@ import { Teams2 } from "./teams2";
 export interface Linescore {
     currentInning: number;
     currentInningOrdinal: string;
+    currentInningState: string;
     inningState: string;
     inningHalf: string;
     isTopInning: boolean;
@@ -18,4 +19,6 @@ export interface Linescore {
     strikes: number;
     outs: number;
     note: string;
+    position: any;
 }
+

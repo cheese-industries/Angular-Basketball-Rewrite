@@ -4,6 +4,7 @@ import { Matchup } from "./matchup";
 import { Result } from "./result";
 
 export interface HomeRun {
+    homeRunNumber: number | string;
     result: Result;
     about: About;
     count: Count;

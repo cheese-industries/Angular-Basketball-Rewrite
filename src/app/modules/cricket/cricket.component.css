@@ -85,8 +85,13 @@ div:empty {
     font-size: 1.3rem;
   }
   
-  .xsTeamScore {
-    font-size: 2rem;
+  .xsTeamScore, .status, .venue, .date{
+    font-size: 0.7rem;
+  }
+
+  .status {
+    text-align: center;
+    width: 100%
   }
   
   .teamLogo {

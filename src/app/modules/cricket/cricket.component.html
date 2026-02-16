@@ -1,11 +1,6 @@
-<span class="echlHeader">
-  <p><i>Please note that, due to a limitation with the data provider, there is no date selector for cricket scores.</i>
-  </p>
-</span>
 <ng-container>
   <div class="isNotMobile">
     <mat-card-flat class="centerVertically" *ngIf="data" fxLayout="row wrap">
-
       <ul class="notTinyUl" *ngFor="let event of events; let i = index">
         <mat-card>
           <mat-grid-list cols="20" rows="9">
@@ -58,6 +53,56 @@
             </mat-grid-tile>
             <mat-grid-tile colspan="20" rowspan="1">
               {{event.startDate}}
+            </mat-grid-tile>
+          </mat-grid-list>
+        </mat-card>
+      </ul>
+    </mat-card-flat>
+  </div>
+</ng-container>
+
+<ng-container>
+  <div class="isMobile">
+    <mat-card-flat class="centerVertically" *ngIf="data" fxLayout="row wrap">
+      <ul class="tinyUl" *ngFor="let event of events; let i = index">
+        <mat-card>
+          <mat-grid-list cols="20" rows="9">
+            <mat-grid-tile colspan="20" rowspan="1">
+              <span class="venue">
+                {{event.series.longName}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="14" rowspan="3">
+              <span class="xsTeamLocation">
+                {{event.teams[0].team.longName}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="6" rowspan="3">
+              <span class="xsTeamScore">
+                {{event.teams[0].score}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="14" rowspan="3">
+              <span class="xsTeamLocation">
+                {{event.teams[1].team.longName}}
+              </span>
+            </mat-grid-tile>
+              <mat-grid-tile colspan="6" rowspan="3">
+              <span class="xsTeamScore">
+                {{event.teams[1].score}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="20" rowspan="1">
+              <span class="status">
+              <span *ngIf="event.status == 'Stumps'">
+                {{event.status}}&nbsp;
+              </span>{{event.statusText}}
+            </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="20" rowspan="1">
+              <span class="date">
+              {{event.startDate}}
+            </span>
             </mat-grid-tile>
           </mat-grid-list>
         </mat-card>

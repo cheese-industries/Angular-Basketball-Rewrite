@@ -40,6 +40,5 @@ export class SoccerService {
     return this.http.get<GameData>(
       `${this.urlToFetch}/${leagueToFetch}/scoreboard/${gameId}`
     );
-    console.log(this.leagueToFetch);
-  }
+    }
 }

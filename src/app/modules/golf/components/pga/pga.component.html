@@ -1,4 +1,4 @@
-<mat-card class="golf-scoreboard">
+<mat-card class="desktop-golf-scoreboard">
   <mat-card-title>{{data.events[0].name}}</mat-card-title>
   <mat-card-content>
     <div class="header-row">
@@ -45,6 +45,34 @@
         <span *ngIf="!competitor.linescores[3]" class="round">&nbsp;</span>
         <span *ngIf="competitor.linescores[4]" class="round">{{competitor.linescores[4].value}}</span>
         <span *ngIf="!competitor.linescores[4]" class="round">&nbsp;</span>
+      </div>
+    </ul>
+  </mat-card-content>
+</mat-card>
+
+
+<mat-card class="mobile-golf-scoreboard">
+  <mat-card-title class="mobile-event-name">{{data.events[0].name}}</mat-card-title>
+  <mat-card-content>
+    <div class="mobile-header-row">
+      <span class="mobile-name">Name</span>
+      <span class="mobile-score">Score</span>
+      <span class="mobile-total">Total</span>
+    </div>
+
+    <ul class="tinyUl" *ngFor="let competitor of data.events[0].competitions[0].competitors; let i = index">
+      <div *ngIf="i % 2 === 1" class="golfer-row">
+        <span class="mobile-name"><img class="flag" src="{{competitor.athlete.flag.href}}">
+          {{competitor.athlete.displayName}}</span>
+        <span *ngIf="competitor.score" class="mobile-score"> {{competitor.score.displayValue}}</span>
+        <span *ngIf="competitor.score" class="mobile-total">{{competitor.score.value}}</span>
+      </div>
+
+      <div *ngIf="i % 2 === 0" class="golfer-row-gray">
+        <span class="mobile-name"><img class="flag" src="{{competitor.athlete.flag.href}}">
+          {{competitor.athlete.displayName}}</span>
+        <span *ngIf="competitor.score" class="mobile-score"> {{competitor.score.displayValue}}</span>
+        <span *ngIf="competitor.score" class="mobile-total">{{competitor.score.value}}</span>
       </div>
     </ul>
   </mat-card-content>

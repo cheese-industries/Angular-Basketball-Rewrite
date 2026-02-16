@@ -4,7 +4,7 @@ div:empty {
   
   .tinyUl {
     width: 300px;
-    padding: 0px;
+    padding: 12px;
   }
 
   .echlHeader {
@@ -31,7 +31,7 @@ div:empty {
   
   .xsTeamLocation {
     text-align: left;
-    font-size: 0.8rem;
+    font-size: 1.11rem;
     font-weight: medium;
     position: absolute;
     left: 5px;
@@ -67,6 +67,13 @@ div:empty {
     font-weight: bold;
   }
   
+  .xsVenue {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+  
+
   .teamRecord {
     text-align: left;
     font-size: 1rem;
@@ -86,7 +93,7 @@ div:empty {
   }
   
   .xsTeamScore {
-    font-size: 2rem;
+    font-size: 1.1rem;
   }
   
   .teamLogo {

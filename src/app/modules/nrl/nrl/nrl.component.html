@@ -1,0 +1,118 @@
+<div class="note"> <i>Current round shown by default.</i></div>
+
+<div class="dropdowns">
+  <select name="year" id="year">
+    <option value="">Select a Year</option>
+    <option *ngFor="let year of yearsArray" value="{{year}}">{{year}}</option>
+  </select>
+  <select name="round" id="round">
+    <option value="">Select a Round</option>
+    <option *ngFor="let round of roundsArray" value="{{round}}">Round {{round}}</option>
+  </select>
+  <button mat-raised-button (click)="loadNewRound()">Submit</button>
+</div>
+
+<div *ngIf="nrlData" class="desktop-game-container">
+  <ul class="desktop" *ngFor="let game of nrlData.fixtures">
+    <mat-card class="desktop-mat-card">
+      <mat-grid-list cols="20" rows="14">
+        <mat-grid-tile colspan="20" rowspan="1">
+          {{game.roundTitle}}
+        </mat-grid-tile>
+        <mat-grid-tile *ngIf="game.venue"colspan="20" rowspan="1">
+          <span class="venue">{{game.venue}} - {{game.venueCity}}</span>
+        </mat-grid-tile>
+        <div class="team-container">
+          <mat-grid-tile colspan="4" rowspan="4">
+            <span><img class="team-logo"
+                src="https://www.nrl.com/Client/dist/logos/{{game.homeTeam.theme.key}}-badge.png"></span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="12" rowspan="1">
+            <span class="team-name">{{game.homeTeam.city}}</span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="4" rowspan="4">
+            <span *ngIf="game.homeTeam.score" class="finalScore"><b>{{game.homeTeam.score}}</b></span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="12" rowspan="2">
+            <span class="nickname">{{game.homeTeam.nickName}}</span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="12" rowspan="1">
+            <span *ngIf="game.homeTeam.odds" class="record">${{game.homeTeam.odds}}</span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="8" rowspan="1"></mat-grid-tile>
+          <mat-grid-tile colspan="12" rowspan="1">
+            <span *ngIf="game.matchMode == 'Pre'">{{game.clock.kickOffTimeLong | date: 'ccc MMMM d, h:mm a' }}</span>
+            <span *ngIf="game.matchMode == 'Post'">Final</span>
+            <span *ngIf="game.matchMode !== 'Post' && game.matchMode !== 'Pre'">{{game.clock.gameTime}}</span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="4" rowspan="4">
+            <span><img class="team-logo"
+                src="https://www.nrl.com/Client/dist/logos/{{game.awayTeam.theme.key}}-badge.png"></span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="12" rowspan="1">
+            <span class="team-name">{{game.awayTeam.city}}</span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="4" rowspan="4">
+            <span *ngIf="game.awayTeam.score && game.awayTeam.score.toString() == '0'"
+              class="finalScore"><b>{{game.awayTeam.score}}</b></span>
+            <span *ngIf="game.awayTeam.score && game.awayTeam.score.toString() !== '0'"
+              class="finalScore"><b>{{game.awayTeam.score}}</b></span>
+            <span *ngIf="!game.awayTeam.score" class="finalScore"><b>{{game.awayTeam.score}}</b></span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="12" rowspan="2">
+            <span class="nickname">{{game.awayTeam.nickName}}</span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="12" rowspan="1">
+            <span *ngIf="game.awayTeam.odds" class="record">${{game.awayTeam.odds}}</span>
+          </mat-grid-tile>
+        </div>
+      </mat-grid-list>
+    </mat-card>
+  </ul>
+</div>
+
+<div *ngIf="nrlData" class="mobile-game-container">
+  <ul class="mobile" *ngFor="let game of nrlData.fixtures">
+    <mat-card class="mobile-mat-card">
+      <mat-grid-list cols="20" rows="14">
+        <mat-grid-tile colspan="12" rowspan="1">
+          <span class="status"
+            *ngIf="game.matchMode == 'Pre'">{{game.clock.kickOffTimeLong | date: 'ccc MMMM d, h:mm a' }}</span>
+          <span class="status" *ngIf="game.matchMode == 'Post'">Final</span>
+          <span class="status"
+            *ngIf="game.matchMode !== 'Post' && game.matchMode !== 'Pre'">{{game.clock.gameTime}}</span>
+        </mat-grid-tile>
+        <div class="team-container">
+          <mat-grid-tile colspan="12" rowspan="1">
+            <span class="team-name">{{game.homeTeam.city}}</span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="4" rowspan="4">
+            <span *ngIf="game.homeTeam.score" class="finalScore"><b>{{game.homeTeam.score}}</b></span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="12" rowspan="2">
+            <span class="nickname">{{game.homeTeam.nickName}}</span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="12" rowspan="1">
+            <span *ngIf="game.homeTeam.odds" class="record">${{game.homeTeam.odds}}</span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="12" rowspan="1">
+            <span class="team-name">{{game.awayTeam.city}}</span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="4" rowspan="4">
+            <span *ngIf="game.awayTeam.score && game.awayTeam.score.toString() == '0'"
+              class="finalScore"><b>{{game.awayTeam.score}}</b></span>
+            <span *ngIf="game.awayTeam.score && game.awayTeam.score.toString() !== '0'"
+              class="finalScore"><b>{{game.awayTeam.score}}</b></span>
+            <span *ngIf="!game.awayTeam.score" class="finalScore"><b>{{game.awayTeam.score}}</b></span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="12" rowspan="2">
+            <span class="nickname">{{game.awayTeam.nickName}}</span>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="12" rowspan="1">
+            <span *ngIf="game.awayTeam.odds" class="record">${{game.awayTeam.odds}}</span>
+          </mat-grid-tile>
+        </div>
+      </mat-grid-list>
+    </mat-card>
+  </ul>
+</div>

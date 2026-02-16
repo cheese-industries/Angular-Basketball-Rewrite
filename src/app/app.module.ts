@@ -1,3 +1,5 @@
+import { KboComponent } from './modules/baseball/components/kbo/kbo.component';
+import { NpbComponent } from './modules/baseball/components/npb/npb.component';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
@@ -38,6 +40,16 @@ import { EuropeanTourComponent } from './modules/golf/components/european-tour/e
 import { ChampionsTourComponent } from './modules/golf/components/champions-tour/champions-tour.component';
 import { RugbyunionComponent } from './modules/rugbyunion/rugbyunion/rugbyunion.component';
 import { NorthAmericaComponent } from './modules/baseball/components/north-america/north-america.component';
+import { BoxscoreComponent } from './modules/baseball/components/boxscore/boxscore.component';
+import { AflComponent } from './modules/footy/afl/afl.component';
+import { NrlComponent } from './modules/nrl/nrl/nrl.component';
+import { CflComponent } from './modules/football/components/cfl/cfl.component';
+import { AtpComponent } from './modules/tennis/components/atp/atp.component';
+import { WtaComponent } from './modules/tennis/components/wta/wta.component';
+import { CpblComponent } from './modules/baseball/components/cpbl/cpbl.component';
+// import { WtaComponent } from './modules/tennis/components/wta/wta.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+
 
 @NgModule({
   declarations: [
@@ -58,7 +70,17 @@ import { NorthAmericaComponent } from './modules/baseball/components/north-ameri
     KornFerryTourComponent,
     EuropeanTourComponent,
     ChampionsTourComponent,
-    RugbyunionComponent, NorthAmericaComponent
+    RugbyunionComponent,
+    NorthAmericaComponent,
+    BoxscoreComponent,
+    AflComponent,
+    NrlComponent,
+    CflComponent,
+    AtpComponent,
+    WtaComponent,
+    NpbComponent,
+    CpblComponent,
+    KboComponent
   ],
   imports: [
     BrowserModule,
@@ -82,6 +104,7 @@ import { NorthAmericaComponent } from './modules/baseball/components/north-ameri
     MatMenuModule,
     MatIconModule,
     MatAutocompleteModule,
+    MatSlideToggleModule
   ],
   providers: [],
   bootstrap: [AppComponent],

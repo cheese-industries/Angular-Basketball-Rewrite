@@ -1,3 +1,4 @@
+import { WeatherAPIReturn } from 'src/app/models/weather-api-return';
 import { Broadcast } from './broadcast';
 import { Content } from './content';
 import { Decisions } from './decisions';
@@ -10,8 +11,16 @@ import { SeriesStatus } from './series-status';
 import { Status } from './status';
 import { Teams } from './teams';
 import { Venue3 } from './venue3';
+import { DateTime } from 'luxon';
 
 export interface Game {
+  mobileHomeRunList: string;
+  dateTime: Date;
+  weatherData: any;
+  weather: any;
+  winProbDiv: string;
+  homeWinProb: number | string;
+  leverageIndex: any;
   sortIndex1: number;
   sortIndex2: number;
   sortIndex3: number;
@@ -58,4 +67,5 @@ export interface Game {
   awayTVArray: string[];
   homeTVDiv: string;
   awayTVDiv: string;
+  lastPlay: string;
 }

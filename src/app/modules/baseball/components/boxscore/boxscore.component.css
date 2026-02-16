@@ -1,0 +1,90 @@
+.team-batters {
+  font-family: "Roboto Condensed";
+  margin-bottom: 25px;
+}
+
+.boxscore-container {
+    padding-top: 25px;
+    max-width: 700px;
+    margin-left: calc((100vw - 700px)/2);
+    margin-right: calc((100vw - 700px)/2);
+}
+
+.team-pitchers {
+  font-family: "Roboto Condensed";
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+.pitching-notes {
+  font-family: "Roboto Condensed";
+  /* margin-top: 25px; */
+  margin-bottom: 25px;
+  margin-left: 20px;
+}
+
+.batting-notes {
+  font-size: smaller;
+  margin-top: 4px;
+  margin-left: 25px;
+}
+
+.batters, .pitchers {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.game-errata {
+  font-family: "Roboto Condensed";
+}
+
+.individual-game-note {
+  width: 700px;
+  margin-left: 20px;
+}
+
+.team-header {
+  font-family: "Roboto Condensed";
+  margin-bottom: 0px;
+  font-weight: bold;
+}
+
+.batter-line,
+.pitcher-line {
+  display: flex;
+}
+
+.stat {
+  width: 25px;
+  text-align: center;
+}
+
+.batter-name {
+  width: 150px;
+}
+
+.pitcher-name {
+  margin-left: 20px;
+  width: 200px;
+}
+
+.innings,
+.pitches {
+  width: 30px;
+  text-align: center;
+}
+
+.era {
+  width: 50px;
+  text-align: center;
+}
+
+.position {
+  width: 60px;
+  text-align: center;
+}
+
+.average {
+  width: 40px;
+  text-align: center;
+}

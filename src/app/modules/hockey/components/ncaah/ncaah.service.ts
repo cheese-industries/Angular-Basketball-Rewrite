@@ -10,7 +10,7 @@ import { NcaaGameData } from 'src/app/models/ncaa-game-data';
 })
 export class NcaahService {
   urlToFetch: string =
-    'https://hidden-anchorage-20030.herokuapp.com/https://data.ncaa.com/casablanca/scoreboard/icehockey-men/d1/';
+    'https://danl.ee:3000/fetch/https://data.ncaa.com/casablanca/scoreboard/icehockey-men/d1/';
   leagueToFetch: string | undefined;
 
   constructor(private http: HttpClient) {}

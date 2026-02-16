@@ -25,14 +25,14 @@ div:empty {
   }
 
   
+
   .xsTeamLocation {
     text-align: left;
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-weight: medium;
     position: absolute;
     left: 5px;
   }
-  
   .teamNickname {
     text-align: left;
     font-size: 1.6rem;
@@ -43,11 +43,12 @@ div:empty {
   
   .xsTeamNickname {
     text-align: left;
-    font-size: 0.9rem;
+    font-size: 1.4rem;
     position: absolute;
     font-weight: bolder;
     left: 5px;
   }
+  
   
   .status {
     text-align: right;

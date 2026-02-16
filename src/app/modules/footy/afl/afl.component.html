@@ -1,0 +1,222 @@
+<div class="note"> <i>Current round shown by default.</i></div>
+
+<div  class="dropdowns">
+  <select name="year" id="year">
+    <option value="">Select a Year</option>
+    <option *ngFor="let year of yearsArray" value="{{year}}">{{year}}</option>
+  </select>
+  <select name="homeAndAway" id="homeAndAway">
+    <option value="">Select a Round</option>
+    <option value="1">Round 1</option>
+    <option value="2">Round 2</option>
+    <option value="3">Round 3</option>
+    <option value="4">Round 4</option>
+    <option value="5">Round 5</option>
+    <option value="6">Round 6</option>
+    <option value="7">Round 7</option>
+    <option value="8">Round 8</option>
+    <option value="9">Round 9</option>
+    <option value="10">Round 10</option>
+    <option value="11">Round 11</option>
+    <option value="12">Round 12</option>
+    <option value="13">Round 13</option>
+    <option value="14">Round 14</option>
+    <option value="15">Round 15</option>
+    <option value="16">Round 16</option>
+    <option value="17">Round 17</option>
+    <option value="18">Round 18</option>
+    <option value="19">Round 19</option>
+    <option value="20">Round 20</option>
+    <option value="21">Round 21</option>
+    <option value="22">Round 22</option>
+    <option value="23">Round 23</option>
+    <option value="24">Finals Round 1</option>
+    <option value="25">Semifinals</option>
+    <option value="26">Preliminary Finals</option>
+    <option value="27">Grand Final</option>
+  </select>
+  <button mat-raised-button (click)="loadNewRound()">Submit</button>
+</div>
+
+
+<ng-container>
+  <div *ngIf="aflData" class="desktop-game-container">
+    <ul class="desktop" *ngFor="let game of aflData.content.sbData.events">
+      <mat-card>
+        <mat-grid-list cols="20" rows="14">
+          <mat-grid-tile colspan="20" rowspan="1">
+            <div class="headline">{{game.competitions[0].notes[0].headline}}</div>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="20" rowspan="1">
+            <div class="venue">{{game.competitions[0].venue.fullName}}</div>
+          </mat-grid-tile>
+          <div class="team-container">
+            <mat-grid-tile colspan="4" rowspan="4">
+              <span><img class="team-logo" src="{{game.competitions[0].competitors[0].team.logo}}"></span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="6" rowspan="1">
+              <span class="team-name">{{game.competitions[0].competitors[0].team.displayName}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2" rowspan="3">
+              <span
+                *ngIf="game.competitions[0].competitors[0].linescores && game.competitions[0].competitors[0].linescores[0]"
+                class="qtrScore">{{game.competitions[0].competitors[0].linescores[0].value}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2" rowspan="3">
+              <span
+                *ngIf="game.competitions[0].competitors[0].linescores && game.competitions[0].competitors[0].linescores[1]"
+                class="qtrScore">{{game.competitions[0].competitors[0].linescores[1].value}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2" rowspan="3">
+              <span
+                *ngIf="game.competitions[0].competitors[0].linescores && game.competitions[0].competitors[0].linescores[2]"
+                class="qtrScore">{{game.competitions[0].competitors[0].linescores[2].value}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2" rowspan="3">
+              <span
+                *ngIf="game.competitions[0].competitors[0].linescores && game.competitions[0].competitors[0].linescores[3]"
+                class="qtrScore">{{game.competitions[0].competitors[0].linescores[3].value}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2" rowspan="3">
+              <span class="finalScore"><b>{{game.competitions[0].competitors[0].score}}</b></span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="6" rowspan="2">
+              <span class="nickname">{{game.competitions[0].competitors[0].team.nickname}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="6" rowspan="1">
+              <span
+                *ngIf="game.competitions[0].competitors[0].records && game.competitions[0].competitors[0].records[0] && game.competitions[0].competitors[0].records[0].summary"
+                class="record">{{game.competitions[0].competitors[0].records[0].summary}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile *ngIf="game.status.type.state !== 'pre'" colspan="10" rowspan="2">
+              {{game.status.type.description}}</mat-grid-tile>
+            <mat-grid-tile *ngIf="game.status.type.state == 'pre'" colspan="10" rowspan="2">
+            </mat-grid-tile>
+
+            <mat-grid-tile colspan="4" rowspan="4">
+              <span><img class="team-logo" src="{{game.competitions[0].competitors[1].team.logo}}"></span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="6" rowspan="1">
+              <span class="team-name">{{game.competitions[0].competitors[1].team.displayName}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="6" rowspan="2">
+              <span class="nickname">{{game.competitions[0].competitors[1].team.nickname}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2" rowspan="3">
+              <span
+                *ngIf="game.competitions[0].competitors[1].linescores && game.competitions[0].competitors[1].linescores[0]"
+                class="qtrScore">{{game.competitions[0].competitors[1].linescores[0].value}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2" rowspan="3">
+              <span
+                *ngIf="game.competitions[0].competitors[1].linescores && game.competitions[0].competitors[1].linescores[1]"
+                class="qtrScore">{{game.competitions[0].competitors[1].linescores[1].value}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2" rowspan="3">
+              <span
+                *ngIf="game.competitions[0].competitors[1].linescores && game.competitions[0].competitors[1].linescores[2]"
+                class="qtrScore">{{game.competitions[0].competitors[1].linescores[2].value}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2" rowspan="3">
+              <span
+                *ngIf="game.competitions[0].competitors[1].linescores && game.competitions[0].competitors[1].linescores[3]"
+                class="qtrScore">{{game.competitions[0].competitors[1].linescores[3].value}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2" rowspan="3">
+              <span class="finalScore"><b>{{game.competitions[0].competitors[1].score}}</b></span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="6" rowspan="1">
+              <span
+                *ngIf="game.competitions[0].competitors[1].records && game.competitions[0].competitors[1].records[0] && game.competitions[0].competitors[1].records[0].summary"
+                class="record">{{game.competitions[0].competitors[1].records[0].summary}}</span>
+            </mat-grid-tile>
+          </div>
+          <mat-grid-tile *ngIf="game.status.type.state == 'pre'" colspan="20" rowspan="2"><span
+              class="date-time">{{game.date | date:'medium' }}</span></mat-grid-tile>
+          <div *ngIf="game.status.type.state !== 'pre'" class="leaders">
+            <mat-grid-tile colspan="10" rowspan="1">
+              <b>{{game.competitions[0].competitors[0].team.nickname}} Leaders</b>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="10" rowspan="1">
+              <b>{{game.competitions[0].competitors[1].team.nickname}} Leaders</b>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="10" rowspan="1">
+              <span class="leader">
+                <b>{{game.competitions[0].competitors[0].leaders[0].displayName}}:&nbsp;</b>
+                {{game.competitions[0].competitors[0].leaders[0].leaders[0].athlete.displayName}}
+                {{game.competitions[0].competitors[0].leaders[0].leaders[0].displayValue}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="10" rowspan="1">
+              <span class="leader">
+                <b>{{game.competitions[0].competitors[1].leaders[0].displayName}}:&nbsp;</b>
+                {{game.competitions[0].competitors[1].leaders[0].leaders[0].athlete.displayName}}
+                {{game.competitions[0].competitors[1].leaders[0].leaders[0].displayValue}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="10" rowspan="1">
+              <span class="leader">
+
+                <b>{{game.competitions[0].competitors[0].leaders[1].displayName}}:&nbsp;</b>
+                {{game.competitions[0].competitors[0].leaders[1].leaders[0].athlete.displayName}}
+                {{game.competitions[0].competitors[0].leaders[1].leaders[0].displayValue}}
+              </span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="10" rowspan="1">
+              <span class="leader"><b>{{game.competitions[0].competitors[1].leaders[1].displayName}}:&nbsp;</b>
+                {{game.competitions[0].competitors[1].leaders[1].leaders[0].athlete.displayName}}
+                {{game.competitions[0].competitors[1].leaders[1].leaders[0].displayValue}}
+              </span>
+            </mat-grid-tile>
+          </div>
+        </mat-grid-list>
+      </mat-card>
+    </ul>
+  </div>
+</ng-container>
+
+<ng-container>
+  <div *ngIf="aflData" class="mobile-game-container">
+    <ul class="mobile" *ngFor="let game of aflData.content.sbData.events">
+      <mat-card>
+        <mat-grid-list cols="20" rows="14">
+          <mat-grid-tile colspan="20" rowspan="1">
+            <div class="headline">{{game.competitions[0].notes[0].headline}}</div>
+          </mat-grid-tile>
+          <div class="team-container">
+            <mat-grid-tile colspan="12" rowspan="1">
+              <span class="team-name">{{game.competitions[0].competitors[0].team.displayName}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="8" rowspan="4">
+              <span class="finalScore"><b>{{game.competitions[0].competitors[0].score}}</b></span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="12" rowspan="2">
+              <span class="nickname">{{game.competitions[0].competitors[0].team.nickname}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="12" rowspan="1">
+              <span class="record">{{game.competitions[0].competitors[0].records[0].summary}}</span>
+            </mat-grid-tile>
+
+
+
+
+            <mat-grid-tile colspan="12" rowspan="1">
+              <span class="team-name">{{game.competitions[0].competitors[1].team.displayName}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="8" rowspan="4">
+              <span class="finalScore"><b>{{game.competitions[0].competitors[1].score}}</b></span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="12" rowspan="2">
+              <span class="nickname">{{game.competitions[0].competitors[1].team.nickname}}</span>
+            </mat-grid-tile>
+
+            <mat-grid-tile colspan="12" rowspan="1">
+              <span class="record">{{game.competitions[0].competitors[1].records[0].summary}}</span>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="20" rowspan="1">{{game.status.type.description}}</mat-grid-tile>
+          </div>
+        </mat-grid-list>
+      </mat-card>
+    </ul>
+  </div>
+</ng-container>

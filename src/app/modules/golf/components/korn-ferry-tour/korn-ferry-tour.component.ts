@@ -35,9 +35,7 @@ export class KornFerryTourComponent implements OnInit {
   getTheScores() {
     const subscription = this.service.getGameData().subscribe((response) => {
       this.data = response;
-      console.log(this.data);
       this.sortTheGolfers();
-      console.log(this.data);
       subscription.unsubscribe();
     });
   }

@@ -41,8 +41,6 @@ export class AhlComponent implements OnInit {
   }
 
   getTheScores(dateToFetch: string) {
-    console.log('the date to fetch is ');
-    console.log(dateToFetch);
     const subscription = this.service
       .getGameData(dateToFetch)
       .subscribe((response) => {
@@ -85,7 +83,6 @@ export class AhlComponent implements OnInit {
   }
 
   handleDateChange() {
-    console.log(this.getDateToCall());
     this.getTheScores(this.getDateToCall());
   }
 
