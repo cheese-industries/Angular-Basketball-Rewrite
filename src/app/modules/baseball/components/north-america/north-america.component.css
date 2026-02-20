@@ -1,414 +1,629 @@
+.scoreboard-shell {
+    padding: 18px 20px 28px;
+    background: linear-gradient(180deg, #f7f9ff 0%, #eef2f9 100%);
+    min-height: calc(100vh - 64px);
+}
+
+.scoreboard-header {
+    text-align: center;
+    margin: 6px auto 14px;
+}
+
+.scoreboard-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #1b2b48;
+}
+
+.scoreboard-header p {
+    margin: 6px 0 0;
+    font-size: 0.95rem;
+    color: #5d6c86;
+}
+
+.scoreboard-controls {
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(126, 145, 178, 0.25);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 10px 24px rgba(24, 39, 75, 0.1);
+    padding: 14px 14px 6px;
+    margin: 0 auto 20px;
+    max-width: 1240px;
+}
+
 .datepicker-center {
     text-align: center;
-    padding-top: 10px;
+    padding-top: 4px;
 }
-.organization-filter-select{
+
+.organization-filter-select {
     width: 100%;
     text-align: center;
-    margin-bottom: 15px;
-    font-size: 12px;
+    margin-bottom: 12px;
+    font-size: 0.82rem;
+    color: #374966;
 }
+
+.filter-label {
+    margin-right: 8px;
+    font-weight: 700;
+}
+
+.organization-filter-select select {
+    border: 1px solid #c8d2e6;
+    border-radius: 8px;
+    padding: 6px 10px;
+    background-color: #fff;
+    color: #1f2d45;
+}
+
+.toggles-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+}
+
 .mat-slide-toggle {
-    margin: 0 20px;
+    margin: 0;
 }
-.mat-slide-toggle-label{
-    font-family: "Roboto Condensed";
+
+.filter-note {
+    color: #6c4b00;
 }
+
+.filter-note a {
+    color: #0b5ed7;
+    cursor: pointer;
+}
+
 .leverage-index {
     width: 100%;
 }
-.game-time, .broadcasts {
+
+.game-time,
+.broadcasts {
     margin-top: 8px;
     margin-bottom: 8px;
 }
-.mat-card {
+
+.game-card {
     min-height: 250px;
+    border-radius: 16px;
+    border: 1px solid #dfe5f1;
+    box-shadow: 0 8px 24px rgba(20, 39, 82, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.game-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(20, 39, 82, 0.14);
+}
+
+.card-subtitle {
+    border-bottom: 1px solid #eef2f8;
+    padding-bottom: 6px;
+}
+
 .tooltip {
     position: relative;
     display: inline-block;
-    border-bottom: 1px dotted black;
+    border-bottom: 1px dotted #5f6f8d;
 }
-.show-all {
-    margin: 8px;
-    background-color: #3f51b5;
-    color: white;
-}
+
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 350px;
-    background-color: black;
+    width: 320px;
+    background-color: #1c2434;
     color: #fff;
     text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-   /* Position the tooltip */
+    border-radius: 8px;
+    padding: 8px;
     position: absolute;
-    z-index: 1;
+    z-index: 3;
     top: -5px;
     left: 105%;
-    opacity: 75%;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
+
 .tooltip:hover .tooltiptext {
     visibility: visible;
+    opacity: 0.95;
 }
+
 .team-container {
-    font-family: "Roboto Condensed";
-    display: flexbox;
+    font-family: 'Roboto Condensed';
 }
+
 .postgame-pitcher-info {
-    font-family: "Roboto Condensed";
+    font-family: 'Roboto Condensed';
 }
-.away-broadcast, .home-broadcast {
-    font-family: "Roboto Condensed";
+
+.away-broadcast,
+.home-broadcast {
+    font-family: 'Roboto Condensed';
     font-size: 13px;
 }
+
 .no-text-decoration {
     text-decoration: none;
 }
+
 .notes {
-    font-family: "Roboto Condensed";
-    padding: 5px 0px 5px 0px;
+    font-family: 'Roboto Condensed';
+    padding: 5px 0;
     text-align: center;
 }
-.delay-flag, .inning-div {
-    font-family: "Roboto Condensed";
-    font-weight: bold;
+
+.delay-flag,
+.inning-div,
+.doubleheader-flag,
+.event-flag,
+.inning-span {
+    font-family: 'Roboto Condensed';
+    font-weight: 700;
 }
+
 .team-logo {
     height: 20px;
     width: 20px;
-   /* position: relative;
-    */
     top: 2px;
     padding-right: 5px;
 }
+
 .inning-div {
     display: inline-flex;
     width: 100%;
 }
+
+.rhe-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) repeat(3, 35px);
+    align-items: center;
+    margin: 4px 0;
+    color: #6b7a93;
+    font-family: 'Roboto Condensed';
+}
+
+.rhe-spacer {
+    display: block;
+}
+
+.rhe-label {
+    width: 35px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
 .homers {
     padding-left: 0;
+    margin: 0;
+    list-style: none;
+    line-height: 1.25;
 }
+
 .leftside {
     width: 360px;
-   /* text-align: center;
-    */
     margin-left: auto;
     margin-right: auto;
 }
+
 a {
-    color: rgba(0, 0, 0, 0.54);
+    color: rgba(0, 0, 0, 0.58);
 }
+
 .gameday-link {
     display: flex;
     float: right;
 }
+
+.gameday-link a {
+    color: #4267b2;
+    font-weight: 600;
+}
+
 .level-and-gameday {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
-.doubleheader-flag {
-    font-family: "Roboto Condensed";
-    font-weight: bold;
-}
-.event-flag {
-    width: 50%;
-    font-weight: bold;
-    font-family: "Roboto Condensed";
-    display: flex;
-}
+
+.event-flag,
 .inning-span {
     width: 50%;
-    font-weight: bold;
-    font-family: "Roboto Condensed";
-    justify-content: right;
     display: flex;
+}
+
+.inning-span {
+    justify-content: right;
     margin-right: 15px;
 }
+
 .team-name {
     font-size: 18px;
-    width: 200px;
+    min-width: 0;
     display: inline-flex;
 }
-.team-runs, .team-hits, .team-errors {
+
+.team-runs,
+.team-hits,
+.team-errors {
     font-size: 18px;
     width: 35px;
-    justify-content: space-evenly;
+    justify-content: center;
     display: inline-flex;
 }
+
+.team-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) repeat(3, 35px);
+    align-items: center;
+}
+
+.team-identity {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+}
+
 .desktop {
     width: auto;
+    max-width: none;
+    min-width: 0 !important;
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+    grid-column: auto / span 1 !important;
 }
+
 .desktop-container {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-auto-flow: row;
+    column-gap: 14px;
+    row-gap: 14px;
+    max-width: 1260px;
+    margin: 0 auto;
 }
+
 .rightside {
-    white-space: nowrap;
-    display: inline-block;
+    white-space: normal;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
     left: 400px;
-    width: 250px;
+    width: 220px;
+    flex: 0 0 220px;
+    min-width: 0;
 }
+
 .diamond {
     white-space: nowrap;
-    height: 250px;
-    width: 250px;
+    height: 220px;
+    width: 220px;
     display: inline-block;
-    padding: 0px;
+    padding: 0;
     left: 400px;
-    background-image: url("./diamond.png");
-    background-size: 250px 250px;
+    background-image: url('./diamond.png');
+    background-size: 220px 220px;
 }
+
 .data-inside-diamond {
     position: relative;
 }
-.ondeck {
-    white-space: nowrap;
-    width: 250px;
-    font-family: "Roboto Condensed", sans-serif;
-    font-size: 13px;
-    width: 250px;
-    text-align: center;
+
+.ondeck,
+.inthehole,
+.batter,
+.runner1,
+.runner2,
+.runner3,
+.pitcher,
+.balls,
+.strikes,
+.outs,
+.lastPlay,
+.homeruns {
+    font-family: 'Roboto Condensed', sans-serif;
 }
+
+.ondeck,
 .inthehole {
-    white-space: nowrap;
-    width: 250px;
-    font-family: "Roboto Condensed", sans-serif;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: initial;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    width: 220px;
     font-size: 13px;
     text-align: center;
 }
-.batter {
+
+.batter,
+.pitcher {
     white-space: nowrap;
     display: flex;
-    font-family: "Roboto Condensed", sans-serif;
     justify-content: center;
     text-align: center;
     font-size: 14px;
-    font-weight: bold;
-    width: 250px;
+    font-weight: 700;
+    width: 220px;
     position: relative;
-    top: 200px;
 }
+
+.batter {
+    top: 176px;
+}
+
+.pitcher {
+    top: 145px;
+}
+
 .runner2 {
     white-space: nowrap;
     display: flex;
     justify-content: center;
     text-align: center;
-    font-family: "Roboto Condensed", sans-serif;
     top: 40px;
-    left: 75px;
+    left: 60px;
     position: absolute;
     font-size: 13px;
     width: 100px;
 }
+
 .runner3 {
     white-space: nowrap;
     display: inline;
-    justify-content: center;
-    font-family: "Roboto Condensed", sans-serif;
     text-align: center;
     font-size: 13px;
-    width: 100px;
-    left: 0px;
-    top: 115px;
+    left: 0;
+    top: 100px;
     width: 100px !important;
     position: absolute;
 }
+
 .runner1 {
-    font-family: "Roboto Condensed", sans-serif;
     display: flex;
     justify-content: center;
     white-space: nowrap;
     font-size: 13px;
     position: absolute;
-    left: 145px;
-    top: 115px;
+    left: 126px;
+    top: 100px;
     width: 100px;
 }
-.pitcher {
-    display: flex;
-    white-space: nowrap;
-    font-family: "Roboto Condensed", sans-serif;
-    justify-content: center;
-    text-align: center;
-    font-size: 14px;
-    font-weight: bold;
-    width: 250px;
-    top: 165px;
-    position: relative;
-}
-.balls, .strikes, .outs {
-    font-family: "Roboto Condensed";
-   /* font-weight: bold;
-    */
+
+.balls,
+.strikes,
+.outs {
     font-size: 18px;
     width: 33%;
     text-align: center;
 }
+
 .card-container {
     display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    max-width: 100%;
+    min-width: 0;
 }
-.lastPlay {
-    padding-top: 15px;
-    padding-bottom: 15px;
-    font-family: "Roboto Condensed";
+
+.card-container > * {
+    min-width: 0;
 }
-.homeruns {
+
+.game-card {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.desktop > .no-text-decoration {
+    display: block;
+    width: 100%;
+}
+
+.leftside {
     width: auto;
-    padding-top: 15px;
-    font-family: "Roboto Condensed";
+    max-width: none;
+    flex: 1 1 auto;
+    min-width: 0;
 }
+
+.away-broadcast,
+.home-broadcast,
+.lastPlay,
+.homeruns,
+.notes,
+.probable-pitchers,
+.postgame-pitcher-info {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.lastPlay,
+.homeruns {
+    padding-top: 15px;
+}
+
+.lastPlay {
+    padding-bottom: 15px;
+}
+
 .balls-strikes-outs-inning {
     padding-top: 10px;
     display: flex;
     width: 320px;
 }
-@media only screen and (max-device-width: 699px) {
+
+@media only screen and (max-width: 1024px) {
+    .desktop-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        max-width: 100%;
+    }
+
     .rightside {
         display: none;
-   }
+    }
 }
-@media only screen and (max-device-width: 449px) {
-    .mat-card {
+
+@media only screen and (max-width: 760px) {
+    .desktop-container {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media only screen and (max-width: 449px) {
+    .scoreboard-shell {
+        padding: 12px 8px 20px;
+    }
+
+    .scoreboard-header h1 {
+        font-size: 1.45rem;
+    }
+
+    .scoreboard-header p {
+        font-size: 0.82rem;
+    }
+
+    .scoreboard-controls {
+        padding: 10px 8px 0;
+        margin-bottom: 12px;
+    }
+
+    .game-card {
         margin: 0;
         padding: 0;
-        background-color: #f0f0f0;
-        margin-bottom: 50px;
+        background-color: #f8fbff;
+        margin-bottom: 18px;
         min-height: auto;
-   }
-    .ul {
-        width: 100% !important;
-        padding-left: 0;
-   }
-    .desktop-container {
-        display: none;
-   }
+    }
+
+    .desktop-container,
     .desktop {
         display: none;
-   }
+    }
+
     .team-name {
         font-size: 16px;
         width: 150px;
-        display: inline-flex;
-   }
-    .team-runs, .team-hits, .team-errors {
+    }
+
+    .team-runs,
+    .team-hits,
+    .team-errors {
         font-size: 16px;
         width: 30px;
-        justify-content: space-evenly;
-        display: inline-flex;
-   }
+    }
+
     .mobile {
-        font-family: "Roboto Condensed";
-        padding-left: 0px;
-        padding-right: 0px;
+        font-family: 'Roboto Condensed';
+        padding-left: 0;
+        padding-right: 0;
         width: 100%;
-   }
-   .mobile-card-container{
-    font-family: "Roboto Condensed";
-    margin: 10px;
-    display: flex;
-    flex-wrap: wrap;
-   }
-.mobile-team-line{
-    font-family: "Roboto Condensed";
-    font-size: 24px;
-    width: 80%;
-    display: flex;
-    flex-wrap: wrap;
-}
-.mobile-team-name{
-    width: 110px;
-    text-align: left;
-}
-.mobile-rhe{
-    width: 35px;
-    text-align: center;
-}
-.mobile-inning{
-    font-family: "Roboto Condensed";
-    font-size: 16px;
-    width: 100%;
-}
-.mobile-batter
-{
-    font-family: "Roboto Condensed";
-    font-size: 14px;
-    width: 100%;
-    margin-top: 10px;
-}
-.mobile-pitcher
-{
-    font-family: "Roboto Condensed";
-    font-size: 14px;
-    width: 100%;
-    margin-bottom: 10px;
-}
-.mobile-broadcaster
-{
-    font-family: "Roboto Condensed";
-    font-size: 14px;
-    width: 100%;
-}
-.mobile-away-probable-pitcher
-{
-    font-family: "Roboto Condensed";
-    width: 100%;
-    margin-top: 10px;
-}
-.mobile-home-probable-pitcher
-{
-    font-family: "Roboto Condensed";
-    width: 100%;
-    margin-bottom: 10px;
-}
-.mobile-start-time{
-    font-family: "Roboto Condensed";
-    width: 100%;
-    font-size: 16px;
-    /* margin-bottom: 10px; */
-}
-.mobile-baserunners{
-    font-family: "Roboto Condensed";
-    font-size: 10px;
-    margin-top: 10px;
-    width: 33%;
-    min-width: 110px;
-}
-.mobile-in-progress-home-runs{
-    font-family: "Roboto Condensed";
-    font-size: 10px;
-    margin-top: 10px;
-    width: 63%;
-    min-width: 190px;
-}
-.mobile-win-pitcher,
-.mobile-game-over-home-runs{
-    font-family: "Roboto Condensed";
-    width: 100%;
-    margin-top: 10px;
+        margin: 0;
+    }
+
+    .mobile-card-container {
+        font-family: 'Roboto Condensed';
+        margin: 10px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .mobile-team-line {
+        font-family: 'Roboto Condensed';
+        font-size: 24px;
+        width: 80%;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .mobile-team-name {
+        width: 110px;
+        text-align: left;
+    }
+
+    .mobile-rhe {
+        width: 35px;
+        text-align: center;
+    }
+
+    .mobile-inning {
+        font-size: 16px;
+        width: 100%;
+    }
+
+    .mobile-batter,
+    .mobile-pitcher,
+    .mobile-broadcaster,
+    .mobile-away-probable-pitcher,
+    .mobile-home-probable-pitcher,
+    .mobile-start-time,
+    .mobile-final,
+    .mobile-decision-pitcher,
+    .mobile-win-pitcher,
+    .mobile-game-over-home-runs {
+        width: 100%;
+    }
+
+    .mobile-batter {
+        font-size: 14px;
+        margin-top: 10px;
+    }
+
+    .mobile-pitcher {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .mobile-broadcaster {
+        font-size: 14px;
+    }
+
+    .mobile-away-probable-pitcher {
+        margin-top: 10px;
+    }
+
+    .mobile-home-probable-pitcher {
+        margin-bottom: 10px;
+    }
+
+    .mobile-start-time {
+        font-size: 16px;
+    }
+
+    .mobile-baserunners {
+        font-size: 10px;
+        margin-top: 10px;
+        width: 33%;
+        min-width: 110px;
+    }
+
+    .mobile-in-progress-home-runs {
+        font-size: 10px;
+        margin-top: 10px;
+        width: 63%;
+        min-width: 190px;
+    }
+
+    .balls,
+    .strikes,
+    .outs {
+        font-size: 16px;
+    }
 }
 
-.mobile-start-time,
-.mobile-final,
-.mobile-decision-pitcher{
-    font-family: "Roboto Condensed";
-    width: 100%;
-}
-    .balls, .strikes, .outs {
-        font-family: "Roboto Condensed";
-       /* font-weight: bold;
-        */
-        font-size: 16px;
-        width: 33%;
-        text-align: center;
-   }
-}
-@media only screen and (min-device-width: 450px) {
-    .mobile-container {
-        display: none;
-   }
+@media only screen and (min-width: 450px) {
+    .mobile-container,
     .mobile {
         display: none;
-   }
+    }
 }

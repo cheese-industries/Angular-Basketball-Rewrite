@@ -1,4 +1,10 @@
 <div class="boxscore-container">
+  <div class="boxscore-hero" *ngIf="data && data.teams">
+    <h1 class="boxscore-title">{{data.teams.away.team.name}} @ {{data.teams.home.team.name}}</h1>
+    <p class="boxscore-subtitle">Live boxscore updates every 15 seconds</p>
+  </div>
+
+  <h2 class="section-title">Batting</h2>
     <div class="batters">
 
 
@@ -10,7 +16,7 @@
                     <span class="stat">
             &nbsp;
           </span>
-                    <span class="batter-name">
+                    <span class="batter-name batter-name-col">
             {{data.teams.away.team.name}}
           </span>
                     <span class="position">
@@ -49,16 +55,16 @@
                     <span class="stat">
             CS
           </span>
-                    <span class="stat">
+                    <span class="stat lob-col">
             LOB
           </span>
                     <span class="average">
             AVG
           </span>
-                    <span class="average">
+                    <span class="average obp-col">
             OBP
           </span>
-                    <span class="average">
+                    <span class="average slg-col">
             SLG
           </span>
                     <span class="average">
@@ -74,7 +80,7 @@
                 <span class="stat" *ngIf="+(batter.battingOrder) % 100 !== 0">
           &nbsp;
         </span>
-                <span class="batter-name">
+                    <span class="batter-name batter-name-col">
           <span *ngIf="batter.stats.batting.note">{{batter.stats.batting.note}}</span>{{batter.person.fullName}}
                 </span>
                 <span class="position">
@@ -117,16 +123,16 @@
                 <span class="stat">
           {{batter.stats.batting.caughtStealing}}
         </span>
-                <span class="stat">
+                <span class="stat lob-col">
           {{batter.stats.batting.leftOnBase}}
         </span>
                 <span class="average">
           {{batter.seasonStats.batting.avg}}
         </span>
-                <span class="average">
+                <span class="average obp-col">
           {{batter.seasonStats.batting.obp}}
         </span>
-                <span class="average">
+                <span class="average slg-col">
           {{batter.seasonStats.batting.slg}}
         </span>
                 <span class="average">
@@ -150,7 +156,7 @@
                     <span class="stat">
           &nbsp;
         </span>
-                    <span class="batter-name">
+                    <span class="batter-name batter-name-col">
           {{data.teams.home.team.name}}
         </span>
                     <span class="position">
@@ -189,16 +195,16 @@
                     <span class="stat">
           CS
         </span>
-                    <span class="stat">
+                    <span class="stat lob-col">
           LOB
         </span>
                     <span class="average">
           AVG
         </span>
-                    <span class="average">
+                    <span class="average obp-col">
           OBP
         </span>
-                    <span class="average">
+                    <span class="average slg-col">
           SLG
         </span>
                     <span class="average">
@@ -213,7 +219,7 @@
                 <span class="stat" *ngIf="+(batter.battingOrder) % 100 !== 0">
           &nbsp;
         </span>
-                <span class="batter-name">
+                <span class="batter-name batter-name-col">
           {{batter.person.fullName}}
         </span>
                 <span class="position">
@@ -256,16 +262,16 @@
                 <span class="stat">
           {{batter.stats.batting.caughtStealing}}
         </span>
-                <span class="stat">
+                <span class="stat lob-col">
           {{batter.stats.batting.leftOnBase}}
         </span>
                 <span class="average">
           {{batter.seasonStats.batting.avg}}
         </span>
-                <span class="average">
+                <span class="average obp-col">
           {{batter.seasonStats.batting.obp}}
         </span>
-                <span class="average">
+                <span class="average slg-col">
           {{batter.seasonStats.batting.slg}}
         </span>
                 <span class="average">
@@ -282,6 +288,7 @@
 
 
     <!-- .............PITCHER HEADERS............ -->
+  <h2 class="section-title">Pitching</h2>
     <div class="pitchers">
         <div class="team-pitchers">
             <div class="team-header">

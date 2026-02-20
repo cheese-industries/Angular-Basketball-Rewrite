@@ -1,63 +1,65 @@
-<form [formGroup]="form" class="datepicker-center">
-  <mat-form-field appearance="fill">
-    <mat-label>Choose a date</mat-label>
-    <input
-      formControlName="dateToCall"
-      (dateChange)="handleDateChange()"
-      matInput
-      [matDatepicker]="picker"
-    />
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
-</form>
-<div *ngIf="initialState || filterByOrg" class="organization-filter-select">
-  Filter by organization:
-  <select (change)="addOrgFilter($event)">
-    <option value="">Show all scores</option>
-    <option value="ARI">Arizona Diamondbacks</option>
-    <option value="ATL">Atlanta Braves</option>
-    <option value="BAL">Baltimore Orioles</option>
-    <option value="BOS">Boston Red Sox</option>
-    <option value="CHW">Chicago White Sox</option>
-    <option value="CHC">Chicago Cubs</option>
-    <option value="CIN">Cincinnati Reds</option>
-    <option value="CLE">Cleveland Guardians</option>
-    <option value="COL">Colorado Rockies</option>
-    <option value="DET">Detroit Tigers</option>
-    <option value="HOU">Houston Astros</option>
-    <option value="KC">Kansas City Royals</option>
-    <option value="LAA">Los Angeles Angels</option>
-    <option value="LAD">Los Angeles Dodgers</option>
-    <option value="MIA">Miami Marlins</option>
-    <option value="MIL">Milwaukee Brewers</option>
-    <option value="MIN">Minnesota Twins</option>
-    <option value="NYY">New York Yankees</option>
-    <option value="NYM">New York Mets</option>
-    <option value="OAK">Oakland Athletics</option>
-    <option value="PHI">Philadelphia Phillies</option>
-    <option value="PIT">Pittsburgh Pirates</option>
-    <option value="SD">San Diego Padres</option>
-    <option value="SF">San Francisco Giants</option>
-    <option value="SEA">Seattle Mariners</option>
-    <option value="STL">St. Louis Cardinals</option>
-    <option value="TB">Tampa Bay Rays</option>
-    <option value="TEX">Texas Rangers</option>
-    <option value="TOR">Toronto Blue Jays</option>
-    <option value="WAS">Washington Nationals</option>
-  </select>
-</div>
-<div
-  *ngIf="(!initialState && filterByOrg) || hasOrgFilter"
-  class="organization-filter-select"
->
-  <i
-    >Filtering by organization does not currently work at the same time as
-    filtering by level and live status. If you'd like to filter games by level,
-    please <a (click)="reloadThePage()">click here to reload the page</a>.</i
-  >
-</div>
-<div class="organization-filter-select" *ngIf="initialState || filterByLevel">
+<div class="scoreboard-shell">
+  <header class="scoreboard-header">
+    <h1>Every Baseball Score</h1>
+    <p>Live updates every 30 seconds for every game across MLB and the minors.</p>
+  </header>
+
+  <section class="scoreboard-controls">
+    <form [formGroup]="form" class="datepicker-center">
+      <mat-form-field appearance="fill">
+        <mat-label>Choose a date</mat-label>
+        <input
+          formControlName="dateToCall"
+          (dateChange)="handleDateChange()"
+          matInput
+          [matDatepicker]="picker"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="picker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </form>
+
+    <div class="organization-filter-select">
+      <label class="filter-label" for="orgFilter">Filter by organization:</label>
+      <select id="orgFilter" (change)="addOrgFilter($event)">
+        <option value="">Show all scores</option>
+        <option value="ARI">Arizona Diamondbacks</option>
+        <option value="ATL">Atlanta Braves</option>
+        <option value="BAL">Baltimore Orioles</option>
+        <option value="BOS">Boston Red Sox</option>
+        <option value="CHW">Chicago White Sox</option>
+        <option value="CHC">Chicago Cubs</option>
+        <option value="CIN">Cincinnati Reds</option>
+        <option value="CLE">Cleveland Guardians</option>
+        <option value="COL">Colorado Rockies</option>
+        <option value="DET">Detroit Tigers</option>
+        <option value="HOU">Houston Astros</option>
+        <option value="KC">Kansas City Royals</option>
+        <option value="LAA">Los Angeles Angels</option>
+        <option value="LAD">Los Angeles Dodgers</option>
+        <option value="MIA">Miami Marlins</option>
+        <option value="MIL">Milwaukee Brewers</option>
+        <option value="MIN">Minnesota Twins</option>
+        <option value="NYY">New York Yankees</option>
+        <option value="NYM">New York Mets</option>
+        <option value="OAK">Oakland Athletics</option>
+        <option value="PHI">Philadelphia Phillies</option>
+        <option value="PIT">Pittsburgh Pirates</option>
+        <option value="SD">San Diego Padres</option>
+        <option value="SF">San Francisco Giants</option>
+        <option value="SEA">Seattle Mariners</option>
+        <option value="STL">St. Louis Cardinals</option>
+        <option value="TB">Tampa Bay Rays</option>
+        <option value="TEX">Texas Rangers</option>
+        <option value="TOR">Toronto Blue Jays</option>
+        <option value="WAS">Washington Nationals</option>
+      </select>
+    </div>
+
+    <div class="organization-filter-select toggles-row">
   <mat-slide-toggle
     #mlbToggle
     [(ngModel)]="mlbIsChecked"
@@ -100,19 +102,12 @@
     (change)="onSliderChange()"
     >Sort by Scheduled Start Time</mat-slide-toggle
   >
-</div>
-<div *ngIf="!initialState && filterByLevel" class="organization-filter-select">
-  <i
-    >Filtering by organization does not currently work at the same time as
-    filtering by level and live status. If you'd like to filter games by
-    organization please
-    <a (click)="reloadThePage()">click here to reload the page</a>.</i
-  >
-</div>
+    </div>
+  </section>
 
 <ng-container>
   <div *ngIf="everyGame" class="desktop-container">
-    <ul
+    <div
       class="desktop"
       *ngFor="let game of everyGame.dates[0].games; let i = index"
     >
@@ -122,8 +117,8 @@
         href=""
         target="_blank"
       >
-        <mat-card>
-          <mat-card-subtitle>
+        <mat-card class="game-card">
+          <mat-card-subtitle class="card-subtitle">
             <div
               *ngIf="
                 game.teams.away.team.sport.name === 'Major League Baseball'
@@ -239,30 +234,38 @@
                     {{ game.linescore.currentInning }}</span
                   >
                 </div>
+                <div *ngIf="game.linescore.teams" class="rhe-header">
+                  <span class="rhe-spacer">&nbsp;</span>
+                  <span class="rhe-label">R</span>
+                  <span class="rhe-label">H</span>
+                  <span class="rhe-label">E</span>
+                </div>
                 <div class="team-container">
-                  <span *ngIf="game.teams.away.team.parentOrgId">
-                    <img
-                      class="team-logo"
-                      height="20px"
-                      src="https://cheese-industries.com/assets/logos/{{
-                        game.teams.away.team.parentOrgId
-                      }}.svg"
-                    />
-                  </span>
-                  <span>
-                    <img
-                      class="team-logo"
-                      height="20px"
-                      src="https://cheese-industries.com/assets/logos/{{
-                        game.teams.away.team.id
-                      }}.svg"
-                    />
-                  </span>
-                  <span class="team-name">
-                    {{ game.teams.away.team.shortName }}
-                    ({{ game.teams.away.leagueRecord.wins }}-{{
-                      game.teams.away.leagueRecord.losses
-                    }})
+                  <span class="team-identity">
+                    <span *ngIf="game.teams.away.team.parentOrgId">
+                      <img
+                        class="team-logo"
+                        height="20px"
+                        src="https://cheese-industries.com/assets/logos/{{
+                          game.teams.away.team.parentOrgId
+                        }}.svg"
+                      />
+                    </span>
+                    <span>
+                      <img
+                        class="team-logo"
+                        height="20px"
+                        src="https://cheese-industries.com/assets/logos/{{
+                          game.teams.away.team.id
+                        }}.svg"
+                      />
+                    </span>
+                    <span class="team-name">
+                      {{ game.teams.away.team.shortName }}
+                      ({{ game.teams.away.leagueRecord.wins }}-{{
+                        game.teams.away.leagueRecord.losses
+                      }})
+                    </span>
                   </span>
                   <span
                     *ngIf="
@@ -283,30 +286,32 @@
                   </span>
                 </div>
                 <div class="team-container">
-                  <span *ngIf="game.teams.home.team.parentOrgId">
-                    <img
-                      class="team-logo"
-                      height="20px"
-                      src="https://cheese-industries.com/assets/logos/{{
-                        game.teams.home.team.parentOrgId
-                      }}.svg"
-                    />
-                  </span>
-                  <span>
-                    <img
-                      class="team-logo"
-                      height="20px"
-                      src="https://cheese-industries.com/assets/logos/{{
-                        game.teams.home.team.id
-                      }}.svg"
-                    />
-                  </span>
+                  <span class="team-identity">
+                    <span *ngIf="game.teams.home.team.parentOrgId">
+                      <img
+                        class="team-logo"
+                        height="20px"
+                        src="https://cheese-industries.com/assets/logos/{{
+                          game.teams.home.team.parentOrgId
+                        }}.svg"
+                      />
+                    </span>
+                    <span>
+                      <img
+                        class="team-logo"
+                        height="20px"
+                        src="https://cheese-industries.com/assets/logos/{{
+                          game.teams.home.team.id
+                        }}.svg"
+                      />
+                    </span>
 
-                  <span class="team-name">
-                    {{ game.teams.home.team.shortName }}
-                    ({{ game.teams.home.leagueRecord.wins }}-{{
-                      game.teams.home.leagueRecord.losses
-                    }})
+                    <span class="team-name">
+                      {{ game.teams.home.team.shortName }}
+                      ({{ game.teams.home.leagueRecord.wins }}-{{
+                        game.teams.home.leagueRecord.losses
+                      }})
+                    </span>
                   </span>
                   <span
                     *ngIf="
@@ -559,17 +564,17 @@
           </mat-card-content>
         </mat-card>
       </a>
-    </ul>
+    </div>
   </div>
 </ng-container>
 
 <ng-container>
   <div *ngIf="everyGame" class="mobile-container">
-    <ul
+    <div
       class="mobile"
       *ngFor="let game of everyGame.dates[0].games; let i = index"
     >
-      <mat-card class="mobile-mat-card">
+      <mat-card class="mobile-mat-card game-card mobile-game-card">
         <mat-card-content>
           <div class="mobile-card-container">
             <div class="mobile-team-line">
@@ -722,6 +727,8 @@
           </div>
         </mat-card-content>
       </mat-card>
-    </ul>
+    </div>
   </div>
 </ng-container>
+
+</div>

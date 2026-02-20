@@ -1,90 +1,205 @@
-.team-batters {
-  font-family: "Roboto Condensed";
-  margin-bottom: 25px;
-}
-
 .boxscore-container {
-    padding-top: 25px;
-    max-width: 700px;
-    margin-left: calc((100vw - 700px)/2);
-    margin-right: calc((100vw - 700px)/2);
+  padding: 22px 16px 30px;
+  max-width: 1320px;
+  margin: 0 auto;
+  font-family: "Inter", "Roboto Condensed", sans-serif;
+  color: #1f2b44;
 }
 
+.boxscore-hero {
+  background: linear-gradient(135deg, #f8fbff 0%, #eef3ff 100%);
+  border: 1px solid #dbe5f8;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(20, 39, 82, 0.08);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.boxscore-title {
+  margin: 0;
+  font-size: 1.32rem;
+  font-weight: 800;
+}
+
+.boxscore-subtitle {
+  margin: 5px 0 0;
+  color: #637696;
+  font-size: 0.9rem;
+}
+
+.section-title {
+  margin: 14px 0 10px;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #4c5f7e;
+}
+
+.batters,
+.pitchers {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.team-batters,
 .team-pitchers {
-  font-family: "Roboto Condensed";
-  margin-top: 25px;
-  margin-bottom: 25px;
-}
-
-.pitching-notes {
-  font-family: "Roboto Condensed";
-  /* margin-top: 25px; */
-  margin-bottom: 25px;
-  margin-left: 20px;
-}
-
-.batting-notes {
-  font-size: smaller;
-  margin-top: 4px;
-  margin-left: 25px;
-}
-
-.batters, .pitchers {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.game-errata {
-  font-family: "Roboto Condensed";
-}
-
-.individual-game-note {
-  width: 700px;
-  margin-left: 20px;
+  font-family: "Roboto Condensed", sans-serif;
+  border: 1px solid #dbe2f1;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(24, 42, 79, 0.06);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 8px 10px;
 }
 
 .team-header {
-  font-family: "Roboto Condensed";
-  margin-bottom: 0px;
-  font-weight: bold;
+  margin-bottom: 0;
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f4f7ff;
+  border-radius: 8px;
+  border: 1px solid #e2e9f7;
 }
 
 .batter-line,
 .pitcher-line {
-  display: flex;
+  display: grid;
+  align-items: center;
+  column-gap: 4px;
+  padding: 5px 6px;
+  border-bottom: 1px solid #edf1f8;
 }
 
-.stat {
-  width: 25px;
+.batter-line {
+  grid-template-columns: 28px minmax(180px, 1fr) 58px repeat(12, 34px) repeat(4, 52px);
+  min-width: 1120px;
+}
+
+@media (max-width: 1180px) {
+  .lob-col {
+    display: none;
+  }
+
+  .batter-line {
+    grid-template-columns: 28px minmax(180px, 1fr) 58px repeat(11, 34px) repeat(4, 52px);
+    min-width: 1086px;
+  }
+}
+
+@media (max-width: 1130px) {
+  .batter-line {
+    grid-template-columns: 28px minmax(150px, 1fr) 58px repeat(11, 34px) repeat(4, 52px);
+    min-width: 1056px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .obp-col,
+  .slg-col {
+    display: none;
+  }
+
+  .batter-line {
+    grid-template-columns: 28px minmax(150px, 1fr) 58px repeat(11, 34px) repeat(2, 52px);
+    min-width: 952px;
+  }
+}
+
+.pitcher-line {
+  grid-template-columns: minmax(220px, 1fr) 40px repeat(8, 34px) 52px 42px 42px;
+  min-width: 840px;
+}
+
+.team-batters .batter-line:last-child,
+.team-pitchers .pitcher-line:last-child {
+  border-bottom: none;
+}
+
+.stat,
+.innings,
+.pitches,
+.era,
+.position,
+.average {
+  width: auto;
   text-align: center;
 }
 
-.batter-name {
-  width: 150px;
+.batter-name,
+.pitcher-name {
+  width: auto;
+  min-width: 0;
+  text-align: left;
 }
 
 .pitcher-name {
-  margin-left: 20px;
-  width: 200px;
+  margin-left: 0;
 }
 
-.innings,
-.pitches {
-  width: 30px;
-  text-align: center;
+.batting-notes,
+.pitching-notes,
+.game-errata {
+  font-family: "Roboto Condensed", sans-serif;
+  border: 1px solid #dbe2f1;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(24, 42, 79, 0.05);
+  padding: 10px 12px;
+  margin-top: 8px;
 }
 
-.era {
-  width: 50px;
-  text-align: center;
+.batting-notes {
+  font-size: 0.9rem;
+  margin-left: 0;
 }
 
-.position {
-  width: 60px;
-  text-align: center;
+.pitching-notes {
+  margin-bottom: 14px;
+  margin-left: 0;
 }
 
-.average {
-  width: 40px;
-  text-align: center;
+.individual-game-note {
+  width: auto;
+  margin-left: 0;
+  padding: 4px 0;
+}
+
+@media (min-width: 1200px) {
+  .batters,
+  .pitchers {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 2400px) {
+  .boxscore-container {
+    max-width: 2360px;
+  }
+
+  .batters,
+  .pitchers {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .boxscore-container {
+    padding: 14px 8px 24px;
+  }
+
+  .boxscore-title {
+    font-size: 1.05rem;
+  }
+
+  .boxscore-subtitle {
+    font-size: 0.82rem;
+  }
+
+  .section-title {
+    font-size: 0.82rem;
+  }
 }

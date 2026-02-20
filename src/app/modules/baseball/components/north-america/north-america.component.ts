@@ -134,6 +134,7 @@ export class NorthAmericaComponent implements OnInit {
     });
     this.route.queryParamMap.subscribe((data: ParamMap) => {
       this.org = data.get('org');
+      this.hasOrgFilter = !!(this.org && this.org.length > 0);
       this.orgSwitchCase();
 
       this.getTheScores(
@@ -257,7 +258,7 @@ export class NorthAmericaComponent implements OnInit {
   }
 
   applyFilters() {
-    if (this.everyGame && (this.orgNumber || this.org == '')) {
+    if (this.everyGame && this.orgNumber) {
       let filteredGames = this.everyGame.dates[0].games.filter(
         (game) =>
           game.teams.away.team.id == this.orgNumber ||
@@ -270,18 +271,6 @@ export class NorthAmericaComponent implements OnInit {
   }
 
   onSliderChange() {
-    if (
-      !this.mlbIsChecked ||
-      !this.aaaIsChecked ||
-      !this.aaIsChecked ||
-      !this.highAIsChecked ||
-      !this.lowAIsChecked ||
-      this.liveOnlyIsChecked
-    ) {
-      this.filterByOrg = false;
-      this.filterByLevel = true;
-      this.initialState = false;
-    }
     this.getTheScores(
       this.getYearToCall(),
       this.getMonthToCall(),
@@ -494,17 +483,13 @@ export class NorthAmericaComponent implements OnInit {
   }
 
   addOrgFilter(event: any) {
-    this.filterByOrg = true;
-    this.filterByLevel = false;
-    this.initialState = false;
     this.org = event.target.value;
+    this.hasOrgFilter = !!(this.org && this.org.length > 0);
     this.orgSwitchCase();
-    this.router.navigate(['/'], { queryParams: { org: this.org } });
-    this.getTheScores(
-      this.getYearToCall(),
-      this.getMonthToCall(),
-      this.getDayToCall()
-    );
+    this.router.navigate(['/'], {
+      queryParams: { org: this.org || null },
+      queryParamsHandling: 'merge',
+    });
     this.applyFilters();
   }
 
@@ -570,6 +555,7 @@ export class NorthAmericaComponent implements OnInit {
       MIL: 158,
     };
 
+    this.orgNumber = null;
     if (this.org !== null) {
       this.orgNumber = orgNumberMap[this.org] || null;
     }

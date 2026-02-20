@@ -7,12 +7,15 @@ body {
 
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: "Inter", Roboto, "Helvetica Neue", sans-serif;
+  background: #eef2f9;
+  color: #1f2b44;
 }
 
 .mat-toolbar {
   display: flex;
   text-align: center;
   justify-content: center;
-  width: 100%
+  width: 100%;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.14);
 }
