@@ -1,7 +1,7 @@
 <div class="scoreboard-shell">
   <header class="scoreboard-header">
     <h1>Every Baseball Score</h1>
-    <p>Live updates every 30 seconds for every game across MLB and the minors.</p>
+    <p>Live updates every 30 seconds for every game across MLB and the minors. Click a game to see its box score.</p>
   </header>
 
   <section class="scoreboard-controls">
@@ -45,9 +45,9 @@
         <option value="MIN">Minnesota Twins</option>
         <option value="NYY">New York Yankees</option>
         <option value="NYM">New York Mets</option>
-        <option value="OAK">Oakland Athletics</option>
         <option value="PHI">Philadelphia Phillies</option>
         <option value="PIT">Pittsburgh Pirates</option>
+        <option value="SAC">Sacramento Athletics</option>
         <option value="SD">San Diego Padres</option>
         <option value="SF">San Francisco Giants</option>
         <option value="SEA">Seattle Mariners</option>
@@ -574,7 +574,13 @@
       class="mobile"
       *ngFor="let game of everyGame.dates[0].games; let i = index"
     >
-      <mat-card class="mobile-mat-card game-card mobile-game-card">
+      <a
+        class="no-text-decoration"
+        [routerLink]="['/boxscore', game.gamePk]"
+        href=""
+        target="_blank"
+      >
+        <mat-card class="mobile-mat-card game-card mobile-game-card">
         <mat-card-content>
           <div class="mobile-card-container">
             <div class="mobile-team-line">
@@ -727,6 +733,7 @@
           </div>
         </mat-card-content>
       </mat-card>
+      </a>
     </div>
   </div>
 </ng-container>

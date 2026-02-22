@@ -74,6 +74,12 @@
   border-bottom: 1px solid #edf1f8;
 }
 
+.pitcher-line {
+  grid-template-columns: minmax(225px, 1fr) 40px repeat(8, 34px) 52px 42px 42px;
+  min-width: auto;
+  column-gap: 0;
+}
+
 .batter-line {
   grid-template-columns: 28px minmax(180px, 1fr) 58px repeat(12, 34px) repeat(4, 52px);
   min-width: 1120px;
@@ -85,14 +91,14 @@
   }
 
   .batter-line {
-    grid-template-columns: 28px minmax(180px, 1fr) 58px repeat(11, 34px) repeat(4, 52px);
+    grid-template-columns: 28px 225px 58px repeat(11, 34px) repeat(4, 52px);
     min-width: 1086px;
   }
 }
 
 @media (max-width: 1130px) {
   .batter-line {
-    grid-template-columns: 28px minmax(150px, 1fr) 58px repeat(11, 34px) repeat(4, 52px);
+    grid-template-columns: 28px 225px 58px repeat(11, 34px) repeat(4, 52px);
     min-width: 1056px;
   }
 }
@@ -104,14 +110,153 @@
   }
 
   .batter-line {
-    grid-template-columns: 28px minmax(150px, 1fr) 58px repeat(11, 34px) repeat(2, 52px);
-    min-width: 952px;
+    grid-template-columns: 28px 225px 58px repeat(11, 34px) repeat(2, 52px);
+    min-width: 843px;
+  }
+}
+@media (max-width: 922px) {
+  .bb-col,
+  .so-col,
+  .sb-col,
+  .cs-col {
+    display: none;
+  }
+
+  .batter-line {
+    grid-template-columns: 28px 250px 58px repeat(7, 34px) repeat(2, 52px);
+    min-width: 684px;
   }
 }
 
-.pitcher-line {
-  grid-template-columns: minmax(220px, 1fr) 40px repeat(8, 34px) 52px 42px 42px;
-  min-width: 840px;
+@media (max-width: 789px) {
+  .twob-col,
+  .threeb-col,
+  .hr-col {
+    display: none;
+  }
+
+  .batter-line {
+    grid-template-columns: 28px 250px 58px repeat(4, 34px) repeat(2, 52px);
+    min-width: 576px;
+  }
+}
+
+@media (max-width: 671px) {
+  .batter-line {
+    grid-template-columns: 28px 150px 58px repeat(4, 34px) repeat(2, 52px);
+    min-width: 476px;
+  }
+
+  .batter-name {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 557px) {
+  .ops-col {
+    display: none;
+  }
+
+  .batter-line {
+    grid-template-columns: 28px 150px 58px repeat(4, 34px) 52px;
+    min-width: 424px;
+  }
+}
+
+@media (max-width: 499px) {
+  .avg-col {
+    display: none;
+  }
+
+  .batter-line {
+    grid-template-columns: 28px 150px 58px repeat(4, 34px);
+    min-width: 372px;
+  }
+}
+
+@media (max-width: 443px) {
+  .batter-line {
+    grid-template-columns: 28px 100px 58px repeat(4, 34px);
+    min-width: 324px;
+  }
+}
+
+@media (max-width: 916px) {
+  .pitcher-line {
+    grid-template-columns: 225px 40px repeat(8, 34px) 52px 42px 42px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 743px) {
+  .pitches {
+    display: none;
+  }
+
+  .pitcher-line {
+    grid-template-columns: 225px 40px repeat(8, 34px) 52px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 647px) {
+  .bf-col {
+    display: none;
+  }
+
+  .pitcher-line {
+    grid-template-columns: 225px 40px repeat(7, 34px) 52px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 587px) {
+  .hr-col {
+    display: none;
+  }
+
+  .pitcher-line {
+    grid-template-columns: 225px 40px repeat(6, 34px) 52px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 550px) {
+  .pitcher-line {
+    grid-template-columns: 175px 40px repeat(6, 34px) 52px;
+    min-width: auto;
+  }
+
+  .pitcher-line .pitcher-name {
+    display: block;
+    width: 100%;
+    max-width: 175px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 469px) {
+  .era {
+    display: none;
+  }
+
+  .pitcher-line {
+    grid-template-columns: 175px 40px repeat(5, 34px);
+    min-width: auto;
+  }
+}
+
+@media (max-width: 436px) {
+  .pitcher-line {
+    grid-template-columns: 169px 34px repeat(5, 28px);
+    min-width: auto;
+  }
+
+  .pitcher-line .pitcher-name {
+    max-width: 169px;
+  }
 }
 
 .team-batters .batter-line:last-child,
@@ -150,6 +295,23 @@
   box-shadow: 0 4px 14px rgba(24, 42, 79, 0.05);
   padding: 10px 12px;
   margin-top: 8px;
+}
+
+.batting-mobile-stats {
+  display: none;
+  font-family: "Roboto Condensed", sans-serif;
+  border: 1px solid #dbe2f1;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(24, 42, 79, 0.05);
+  padding: 10px 12px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.batting-mobile-stats > div + div {
+  margin-top: 2px;
 }
 
 .batting-notes {
@@ -201,5 +363,11 @@
 
   .section-title {
     font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 922px) {
+  .batting-mobile-stats {
+    display: block;
   }
 }

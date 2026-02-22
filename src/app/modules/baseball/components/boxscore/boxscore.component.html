@@ -31,34 +31,34 @@
                     <span class="stat">
             H
           </span>
-                    <span class="stat">
+                    <span class="stat twob-col">
             2B
           </span>
-                    <span class="stat">
+                    <span class="stat threeb-col">
             3B
           </span>
-                    <span class="stat">
+                    <span class="stat hr-col">
             HR
           </span>
                     <span class="stat">
             RBI
           </span>
-                    <span class="stat">
+                    <span class="stat bb-col">
             BB
           </span>
-                    <span class="stat">
+                    <span class="stat so-col">
             SO
           </span>
-                    <span class="stat">
+                    <span class="stat sb-col">
             SB
           </span>
-                    <span class="stat">
+                    <span class="stat cs-col">
             CS
           </span>
                     <span class="stat lob-col">
             LOB
           </span>
-                    <span class="average">
+                    <span class="average avg-col">
             AVG
           </span>
                     <span class="average obp-col">
@@ -67,7 +67,7 @@
                     <span class="average slg-col">
             SLG
           </span>
-                    <span class="average">
+                    <span class="average ops-col">
             OPS
           </span>
                 </div>
@@ -81,7 +81,7 @@
           &nbsp;
         </span>
                     <span class="batter-name batter-name-col">
-          <span *ngIf="batter.stats.batting.note">{{batter.stats.batting.note}}</span>{{batter.person.fullName}}
+          <span *ngIf="batter.stats.batting.note">{{batter.stats.batting.note}}</span>{{ isSmallScreen ? batter.person.boxscoreName : batter.person.fullName }}
                 </span>
                 <span class="position">
           <span *ngFor="let position of batter.allPositions; let i = index">
@@ -99,34 +99,34 @@
                 <span class="stat">
           {{batter.stats.batting.hits}}
         </span>
-                <span class="stat">
+                <span class="stat twob-col">
           {{batter.stats.batting.doubles}}
         </span>
-                <span class="stat">
+                <span class="stat threeb-col">
           {{batter.stats.batting.triples}}
         </span>
-                <span class="stat">
+                <span class="stat hr-col">
           {{batter.stats.batting.homeRuns}}
         </span>
                 <span class="stat">
           {{batter.stats.batting.rbi}}
         </span>
-                <span class="stat">
+                <span class="stat bb-col">
           {{batter.stats.batting.baseOnBalls}}
         </span>
-                <span class="stat">
+                <span class="stat so-col">
           {{batter.stats.batting.strikeOuts}}
         </span>
-                <span class="stat">
+                <span class="stat sb-col">
           {{batter.stats.batting.stolenBases}}
         </span>
-                <span class="stat">
+                <span class="stat cs-col">
           {{batter.stats.batting.caughtStealing}}
         </span>
                 <span class="stat lob-col">
           {{batter.stats.batting.leftOnBase}}
         </span>
-                <span class="average">
+                <span class="average avg-col">
           {{batter.seasonStats.batting.avg}}
         </span>
                 <span class="average obp-col">
@@ -135,7 +135,7 @@
                 <span class="average slg-col">
           {{batter.seasonStats.batting.slg}}
         </span>
-                <span class="average">
+                <span class="average ops-col">
           {{batter.seasonStats.batting.ops}}
         </span>
             </div>
@@ -143,6 +143,11 @@
                 <div *ngFor="let note of data.teams.away.note">
                     {{note.label}}-{{note.value}}
                 </div>
+            </div>
+            <div class="batting-mobile-stats" *ngIf="awayBattingLeaders.length > 0">
+              <div *ngFor="let line of awayBattingLeaders">
+                {{line}}
+              </div>
             </div>
         </div>
 
@@ -171,34 +176,34 @@
                     <span class="stat">
           H
         </span>
-                    <span class="stat">
+                    <span class="stat twob-col">
           2B
         </span>
-                    <span class="stat">
+                    <span class="stat threeb-col">
           3B
         </span>
-                    <span class="stat">
+                    <span class="stat hr-col">
           HR
         </span>
                     <span class="stat">
           RBI
         </span>
-                    <span class="stat">
+                    <span class="stat bb-col">
           BB
         </span>
-                    <span class="stat">
+                    <span class="stat so-col">
           SO
         </span>
-                    <span class="stat">
+                    <span class="stat sb-col">
           SB
         </span>
-                    <span class="stat">
+                    <span class="stat cs-col">
           CS
         </span>
                     <span class="stat lob-col">
           LOB
         </span>
-                    <span class="average">
+                    <span class="average avg-col">
           AVG
         </span>
                     <span class="average obp-col">
@@ -207,7 +212,7 @@
                     <span class="average slg-col">
           SLG
         </span>
-                    <span class="average">
+                    <span class="average ops-col">
           OPS
         </span>
                 </div>
@@ -220,7 +225,7 @@
           &nbsp;
         </span>
                 <span class="batter-name batter-name-col">
-          {{batter.person.fullName}}
+          {{ isSmallScreen ? batter.person.boxscoreName : batter.person.fullName }}
         </span>
                 <span class="position">
           <span *ngFor="let position of batter.allPositions; let i = index">
@@ -238,34 +243,34 @@
                 <span class="stat">
           {{batter.stats.batting.hits}}
         </span>
-                <span class="stat">
+                <span class="stat twob-col">
           {{batter.stats.batting.doubles}}
         </span>
-                <span class="stat">
+                <span class="stat threeb-col">
           {{batter.stats.batting.triples}}
         </span>
-                <span class="stat">
+                <span class="stat hr-col">
           {{batter.stats.batting.homeRuns}}
         </span>
                 <span class="stat">
           {{batter.stats.batting.rbi}}
         </span>
-                <span class="stat">
+                <span class="stat bb-col">
           {{batter.stats.batting.baseOnBalls}}
         </span>
-                <span class="stat">
+                <span class="stat so-col">
           {{batter.stats.batting.strikeOuts}}
         </span>
-                <span class="stat">
+                <span class="stat sb-col">
           {{batter.stats.batting.stolenBases}}
         </span>
-                <span class="stat">
+                <span class="stat cs-col">
           {{batter.stats.batting.caughtStealing}}
         </span>
                 <span class="stat lob-col">
           {{batter.stats.batting.leftOnBase}}
         </span>
-                <span class="average">
+                <span class="average avg-col">
           {{batter.seasonStats.batting.avg}}
         </span>
                 <span class="average obp-col">
@@ -274,7 +279,7 @@
                 <span class="average slg-col">
           {{batter.seasonStats.batting.slg}}
         </span>
-                <span class="average">
+                <span class="average ops-col">
           {{batter.seasonStats.batting.ops}}
         </span>
             </div>
@@ -282,6 +287,11 @@
                 <div *ngFor="let note of data.teams.home.note">
                     {{note.label}}-{{note.value}}
                 </div>
+            </div>
+            <div class="batting-mobile-stats" *ngIf="homeBattingLeaders.length > 0">
+              <div *ngFor="let line of homeBattingLeaders">
+                {{line}}
+              </div>
             </div>
         </div>
     </div>
@@ -314,10 +324,10 @@
                     <span class="stat">
             SO
           </span>
-                    <span class="stat">
+                    <span class="stat hr-col">
             HR
           </span>
-                    <span class="stat">
+                    <span class="stat bf-col">
             BF
           </span>
                     <span class="era">
@@ -337,10 +347,10 @@
 
             <div class="pitcher-line" *ngFor="let pitcher of awayPitcherArray; let i = index">
                 <span *ngIf="pitcher.stats.pitching.note" class="pitcher-name">
-          {{pitcher.person.fullName}} {{pitcher.stats.pitching.note}}
+          {{ isSmallForPitchers ? pitcher.person.boxscoreName : pitcher.person.fullName }} {{pitcher.stats.pitching.note}}
         </span>
                 <span *ngIf="!pitcher.stats.pitching.note" class="pitcher-name">
-          {{pitcher.person.fullName}}&nbsp;
+          {{ isSmallForPitchers ? pitcher.person.boxscoreName : pitcher.person.fullName }}&nbsp;
         </span>
                 <span class="innings">
           {{pitcher.stats.pitching.inningsPitched}}
@@ -360,10 +370,10 @@
                 <span class="stat">
           {{pitcher.stats.pitching.strikeOuts}}
         </span>
-                <span class="stat">
+                <span class="stat hr-col">
           {{pitcher.stats.pitching.homeRuns}}
         </span>
-                <span class="stat">
+                <span class="stat bf-col">
           {{pitcher.stats.pitching.battersFaced}}
         </span>
                 <span class="era">
@@ -403,10 +413,10 @@
                     <span class="stat">
             SO
           </span>
-                    <span class="stat">
+                    <span class="stat hr-col">
             HR
           </span>
-                    <span class="stat">
+                    <span class="stat bf-col">
             BF
           </span>
                     <span class="era">
@@ -424,10 +434,10 @@
             <!-- .............HOME PITCHERS............ -->
             <div class="pitcher-line" *ngFor="let pitcher of homePitcherArray; let i = index">
                 <span *ngIf="pitcher.stats.pitching.note" class="pitcher-name">
-          {{pitcher.person.fullName}} {{pitcher.stats.pitching.note}}
+          {{ isSmallForPitchers ? pitcher.person.boxscoreName : pitcher.person.fullName }} {{pitcher.stats.pitching.note}}
         </span>
                 <span *ngIf="!pitcher.stats.pitching.note" class="pitcher-name">
-          {{pitcher.person.fullName}}&nbsp;
+          {{ isSmallForPitchers ? pitcher.person.boxscoreName : pitcher.person.fullName }}&nbsp;
         </span>
                 <span class="innings">
           {{pitcher.stats.pitching.inningsPitched}}
@@ -447,10 +457,10 @@
                 <span class="stat">
           {{pitcher.stats.pitching.strikeOuts}}
         </span>
-                <span class="stat">
+                <span class="stat hr-col">
           {{pitcher.stats.pitching.homeRuns}}
         </span>
-                <span class="stat">
+                <span class="stat bf-col">
           {{pitcher.stats.pitching.battersFaced}}
         </span>
                 <span class="era">

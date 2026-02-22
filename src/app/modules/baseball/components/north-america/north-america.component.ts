@@ -96,7 +96,7 @@ export class NorthAmericaComponent implements OnInit {
     { value: 'MIN', label: 'Minnesota Twins' },
     { value: 'NYY', label: 'New York Yankees' },
     { value: 'NYM', label: 'New York Mets' },
-    { value: 'OAK', label: 'Oakland Athletics' },
+    { value: 'SAC', label: 'Sacramento Athletics' },
     { value: 'PHI', label: 'Philadelphia Phillies' },
     { value: 'PIT', label: 'Pittsburgh Pirates' },
     { value: 'SD', label: 'San Diego Padres' },
@@ -242,6 +242,8 @@ export class NorthAmericaComponent implements OnInit {
       );
       games = sortedByStartTime;
     }
+
+    games.forEach((game) => this.applyAthleticsOverridesToGame(game));
 
     this.everyGame = { ...response, dates: [{ ...response.dates[0], games }] };
 
@@ -524,6 +526,8 @@ export class NorthAmericaComponent implements OnInit {
       NYM: 121,
       NYN: 121,
       OAK: 133,
+      ATH: 133,
+      SAC: 133,
       PIT: 134,
       SDP: 135,
       SDN: 135,
@@ -558,6 +562,31 @@ export class NorthAmericaComponent implements OnInit {
     this.orgNumber = null;
     if (this.org !== null) {
       this.orgNumber = orgNumberMap[this.org] || null;
+    }
+  }
+
+  applyAthleticsOverridesToGame(game: any) {
+    if (!this.shouldUseSacramentoBranding(game)) {
+      return;
+    }
+
+    this.applyAthleticsOverridesToTeam(game?.teams?.away?.team);
+    this.applyAthleticsOverridesToTeam(game?.teams?.home?.team);
+  }
+
+  shouldUseSacramentoBranding(game: any): boolean {
+    const gameYear = game?.gameDate ? new Date(game.gameDate).getFullYear() : null;
+    return gameYear === null || gameYear >= 2025;
+  }
+
+  applyAthleticsOverridesToTeam(team: any) {
+    if (!team || +team.id !== 133) {
+      return;
+    }
+
+    team.abbreviation = 'SAC';
+    if (team.name === 'Athletics') {
+      team.name = 'Sacramento Athletics';
     }
   }
 }
