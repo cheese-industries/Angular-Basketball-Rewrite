@@ -8,6 +8,13 @@ import { WeatherAPIReturn } from 'src/app/models/weather-api-return';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { OrgNumbers } from '../../models/mlb-api-models/org-numbers';
 import { DateTime } from 'luxon';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+
+type CardOrderEntry = {
+  order: number[];
+  expiresAt: string;
+  updatedAt: string;
+};
 
 @Component({
   selector: 'app-north-america',
@@ -15,6 +22,14 @@ import { DateTime } from 'luxon';
   styleUrls: ['./north-america.component.css'],
 })
 export class NorthAmericaComponent implements OnInit {
+  private readonly favoritesStorageKey: string = 'favoriteBaseballTeamIdsV2';
+  private readonly favoriteLabelsStorageKey: string =
+    'favoriteBaseballTeamLabelsV1';
+  private readonly favoriteHelpDismissedStorageKey: string =
+    'favoriteBaseballHelpDismissedV1';
+  private readonly cardOrderStorageKey: string =
+    'baseballCardOrderSlatesV1';
+  private readonly cardOrderRetentionLimit: number = 45;
   showOneOrganization: boolean = false;
   filteredGames!: any[];
   liveGamesNow!: any[];
@@ -74,6 +89,10 @@ export class NorthAmericaComponent implements OnInit {
   filterByLevel: boolean = false;
   hasOrgFilter: boolean = false;
   initialState: boolean = true;
+  showFavoriteHelp: boolean = true;
+  favoriteTeamIds: number[] = [];
+  favoriteTeamLabels: Record<number, string> = {};
+  cardOrderBySlate: Record<string, CardOrderEntry> = {};
 
   orgOptions: any[] = [
     { value: '', label: 'Show all scores' },
@@ -132,6 +151,9 @@ export class NorthAmericaComponent implements OnInit {
     this.form = new FormGroup({
       dateToCall: new FormControl(this.setTodayDate(), [Validators.required]),
     });
+    this.loadCardOrderState();
+    this.loadFavoriteHelpPreference();
+    this.loadFavoriteTeams();
     this.route.queryParamMap.subscribe((data: ParamMap) => {
       this.org = data.get('org');
       this.hasOrgFilter = !!(this.org && this.org.length > 0);
@@ -247,6 +269,8 @@ export class NorthAmericaComponent implements OnInit {
 
     this.everyGame = { ...response, dates: [{ ...response.dates[0], games }] };
 
+    this.hydrateFavoriteTeamLabelsFromGames();
+
     this.applyFilters();
 
     await Promise.all([
@@ -260,16 +284,72 @@ export class NorthAmericaComponent implements OnInit {
   }
 
   applyFilters() {
-    if (this.everyGame && this.orgNumber) {
-      let filteredGames = this.everyGame.dates[0].games.filter(
+    if (!this.everyGame) {
+      return;
+    }
+
+    let filteredGames = [...this.everyGame.dates[0].games];
+    if (this.orgNumber) {
+      filteredGames = filteredGames.filter(
         (game) =>
           game.teams.away.team.id == this.orgNumber ||
           game.teams.away.team.parentOrgId == this.orgNumber ||
           game.teams.home.team.id == this.orgNumber ||
           game.teams.home.team.parentOrgId == this.orgNumber
       );
-      this.everyGame.dates[0].games = filteredGames;
     }
+
+    const gamesSortedByFavorites = this.sortGamesWithFavoritesFirst(
+      filteredGames
+    );
+
+    this.everyGame.dates[0].games = this.applySavedCardOrder(
+      gamesSortedByFavorites
+    );
+  }
+
+  canMoveGameCard(index: number, direction: number): boolean {
+    if (!this.everyGame?.dates?.[0]?.games) {
+      return false;
+    }
+
+    const newIndex = index + direction;
+    return newIndex >= 0 && newIndex < this.everyGame.dates[0].games.length;
+  }
+
+  moveGameCard(index: number, direction: number, event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    if (!this.everyGame?.dates?.[0]?.games) {
+      return;
+    }
+
+    const newIndex = index + direction;
+    if (!this.canMoveGameCard(index, direction)) {
+      return;
+    }
+
+    const games = [...this.everyGame.dates[0].games];
+    const [movedGame] = games.splice(index, 1);
+    games.splice(newIndex, 0, movedGame);
+    this.everyGame.dates[0].games = games;
+    this.saveCurrentSlateCardOrder(games);
+  }
+
+  onGameCardDrop(event: CdkDragDrop<any[]>) {
+    if (!this.everyGame?.dates?.[0]?.games) {
+      return;
+    }
+
+    if (event.previousIndex === event.currentIndex) {
+      return;
+    }
+
+    const games = [...this.everyGame.dates[0].games];
+    moveItemInArray(games, event.previousIndex, event.currentIndex);
+    this.everyGame.dates[0].games = games;
+    this.saveCurrentSlateCardOrder(games);
   }
 
   onSliderChange() {
@@ -388,7 +468,9 @@ export class NorthAmericaComponent implements OnInit {
 
           homeRun.matchup.batterTeam = batterTeam;
           homeRun.matchup.ordinalInning = ordinalInning;
-          homeRun.homeRunNumber = homeRun.result.description.replace(/\D/g, '');
+          homeRun.homeRunNumber = this.extractHomeRunSeasonTotal(
+            homeRun.result.description
+          );
         });
       }
     });
@@ -413,7 +495,7 @@ export class NorthAmericaComponent implements OnInit {
             ? game.teams.home.team.abbreviation
             : game.teams.away.team.abbreviation,
             boxScoreName: homeRun.matchup.batter.boxscoreName,
-            totalHR: homeRun.result.description.replace(/\D/g, ''),
+            totalHR: this.extractHomeRunSeasonTotal(homeRun.result.description),
           };
           homers.push(homerObject);
         });
@@ -425,13 +507,13 @@ export class NorthAmericaComponent implements OnInit {
               name: player.name,
               team: player.team,
               appearances: 1,
-              totalHR: parseInt(player.totalHR)
+              totalHR: parseInt(player.totalHR || '0', 10)
             };
           } else {
             playerStats[player.boxScoreName].appearances++;
             playerStats[player.boxScoreName].totalHR = Math.max(
               playerStats[player.boxScoreName].totalHR,
-              parseInt(player.totalHR)
+              parseInt(player.totalHR || '0', 10)
             );
           }
         }
@@ -449,6 +531,10 @@ export class NorthAmericaComponent implements OnInit {
       }
       game.mobileHomeRunList = mobileHRList;
     });
+  }
+
+  private extractHomeRunSeasonTotal(description: string): string {
+    return description?.match(/\((\d+)\)/)?.[1] || '';
   }
 
   getYearToCall(): string {
@@ -495,6 +581,351 @@ export class NorthAmericaComponent implements OnInit {
     this.applyFilters();
   }
 
+  addFavoriteTeam(event: any) {
+    const teamId = +(event.target?.value as string);
+    if (!Number.isFinite(teamId)) {
+      return;
+    }
+
+    this.addFavoriteTeamById(teamId);
+    event.target.value = '';
+  }
+
+  removeFavoriteTeam(teamId: number) {
+    this.favoriteTeamIds = this.favoriteTeamIds.filter((id) => id !== teamId);
+    this.saveFavoriteTeams();
+    this.applyFilters();
+  }
+
+  isFavoriteTeam(teamId: number): boolean {
+    return this.favoriteTeamIds.includes(+teamId);
+  }
+
+  toggleFavoriteTeam(team: any, event?: Event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    const teamId = +team?.id;
+    if (!Number.isFinite(teamId)) {
+      return;
+    }
+
+    if (this.isFavoriteTeam(teamId)) {
+      this.removeFavoriteTeam(teamId);
+      return;
+    }
+
+    this.addFavoriteTeamById(teamId, this.getTeamLabel(team));
+  }
+
+  dismissFavoriteHelp() {
+    this.showFavoriteHelp = false;
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(this.favoriteHelpDismissedStorageKey, 'true');
+    }
+  }
+
+  getAvailableFavoriteTeamOptions() {
+    if (!this.everyGame?.dates?.[0]?.games) {
+      return [];
+    }
+
+    const optionMap = new Map<number, { teamId: number; label: string }>();
+    this.everyGame.dates[0].games.forEach((game) => {
+      [game?.teams?.away?.team, game?.teams?.home?.team].forEach((team) => {
+        const teamId = +team?.id;
+        if (!Number.isFinite(teamId)) {
+          return;
+        }
+        const label = this.getTeamLabel(team);
+        optionMap.set(teamId, { teamId, label });
+      });
+    });
+
+    return Array.from(optionMap.values())
+      .filter((option) => !this.favoriteTeamIds.includes(option.teamId))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }
+
+  getFavoriteTeamLabel(teamId: number): string {
+    return this.favoriteTeamLabels[teamId] || `Team ${teamId}`;
+  }
+
+  private loadFavoriteTeams() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const stored = window.localStorage.getItem(this.favoritesStorageKey);
+    if (!stored) {
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        this.favoriteTeamIds = parsed
+          .map((value) => +value)
+          .filter((value) => Number.isFinite(value));
+      }
+    } catch {
+      this.favoriteTeamIds = [];
+    }
+
+    const storedLabels = window.localStorage.getItem(
+      this.favoriteLabelsStorageKey
+    );
+    if (!storedLabels) {
+      return;
+    }
+
+    try {
+      const parsedLabels = JSON.parse(storedLabels);
+      if (parsedLabels && typeof parsedLabels === 'object') {
+        this.favoriteTeamLabels = parsedLabels;
+      }
+    } catch {
+      this.favoriteTeamLabels = {};
+    }
+  }
+
+  private saveFavoriteTeams() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    window.localStorage.setItem(
+      this.favoritesStorageKey,
+      JSON.stringify(this.favoriteTeamIds)
+    );
+    window.localStorage.setItem(
+      this.favoriteLabelsStorageKey,
+      JSON.stringify(this.favoriteTeamLabels)
+    );
+  }
+
+  private loadFavoriteHelpPreference() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    this.showFavoriteHelp =
+      window.localStorage.getItem(this.favoriteHelpDismissedStorageKey) !==
+      'true';
+  }
+
+  private loadCardOrderState() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const stored = window.localStorage.getItem(this.cardOrderStorageKey);
+    if (!stored) {
+      this.cardOrderBySlate = {};
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(stored);
+      this.cardOrderBySlate = parsed && typeof parsed === 'object' ? parsed : {};
+    } catch {
+      this.cardOrderBySlate = {};
+    }
+
+    this.cleanAndPersistCardOrderState();
+  }
+
+  private saveCurrentSlateCardOrder(games: any[]) {
+    const slateId = this.getCurrentOrderSlateId();
+    if (!slateId) {
+      return;
+    }
+
+    const order = games
+      .map((game) => +game?.gamePk)
+      .filter((gamePk) => Number.isFinite(gamePk));
+
+    this.cardOrderBySlate[slateId] = {
+      order,
+      expiresAt: this.getCurrentSlateExpiry(),
+      updatedAt: DateTime.now().toISO() || '',
+    };
+    this.cleanAndPersistCardOrderState();
+  }
+
+  private applySavedCardOrder(games: any[]) {
+    const slateId = this.getCurrentOrderSlateId();
+    const slateOrder = slateId ? this.cardOrderBySlate[slateId] : null;
+    if (!slateOrder?.order || slateOrder.order.length === 0) {
+      return games;
+    }
+
+    const positionByGamePk = new Map<number, number>();
+    slateOrder.order.forEach((gamePk, index) => {
+      positionByGamePk.set(+gamePk, index);
+    });
+
+    const originalPosition = new Map<number, number>();
+    games.forEach((game, index) => {
+      originalPosition.set(+game?.gamePk, index);
+    });
+
+    return [...games].sort((a, b) => {
+      const aGamePk = +a?.gamePk;
+      const bGamePk = +b?.gamePk;
+      const aPosition = positionByGamePk.get(aGamePk);
+      const bPosition = positionByGamePk.get(bGamePk);
+
+      if (aPosition !== undefined && bPosition !== undefined) {
+        return aPosition - bPosition;
+      }
+      if (aPosition !== undefined) {
+        return -1;
+      }
+      if (bPosition !== undefined) {
+        return 1;
+      }
+
+      return (
+        (originalPosition.get(aGamePk) ?? Number.MAX_SAFE_INTEGER) -
+        (originalPosition.get(bGamePk) ?? Number.MAX_SAFE_INTEGER)
+      );
+    });
+  }
+
+  private getCurrentOrderSlateId(): string {
+    const selectedDate = this.getSelectedDateKey();
+    const levelState = [
+      +this.mlbIsChecked,
+      +this.aaaIsChecked,
+      +this.aaIsChecked,
+      +this.highAIsChecked,
+      +this.lowAIsChecked,
+    ].join('');
+    const liveState = this.liveOnlyIsChecked ? '1' : '0';
+    const startTimeState = this.sortByStartTimeIsChecked ? '1' : '0';
+    const orgState = this.org || 'all';
+    return `${selectedDate}|org:${orgState}|lvl:${levelState}|live:${liveState}|stime:${startTimeState}`;
+  }
+
+  private getSelectedDateKey(): string {
+    const selectedDate =
+      (this.form?.get('dateToCall')?.value as Date) ?? new Date();
+    return DateTime.fromJSDate(selectedDate).toFormat('yyyy-LL-dd');
+  }
+
+  private getCurrentSlateExpiry(): string {
+    const selectedDate =
+      (this.form?.get('dateToCall')?.value as Date) ?? new Date();
+
+    const selectedDateInEt = DateTime.fromJSDate(selectedDate).setZone(
+      'America/New_York'
+    );
+
+    return (
+      selectedDateInEt
+        .plus({ days: 1 })
+        .startOf('day')
+        .plus({ hours: 10 })
+        .toUTC()
+        .toISO() || ''
+    );
+  }
+
+  private cleanAndPersistCardOrderState() {
+    const now = DateTime.now();
+
+    const validEntries = Object.entries(this.cardOrderBySlate).filter(
+      ([, entry]) => {
+        if (!entry || !Array.isArray(entry.order) || !entry.expiresAt) {
+          return false;
+        }
+
+        const expiresAt = DateTime.fromISO(entry.expiresAt);
+        return expiresAt.isValid && expiresAt > now;
+      }
+    );
+
+    validEntries.sort((a, b) => {
+      const aUpdated = DateTime.fromISO(a[1]?.updatedAt || '').toMillis() || 0;
+      const bUpdated = DateTime.fromISO(b[1]?.updatedAt || '').toMillis() || 0;
+      return bUpdated - aUpdated;
+    });
+
+    this.cardOrderBySlate = Object.fromEntries(
+      validEntries.slice(0, this.cardOrderRetentionLimit)
+    );
+
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(
+        this.cardOrderStorageKey,
+        JSON.stringify(this.cardOrderBySlate)
+      );
+    }
+  }
+
+  private addFavoriteTeamById(teamId: number, label?: string) {
+    if (this.favoriteTeamIds.includes(teamId)) {
+      return;
+    }
+
+    this.favoriteTeamIds = [...this.favoriteTeamIds, teamId];
+    if (label) {
+      this.favoriteTeamLabels[teamId] = label;
+    } else {
+      this.hydrateFavoriteTeamLabelsFromGames();
+    }
+    this.saveFavoriteTeams();
+    this.applyFilters();
+  }
+
+  private sortGamesWithFavoritesFirst(games: any[]) {
+    if (!this.favoriteTeamIds || this.favoriteTeamIds.length === 0) {
+      return games;
+    }
+
+    return [...games].sort((a, b) => {
+      const aFavorite = this.isFavoriteGame(a) ? 1 : 0;
+      const bFavorite = this.isFavoriteGame(b) ? 1 : 0;
+      return bFavorite - aFavorite;
+    });
+  }
+
+  private isFavoriteGame(game: any): boolean {
+    const favoriteSet = new Set(this.favoriteTeamIds);
+    const awayTeam = game?.teams?.away?.team;
+    const homeTeam = game?.teams?.home?.team;
+
+    return favoriteSet.has(+awayTeam?.id) || favoriteSet.has(+homeTeam?.id);
+  }
+
+  private hydrateFavoriteTeamLabelsFromGames() {
+    if (!this.everyGame?.dates?.[0]?.games) {
+      return;
+    }
+
+    this.everyGame.dates[0].games.forEach((game) => {
+      [game?.teams?.away?.team, game?.teams?.home?.team].forEach((team) => {
+        const teamId = +team?.id;
+        if (!Number.isFinite(teamId)) {
+          return;
+        }
+        this.favoriteTeamLabels[teamId] = this.getTeamLabel(team);
+      });
+    });
+  }
+
+  getTeamLabel(team: any): string {
+    if (team?.name) {
+      return team.name;
+    }
+    return (
+      team?.shortName ||
+      team?.name ||
+      team?.clubName ||
+      team?.abbreviation ||
+      `Team ${team?.id}`
+    );
+  }
+
   reloadThePage() {
     this.router.navigate(['/']).then(() => {
       window.location.reload();
@@ -502,6 +933,17 @@ export class NorthAmericaComponent implements OnInit {
   }
 
   orgSwitchCase() {
+    this.orgNumber = null;
+    if (this.org !== null) {
+      this.orgNumber = this.getOrgNumberByCode(this.org);
+    }
+  }
+
+  private getOrgNumberByCode(code: string | null): number | null {
+    if (!code) {
+      return null;
+    }
+
     const orgNumberMap: OrgNumbers = {
       LAA: 108,
       ARI: 109,
@@ -559,10 +1001,7 @@ export class NorthAmericaComponent implements OnInit {
       MIL: 158,
     };
 
-    this.orgNumber = null;
-    if (this.org !== null) {
-      this.orgNumber = orgNumberMap[this.org] || null;
-    }
+    return orgNumberMap[code] || null;
   }
 
   applyAthleticsOverridesToGame(game: any) {

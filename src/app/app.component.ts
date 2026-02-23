@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
 
@@ -15,6 +15,8 @@ export class AppComponent {
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer
   ){
+    this.clearShopifyLocalStorageKeys();
+
     this.matIconRegistry.addSvgIcon(
       "usa",
       this.domSanitizer.bypassSecurityTrustResourceUrl("../assets/us.svg")
@@ -76,5 +78,21 @@ export class AppComponent {
 setLeague(league: string) {
   this.league = league;
   // console.log(this.league);
+}
+
+private clearShopifyLocalStorageKeys() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const keysToDelete: string[] = [];
+  for (let i = 0; i < window.localStorage.length; i++) {
+    const key = window.localStorage.key(i);
+    if (key && /shopify/i.test(key)) {
+      keysToDelete.push(key);
+    }
+  }
+
+  keysToDelete.forEach((key) => window.localStorage.removeItem(key));
 }
 }

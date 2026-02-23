@@ -59,6 +59,43 @@
       </select>
     </div>
 
+    <div class="favorite-help" role="note" *ngIf="showFavoriteHelp">
+      <div class="favorite-help-text">
+        <span class="favorite-help-star">☆</span>
+        Click the star next to any team name to favorite it.
+        Favorited teams show
+        <span class="favorite-help-star favorite-help-star-active">★</span>
+        and games featuring them are pinned to the top.
+      </div>
+      <button
+        class="favorite-help-dismiss"
+        type="button"
+        (click)="dismissFavoriteHelp()"
+        aria-label="Dismiss favorites help"
+      >
+        Got it
+      </button>
+    </div>
+
+    <div class="favorite-chip-row" *ngIf="favoriteTeamIds.length > 0">
+      <button
+        class="favorite-chip"
+        type="button"
+        *ngFor="let teamId of favoriteTeamIds"
+        (click)="removeFavoriteTeam(teamId)"
+      >
+        {{ getFavoriteTeamLabel(teamId) }} ×
+      </button>
+    </div>
+
+    <div class="organization-filter-select favorite-note" *ngIf="favoriteTeamIds.length > 0">
+      Click a highlighted star again to remove a team from favorites.
+    </div>
+
+    <div class="organization-filter-select reorder-note">
+      Grab the blue <b>Drag</b> handle on each card to reorder (or use ↑/↓ buttons). Your order is saved for the day and will expire at 10:00 AM Eastern tomorrow.
+    </div>
+
     <div class="organization-filter-select toggles-row">
   <mat-slide-toggle
     #mlbToggle
@@ -106,11 +143,50 @@
   </section>
 
 <ng-container>
-  <div *ngIf="everyGame" class="desktop-container">
+  <div
+    *ngIf="everyGame"
+    class="desktop-container"
+    cdkDropList
+    [cdkDropListData]="everyGame.dates[0].games"
+    (cdkDropListDropped)="onGameCardDrop($event)"
+  >
     <div
       class="desktop"
+      cdkDrag
       *ngFor="let game of everyGame.dates[0].games; let i = index"
     >
+      <div class="card-reorder-controls" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="reorder-btn drag-handle"
+          cdkDragHandle
+          title="Drag to reorder"
+          aria-label="Drag to reorder card"
+        >
+          <span class="drag-dots" aria-hidden="true">⋮⋮</span>
+          <span class="drag-label">Drag</span>
+        </button>
+        <button
+          type="button"
+          class="reorder-btn"
+          (click)="moveGameCard(i, -1, $event)"
+          [disabled]="!canMoveGameCard(i, -1)"
+          title="Move card up"
+          aria-label="Move card up"
+        >
+          ↑
+        </button>
+        <button
+          type="button"
+          class="reorder-btn"
+          (click)="moveGameCard(i, 1, $event)"
+          [disabled]="!canMoveGameCard(i, 1)"
+          title="Move card down"
+          aria-label="Move card down"
+        >
+          ↓
+        </button>
+      </div>
       <a
         class="no-text-decoration"
         [routerLink]="['/boxscore', game.gamePk]"
@@ -266,6 +342,26 @@
                         game.teams.away.leagueRecord.losses
                       }})
                     </span>
+                    <button
+                      type="button"
+                      class="favorite-star-btn"
+                      [class.favorite-star-active]="
+                        isFavoriteTeam(game.teams.away.team.id)
+                      "
+                      (click)="toggleFavoriteTeam(game.teams.away.team, $event)"
+                      [attr.aria-label]="
+                        isFavoriteTeam(game.teams.away.team.id)
+                          ? 'Remove ' + getTeamLabel(game.teams.away.team) + ' from favorites'
+                          : 'Add ' + getTeamLabel(game.teams.away.team) + ' to favorites'
+                      "
+                      [title]="
+                        isFavoriteTeam(game.teams.away.team.id)
+                          ? 'Remove from favorites'
+                          : 'Add to favorites'
+                      "
+                    >
+                      {{ isFavoriteTeam(game.teams.away.team.id) ? '★' : '☆' }}
+                    </button>
                   </span>
                   <span
                     *ngIf="
@@ -312,6 +408,26 @@
                         game.teams.home.leagueRecord.losses
                       }})
                     </span>
+                    <button
+                      type="button"
+                      class="favorite-star-btn"
+                      [class.favorite-star-active]="
+                        isFavoriteTeam(game.teams.home.team.id)
+                      "
+                      (click)="toggleFavoriteTeam(game.teams.home.team, $event)"
+                      [attr.aria-label]="
+                        isFavoriteTeam(game.teams.home.team.id)
+                          ? 'Remove ' + getTeamLabel(game.teams.home.team) + ' from favorites'
+                          : 'Add ' + getTeamLabel(game.teams.home.team) + ' to favorites'
+                      "
+                      [title]="
+                        isFavoriteTeam(game.teams.home.team.id)
+                          ? 'Remove from favorites'
+                          : 'Add to favorites'
+                      "
+                    >
+                      {{ isFavoriteTeam(game.teams.home.team.id) ? '★' : '☆' }}
+                    </button>
                   </span>
                   <span
                     *ngIf="
@@ -569,11 +685,50 @@
 </ng-container>
 
 <ng-container>
-  <div *ngIf="everyGame" class="mobile-container">
+  <div
+    *ngIf="everyGame"
+    class="mobile-container"
+    cdkDropList
+    [cdkDropListData]="everyGame.dates[0].games"
+    (cdkDropListDropped)="onGameCardDrop($event)"
+  >
     <div
       class="mobile"
+      cdkDrag
       *ngFor="let game of everyGame.dates[0].games; let i = index"
     >
+      <div class="mobile-card-reorder-controls" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="reorder-btn drag-handle"
+          cdkDragHandle
+          title="Drag to reorder"
+          aria-label="Drag to reorder card"
+        >
+          <span class="drag-dots" aria-hidden="true">⋮⋮</span>
+          <span class="drag-label">Drag</span>
+        </button>
+        <button
+          type="button"
+          class="reorder-btn"
+          (click)="moveGameCard(i, -1, $event)"
+          [disabled]="!canMoveGameCard(i, -1)"
+          title="Move card up"
+          aria-label="Move card up"
+        >
+          ↑
+        </button>
+        <button
+          type="button"
+          class="reorder-btn"
+          (click)="moveGameCard(i, 1, $event)"
+          [disabled]="!canMoveGameCard(i, 1)"
+          title="Move card down"
+          aria-label="Move card down"
+        >
+          ↓
+        </button>
+      </div>
       <a
         class="no-text-decoration"
         [routerLink]="['/boxscore', game.gamePk]"
@@ -602,7 +757,27 @@
                   }}.svg"
                 />
               </span>
-{{game.teams.away.team.abbreviation}}</div>
+{{game.teams.away.team.abbreviation}}
+              <button
+                type="button"
+                class="favorite-star-btn mobile-favorite-star"
+                [class.favorite-star-active]="
+                  isFavoriteTeam(game.teams.away.team.id)
+                "
+                (click)="toggleFavoriteTeam(game.teams.away.team, $event)"
+                [attr.aria-label]="
+                  isFavoriteTeam(game.teams.away.team.id)
+                    ? 'Remove ' + getTeamLabel(game.teams.away.team) + ' from favorites'
+                    : 'Add ' + getTeamLabel(game.teams.away.team) + ' to favorites'
+                "
+                [title]="
+                  isFavoriteTeam(game.teams.away.team.id)
+                    ? 'Remove from favorites'
+                    : 'Add to favorites'
+                "
+              >
+                {{ isFavoriteTeam(game.teams.away.team.id) ? '★' : '☆' }}
+              </button></div>
               <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.away" class="mobile-rhe">{{game.linescore.teams.away.runs}}</div>
               <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.away" class="mobile-rhe">{{game.linescore.teams.away.hits}}</div>
               <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.away" class="mobile-rhe">{{game.linescore.teams.away.errors}}</div>
@@ -628,7 +803,27 @@
                   }}.svg"
                 />
               </span>
-{{game.teams.home.team.abbreviation}}</div>
+{{game.teams.home.team.abbreviation}}
+              <button
+                type="button"
+                class="favorite-star-btn mobile-favorite-star"
+                [class.favorite-star-active]="
+                  isFavoriteTeam(game.teams.home.team.id)
+                "
+                (click)="toggleFavoriteTeam(game.teams.home.team, $event)"
+                [attr.aria-label]="
+                  isFavoriteTeam(game.teams.home.team.id)
+                    ? 'Remove ' + getTeamLabel(game.teams.home.team) + ' from favorites'
+                    : 'Add ' + getTeamLabel(game.teams.home.team) + ' to favorites'
+                "
+                [title]="
+                  isFavoriteTeam(game.teams.home.team.id)
+                    ? 'Remove from favorites'
+                    : 'Add to favorites'
+                "
+              >
+                {{ isFavoriteTeam(game.teams.home.team.id) ? '★' : '☆' }}
+              </button></div>
               <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.home" class="mobile-rhe">{{game.linescore.teams.home.runs}}</div>
               <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.home" class="mobile-rhe">{{game.linescore.teams.home.hits}}</div>
               <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.home" class="mobile-rhe">{{game.linescore.teams.home.errors}}</div>

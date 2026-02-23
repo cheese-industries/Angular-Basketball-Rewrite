@@ -49,6 +49,7 @@ import { WtaComponent } from './modules/tennis/components/wta/wta.component';
 import { CpblComponent } from './modules/baseball/components/cpbl/cpbl.component';
 // import { WtaComponent } from './modules/tennis/components/wta/wta.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 
 @NgModule({
@@ -104,7 +105,8 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     MatMenuModule,
     MatIconModule,
     MatAutocompleteModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    DragDropModule
   ],
   providers: [],
   bootstrap: [AppComponent],
