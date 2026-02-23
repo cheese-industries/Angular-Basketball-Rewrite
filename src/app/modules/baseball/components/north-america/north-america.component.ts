@@ -585,6 +585,9 @@ export class NorthAmericaComponent implements OnInit {
     }
 
     team.abbreviation = 'SAC';
+    team.shortName = 'Sacramento';
+    team.teamName = 'Sacramento';
+    team.locationName = 'Sacramento';
     if (team.name === 'Athletics') {
       team.name = 'Sacramento Athletics';
     }
