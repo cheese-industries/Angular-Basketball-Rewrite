@@ -175,6 +175,57 @@
     margin-bottom: 10px;
 }
 
+.alerts-toggle-row {
+    margin-top: -2px;
+    margin-bottom: 10px;
+}
+
+.pitching-alert-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(9, 20, 39, 0.56);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+}
+
+.pitching-alert-modal {
+    width: min(520px, calc(100vw - 24px));
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #d6e2f8;
+    box-shadow: 0 16px 40px rgba(5, 20, 46, 0.28);
+    padding: 16px 18px 14px;
+    color: #243a5f;
+}
+
+.pitching-alert-modal h3 {
+    margin: 0 0 8px;
+    font-size: 1.05rem;
+    color: #19325a;
+}
+
+.pitching-alert-modal p {
+    margin: 0 0 12px;
+    line-height: 1.35;
+}
+
+.pitching-alert-close {
+    border: 1px solid #a8c0ef;
+    border-radius: 999px;
+    background: #eef4ff;
+    color: #234f98;
+    padding: 5px 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pitching-alert-close:hover {
+    background: #e2ecff;
+}
+
 .card-reorder-controls,
 .mobile-card-reorder-controls {
     display: flex;
@@ -279,6 +330,16 @@
 .broadcasts {
     margin-top: 8px;
     margin-bottom: 8px;
+}
+
+.pregame-forecast,
+.mobile-pregame-forecast {
+    font-family: 'Roboto Condensed', sans-serif;
+    color: #2f4f79;
+    font-size: 13px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    line-height: 1.35;
 }
 
 .game-card {
@@ -764,6 +825,7 @@ a {
     .mobile-batter,
     .mobile-pitcher,
     .mobile-broadcaster,
+    .mobile-pregame-forecast,
     .mobile-away-probable-pitcher,
     .mobile-home-probable-pitcher,
     .mobile-start-time,

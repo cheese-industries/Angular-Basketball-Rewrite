@@ -96,6 +96,15 @@
       Grab the blue <b>Drag</b> handle on each card to reorder (or use ↑/↓ buttons). Your order is saved for the day and will expire at 10:00 AM Eastern tomorrow.
     </div>
 
+    <div class="organization-filter-select alerts-toggle-row">
+      <mat-slide-toggle
+        [(ngModel)]="showPitchingFeatAlerts"
+        (change)="onPitchingFeatAlertsToggle()"
+      >
+        Show no-hitter/perfect game alerts
+      </mat-slide-toggle>
+    </div>
+
     <div class="organization-filter-select toggles-row">
   <mat-slide-toggle
     #mlbToggle
@@ -302,7 +311,9 @@
                     class="event-flag"
                     >PERFECT GAME</span
                   >
-                  <span *ngIf="game.flags.noHitter == true" class="event-flag"
+                  <span
+                    *ngIf="game.flags.noHitter == true && game.flags.perfectGame !== true"
+                    class="event-flag"
                     >NO-HITTER</span
                   >
                   <span *ngIf="game.gameUtils.isLive" class="inning-span"
@@ -456,6 +467,12 @@
                   class="game-time"
                 >
                   {{ game.gameDate | date : "shortTime" }}
+                </div>
+                <div
+                  *ngIf="$any(game).preGameForecast"
+                  class="pregame-forecast"
+                >
+                  {{ $any(game).preGameForecast }}
                 </div>
                 <div *ngIf="game.description" class="notes">
                   <i>{{ game.description }}</i>
@@ -834,6 +851,9 @@
             <div *ngIf="(game.gameUtils.isPreview || game.gameUtils.isWarmup)" class="mobile-start-time">
               {{ game.gameDate | date : "shortTime" }}
             </div>
+            <div *ngIf="$any(game).preGameForecast" class="mobile-pregame-forecast">
+              {{ $any(game).preGameForecast }}
+            </div>
             <div *ngIf="!game.gameUtils.isLive && !game.gameUtils.isPreview && !game.gameUtils.isWarmup && !game.gameUtils.isPostponed && !game.gameUtils.isCancelled" class="mobile-final">
                 <b>Final</b>
             </div>
@@ -932,5 +952,25 @@
     </div>
   </div>
 </ng-container>
+
+<div
+  class="pitching-alert-overlay"
+  *ngIf="activePitchingFeatAlert as alert"
+  (click)="dismissPitchingFeatAlert()"
+>
+  <div
+    class="pitching-alert-modal"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="alert.title"
+    (click)="$event.stopPropagation()"
+  >
+    <h3>{{ alert.title }}</h3>
+    <p>{{ alert.message }}</p>
+    <button type="button" class="pitching-alert-close" (click)="dismissPitchingFeatAlert()">
+      Got it
+    </button>
+  </div>
+</div>
 
 </div>

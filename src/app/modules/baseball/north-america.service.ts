@@ -6,8 +6,6 @@ import { BaseballPBP } from './models/baseball-pbp/baseball-pbp';
 import { RootObject } from './models/boxscore/root-object';
 import { WinProb } from './models/baseball-pbp/win-prob';
 import { StandingsRootObject } from './models/mlb-api-models/standings';
-import { WeatherAPIReturn } from 'src/app/models/weather-api-return';
-import { ZipCodeDocument } from 'src/app/models/zip-code-document';
 
 @Injectable({
   providedIn: 'root',
@@ -132,9 +130,15 @@ export class NorthAmericaService {
     );
   }
 
-  getWeather(): Observable<any>{
+  getHourlyForecastForVenue(
+    latitude: number,
+    longitude: number,
+    startDate: string,
+    endDate: string
+  ): Observable<any> {
     return this.http.get<any>(
-      `https://danl.ee/weather/todayGameWeather.json`    )
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=UTC&start_date=${startDate}&end_date=${endDate}`
+    );
   }
 
 }

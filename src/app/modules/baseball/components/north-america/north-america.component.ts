@@ -4,7 +4,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { mlbApiReturn } from '../../models/mlb-api-models/mlb-api-return';
 import { WinProb } from '../../models/baseball-pbp/win-prob';
 import { firstValueFrom } from 'rxjs';
-import { WeatherAPIReturn } from 'src/app/models/weather-api-return';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { OrgNumbers } from '../../models/mlb-api-models/org-numbers';
 import { DateTime } from 'luxon';
@@ -14,6 +13,12 @@ type CardOrderEntry = {
   order: number[];
   expiresAt: string;
   updatedAt: string;
+};
+
+type PitchingFeatAlert = {
+  id: string;
+  title: string;
+  message: string;
 };
 
 @Component({
@@ -27,9 +32,14 @@ export class NorthAmericaComponent implements OnInit {
     'favoriteBaseballTeamLabelsV1';
   private readonly favoriteHelpDismissedStorageKey: string =
     'favoriteBaseballHelpDismissedV1';
+  private readonly pitchingFeatAlertsEnabledStorageKey: string =
+    'baseballPitchingFeatAlertsEnabledV1';
   private readonly cardOrderStorageKey: string =
     'baseballCardOrderSlatesV1';
   private readonly cardOrderRetentionLimit: number = 45;
+  private readonly forecastDaysAheadLimit: number = 3;
+  private readonly forecastCacheTtlMs: number = 20 * 60 * 1000;
+  private readonly maxConcurrentForecastRequests: number = 6;
   showOneOrganization: boolean = false;
   filteredGames!: any[];
   liveGamesNow!: any[];
@@ -39,7 +49,6 @@ export class NorthAmericaComponent implements OnInit {
   todayGamesFlag: boolean = true;
   todaysDateArray!: any[];
   baseballDataArray!: any[];
-  weather!: WeatherAPIReturn;
   everyGame?: mlbApiReturn;
   everyGameForMLBToggle?: mlbApiReturn;
   everyGameForAAAToggle?: mlbApiReturn;
@@ -90,9 +99,19 @@ export class NorthAmericaComponent implements OnInit {
   hasOrgFilter: boolean = false;
   initialState: boolean = true;
   showFavoriteHelp: boolean = true;
+  showPitchingFeatAlerts: boolean = true;
   favoriteTeamIds: number[] = [];
   favoriteTeamLabels: Record<number, string> = {};
   cardOrderBySlate: Record<string, CardOrderEntry> = {};
+  activePitchingFeatAlert: PitchingFeatAlert | null = null;
+  private pendingPitchingFeatAlerts: PitchingFeatAlert[] = [];
+  private alertedPitchingFeatKeys: Set<string> = new Set();
+  private venueForecastCache: Partial<Record<
+    string,
+    { fetchedAt: number; response: any }
+  >> = {};
+  private venueForecastInflight: Partial<Record<string, Promise<any | null>>> =
+    {};
 
   orgOptions: any[] = [
     { value: '', label: 'Show all scores' },
@@ -151,6 +170,7 @@ export class NorthAmericaComponent implements OnInit {
     this.form = new FormGroup({
       dateToCall: new FormControl(this.setTodayDate(), [Validators.required]),
     });
+    this.loadPitchingFeatAlertPreference();
     this.loadCardOrderState();
     this.loadFavoriteHelpPreference();
     this.loadFavoriteTeams();
@@ -204,13 +224,271 @@ export class NorthAmericaComponent implements OnInit {
   }
 
   async getTheWeather() {
-    let response = await firstValueFrom(this.service.getWeather());
     if (this.everyGame) {
-      for (var i = 0; i < this.everyGame.dates[0].games.length; i++) {
-        this.everyGame.dates[0].games[i].weather =
-          response[this.everyGame.dates[0].games[i].gamePk];
-      }
+      await this.addPregameForecastsForSelectedWindow(
+        this.everyGame.dates[0].games
+      );
     }
+  }
+
+  private async addPregameForecastsForSelectedWindow(games: any[]) {
+    if (!this.isSelectedDateWithinForecastWindow()) {
+      games.forEach((game) => (game.preGameForecast = ''));
+      return;
+    }
+
+    this.pruneForecastCaches();
+
+    const eligibleGames = games.filter((game) => this.shouldShowPregameForecast(game));
+    games
+      .filter((game) => !this.shouldShowPregameForecast(game))
+      .forEach((game) => (game.preGameForecast = ''));
+
+    const requestsByKey = new Map<
+      string,
+      { key: string; lat: number; lon: number; startDate: string; endDate: string }
+    >();
+
+    const gameRequestMeta = eligibleGames
+      .map((game) => {
+        const coords = game?.venue?.location?.defaultCoordinates;
+        const lat = +coords?.latitude;
+        const lon = +coords?.longitude;
+        const gameDateIso = game?.gameDate;
+        const gameInstantUtc = DateTime.fromISO(gameDateIso || '').toUTC();
+        if (!Number.isFinite(lat) || !Number.isFinite(lon) || !gameInstantUtc.isValid) {
+          game.preGameForecast = '';
+          return null;
+        }
+
+        const startDate = gameInstantUtc.minus({ hours: 12 }).toFormat('yyyy-LL-dd');
+        const endDate = gameInstantUtc.plus({ hours: 12 }).toFormat('yyyy-LL-dd');
+        const requestKey = `${lat.toFixed(4)},${lon.toFixed(4)},${startDate},${endDate}`;
+
+        if (!requestsByKey.has(requestKey)) {
+          requestsByKey.set(requestKey, {
+            key: requestKey,
+            lat,
+            lon,
+            startDate,
+            endDate,
+          });
+        }
+
+        return { game, gameDateIso, requestKey };
+      })
+      .filter((entry) => !!entry) as Array<{
+      game: any;
+      gameDateIso: string;
+      requestKey: string;
+    }>;
+
+    await this.runWithConcurrencyLimit(
+      Array.from(requestsByKey.values()),
+      this.maxConcurrentForecastRequests,
+      async (request) => {
+        await this.getOrFetchVenueForecast(
+          request.key,
+          request.lat,
+          request.lon,
+          request.startDate,
+          request.endDate
+        );
+      }
+    );
+
+    gameRequestMeta.forEach(({ game, gameDateIso, requestKey }) => {
+      const forecastResponse = this.venueForecastCache[requestKey]?.response;
+      game.preGameForecast = forecastResponse
+        ? this.buildPregameForecastText(forecastResponse, gameDateIso)
+        : '';
+    });
+  }
+
+  private async getOrFetchVenueForecast(
+    requestKey: string,
+    lat: number,
+    lon: number,
+    startDate: string,
+    endDate: string
+  ): Promise<any | null> {
+    const cached = this.venueForecastCache[requestKey];
+    if (cached && Date.now() - cached.fetchedAt < this.forecastCacheTtlMs) {
+      return cached.response;
+    }
+
+    if (this.venueForecastInflight[requestKey]) {
+      return this.venueForecastInflight[requestKey];
+    }
+
+    const inflightRequest = firstValueFrom(
+      this.service.getHourlyForecastForVenue(lat, lon, startDate, endDate)
+    )
+      .then((response) => {
+        this.venueForecastCache[requestKey] = {
+          fetchedAt: Date.now(),
+          response,
+        };
+        delete this.venueForecastInflight[requestKey];
+        return response;
+      })
+      .catch(() => {
+        delete this.venueForecastInflight[requestKey];
+        return null;
+      });
+
+    this.venueForecastInflight[requestKey] = inflightRequest;
+    return inflightRequest;
+  }
+
+  private pruneForecastCaches() {
+    const now = Date.now();
+    Object.keys(this.venueForecastCache).forEach((key) => {
+      const cachedEntry = this.venueForecastCache[key];
+      if (!cachedEntry) {
+        delete this.venueForecastCache[key];
+        return;
+      }
+
+      if (now - cachedEntry.fetchedAt > this.forecastCacheTtlMs) {
+        delete this.venueForecastCache[key];
+      }
+    });
+  }
+
+  private async runWithConcurrencyLimit<T>(
+    items: T[],
+    concurrencyLimit: number,
+    worker: (item: T) => Promise<void>
+  ) {
+    if (!items.length) {
+      return;
+    }
+
+    const safeLimit = Math.max(1, concurrencyLimit);
+    let currentIndex = 0;
+    const workers = Array.from({ length: Math.min(safeLimit, items.length) }, async () => {
+      while (currentIndex < items.length) {
+        const item = items[currentIndex++];
+        await worker(item);
+      }
+    });
+
+    await Promise.all(workers);
+  }
+
+  private shouldShowPregameForecast(game: any): boolean {
+    return Boolean(
+      game &&
+        !game?.gameUtils?.isLive &&
+        !game?.gameUtils?.isFinal &&
+        !game?.gameUtils?.isGameOver &&
+        !game?.gameUtils?.isCancelled &&
+        !game?.gameUtils?.isPostponed &&
+        !game?.gameUtils?.isSuspended &&
+        game?.venue?.location?.defaultCoordinates &&
+        game?.gameDate
+    );
+  }
+
+  private buildPregameForecastText(forecastResponse: any, gameDateIso: string): string {
+    const hourly = forecastResponse?.hourly;
+    const times: string[] = hourly?.time || [];
+    const temps: number[] = hourly?.temperature_2m || [];
+    const pops: number[] = hourly?.precipitation_probability || [];
+    const winds: number[] = hourly?.wind_speed_10m || [];
+    const weatherCodes: number[] = hourly?.weather_code || [];
+    if (!times.length || !gameDateIso) {
+      return '';
+    }
+
+    const gameTime = DateTime.fromISO(gameDateIso);
+    const gameTimeUtc = gameTime.toUTC();
+    if (!gameTime.isValid) {
+      return '';
+    }
+
+    let bestIndex = -1;
+    let bestDiff = Number.MAX_SAFE_INTEGER;
+
+    times.forEach((time, index) => {
+      const forecastTime = DateTime.fromISO(time, { zone: 'utc' });
+      const diff = Math.abs(forecastTime.toMillis() - gameTimeUtc.toMillis());
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestIndex = index;
+      }
+    });
+
+    if (bestIndex < 0) {
+      return '';
+    }
+
+    const gameLocalDisplayTime = gameTime.toLocal().toFormat('h:mm a');
+    const temp = temps[bestIndex];
+    const pop = pops[bestIndex];
+    const wind = winds[bestIndex];
+    const weatherDesc = this.describeWeatherCode(weatherCodes[bestIndex]);
+
+    const tempPart = Number.isFinite(temp) ? `${Math.round(temp)}°F` : '--°F';
+    const popPart = Number.isFinite(pop) ? `${Math.round(pop)}% precip` : '--% precip';
+    const windPart = Number.isFinite(wind) ? `${Math.round(wind)} mph wind` : '-- mph wind';
+
+    return `Forecast @ ${gameLocalDisplayTime}: ${tempPart}, ${weatherDesc}, ${popPart}, ${windPart}`;
+  }
+
+  private describeWeatherCode(code: number): string {
+    const weatherCodeMap: Record<number, string> = {
+      0: 'Clear',
+      1: 'Mostly clear',
+      2: 'Partly cloudy',
+      3: 'Overcast',
+      45: 'Fog',
+      48: 'Freezing fog',
+      51: 'Light drizzle',
+      53: 'Drizzle',
+      55: 'Heavy drizzle',
+      56: 'Light freezing drizzle',
+      57: 'Freezing drizzle',
+      61: 'Light rain',
+      63: 'Rain',
+      65: 'Heavy rain',
+      66: 'Light freezing rain',
+      67: 'Freezing rain',
+      71: 'Light snow',
+      73: 'Snow',
+      75: 'Heavy snow',
+      77: 'Snow grains',
+      80: 'Light rain showers',
+      81: 'Rain showers',
+      82: 'Heavy rain showers',
+      85: 'Light snow showers',
+      86: 'Snow showers',
+      95: 'Thunderstorm',
+      96: 'Thunderstorm w/ hail',
+      99: 'Thunderstorm w/ heavy hail',
+    };
+
+    return weatherCodeMap[code] || 'Conditions unavailable';
+  }
+
+  private getTodayDateKey(): string {
+    if (!this.todaysDateArray || this.todaysDateArray.length < 3) {
+      this.setTodayDate();
+    }
+    return `${this.todaysDateArray[0]}-${this.todaysDateArray[1]}-${this.todaysDateArray[2]}`;
+  }
+
+  private isSelectedDateWithinForecastWindow(): boolean {
+    const selectedDate = DateTime.fromFormat(this.getSelectedDateKey(), 'yyyy-LL-dd');
+    const today = DateTime.fromFormat(this.getTodayDateKey(), 'yyyy-LL-dd');
+
+    if (!selectedDate.isValid || !today.isValid) {
+      return false;
+    }
+
+    const diffDays = Math.floor(selectedDate.diff(today, 'days').days);
+    return diffDays >= 0 && diffDays <= this.forecastDaysAheadLimit;
   }
 
   async getEveryGameOnEveryLevel(
@@ -268,6 +546,8 @@ export class NorthAmericaComponent implements OnInit {
     games.forEach((game) => this.applyAthleticsOverridesToGame(game));
 
     this.everyGame = { ...response, dates: [{ ...response.dates[0], games }] };
+
+    this.enqueuePitchingFeatAlerts(games);
 
     this.hydrateFavoriteTeamLabelsFromGames();
 
@@ -358,6 +638,19 @@ export class NorthAmericaComponent implements OnInit {
       this.getMonthToCall(),
       this.getDayToCall()
     );
+  }
+
+  onPitchingFeatAlertsToggle() {
+    this.savePitchingFeatAlertPreference();
+    if (!this.showPitchingFeatAlerts) {
+      this.pendingPitchingFeatAlerts = [];
+      this.activePitchingFeatAlert = null;
+    }
+  }
+
+  dismissPitchingFeatAlert() {
+    this.activePitchingFeatAlert = null;
+    this.showNextPitchingFeatAlertIfNeeded();
   }
 
   getTheScores(yearToFetch: string, monthToFetch: string, dayToFetch: string) {
@@ -710,6 +1003,118 @@ export class NorthAmericaComponent implements OnInit {
     this.showFavoriteHelp =
       window.localStorage.getItem(this.favoriteHelpDismissedStorageKey) !==
       'true';
+  }
+
+  private loadPitchingFeatAlertPreference() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const stored = window.localStorage.getItem(
+      this.pitchingFeatAlertsEnabledStorageKey
+    );
+    this.showPitchingFeatAlerts = stored !== 'false';
+  }
+
+  private savePitchingFeatAlertPreference() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.localStorage.setItem(
+      this.pitchingFeatAlertsEnabledStorageKey,
+      this.showPitchingFeatAlerts ? 'true' : 'false'
+    );
+  }
+
+  private enqueuePitchingFeatAlerts(games: any[]) {
+    if (!this.showPitchingFeatAlerts) {
+      return;
+    }
+
+    games.forEach((game) => {
+      if (this.isCompletedGameStatus(game)) {
+        return;
+      }
+
+      const gamePk = +game?.gamePk;
+      if (!Number.isFinite(gamePk)) {
+        return;
+      }
+
+      const officialDate =
+        game?.officialDate || game?.gameDate?.toString()?.slice(0, 10) || '';
+      const awayName = game?.teams?.away?.team?.shortName || 'Away Team';
+      const homeName = game?.teams?.home?.team?.shortName || 'Home Team';
+      const inningLabel = game?.linescore?.currentInningOrdinal
+        ? `${game?.linescore?.inningState || ''} ${game.linescore.currentInningOrdinal}`.trim()
+        : game?.status?.detailedState || 'Live';
+
+      const isPerfectGame = Boolean(
+        game?.gameUtils?.isPerfectGame ||
+          game?.flags?.perfectGame ||
+          game?.flags?.awayTeamPerfectGame ||
+          game?.flags?.homeTeamPerfectGame
+      );
+      const isNoHitter = Boolean(
+        game?.gameUtils?.isNoHitter ||
+          game?.flags?.noHitter ||
+          game?.flags?.awayTeamNoHitter ||
+          game?.flags?.homeTeamNoHitter
+      );
+
+      if (isPerfectGame) {
+        const alertId = `${officialDate}|${gamePk}|perfect`;
+        if (!this.alertedPitchingFeatKeys.has(alertId)) {
+          this.alertedPitchingFeatKeys.add(alertId);
+          this.pendingPitchingFeatAlerts.push({
+            id: alertId,
+            title: 'Perfect Game Watch',
+            message: `${awayName} at ${homeName} has a perfect game in progress (${inningLabel}).`,
+          });
+        }
+        return;
+      }
+
+      if (isNoHitter) {
+        const alertId = `${officialDate}|${gamePk}|noHitter`;
+        if (!this.alertedPitchingFeatKeys.has(alertId)) {
+          this.alertedPitchingFeatKeys.add(alertId);
+          this.pendingPitchingFeatAlerts.push({
+            id: alertId,
+            title: 'No-Hitter Watch',
+            message: `${awayName} at ${homeName} has a no-hitter in progress (${inningLabel}).`,
+          });
+        }
+      }
+    });
+
+    this.showNextPitchingFeatAlertIfNeeded();
+  }
+
+  private isCompletedGameStatus(game: any): boolean {
+    const status = game?.status || {};
+
+    return (
+      status?.abstractGameState === 'Final' ||
+      status?.codedGameState === 'F' ||
+      status?.detailedState === 'Final' ||
+      status?.statusCode === 'F' ||
+      status?.abstractGameCode === 'F'
+    );
+  }
+
+  private showNextPitchingFeatAlertIfNeeded() {
+    if (!this.showPitchingFeatAlerts || this.activePitchingFeatAlert) {
+      return;
+    }
+
+    const nextAlert = this.pendingPitchingFeatAlerts.shift();
+    if (!nextAlert) {
+      return;
+    }
+
+    this.activePitchingFeatAlert = nextAlert;
   }
 
   private loadCardOrderState() {
