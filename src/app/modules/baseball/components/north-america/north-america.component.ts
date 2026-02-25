@@ -21,6 +21,12 @@ type PitchingFeatAlert = {
   message: string;
 };
 
+type SortMode =
+  | 'favorites'
+  | 'live-first'
+  | 'start-time'
+  | 'closest-geo';
+
 @Component({
   selector: 'app-north-america',
   templateUrl: './north-america.component.html',
@@ -94,6 +100,8 @@ export class NorthAmericaComponent implements OnInit {
   lowAIsChecked: boolean = true;
   liveOnlyIsChecked: boolean = false;
   sortByStartTimeIsChecked: boolean = false;
+  currentSortMode: SortMode = 'favorites';
+  geoSortNotice: string = '';
   filterByOrg: boolean = false;
   filterByLevel: boolean = false;
   hasOrgFilter: boolean = false;
@@ -112,6 +120,16 @@ export class NorthAmericaComponent implements OnInit {
   >> = {};
   private venueForecastInflight: Partial<Record<string, Promise<any | null>>> =
     {};
+  private userGeoLocation: { latitude: number; longitude: number } | null =
+    null;
+  private geolocationRequestInFlight: Promise<boolean> | null = null;
+
+  sortModeOptions: Array<{ value: SortMode; label: string }> = [
+    { value: 'favorites', label: 'Favorites' },
+    { value: 'live-first', label: 'Live first' },
+    { value: 'start-time', label: 'Start time' },
+    { value: 'closest-geo', label: 'Closest to me' },
+  ];
 
   orgOptions: any[] = [
     { value: '', label: 'Show all scores' },
@@ -579,13 +597,59 @@ export class NorthAmericaComponent implements OnInit {
       );
     }
 
-    const gamesSortedByFavorites = this.sortGamesWithFavoritesFirst(
-      filteredGames
-    );
+    const sortedGames = this.applySortMode(filteredGames);
 
     this.everyGame.dates[0].games = this.applySavedCardOrder(
-      gamesSortedByFavorites
+      sortedGames
     );
+  }
+
+  async setSortMode(mode: SortMode) {
+    if (mode === 'closest-geo') {
+      const hasLocation = await this.ensureUserLocationForGeoSort();
+      if (!hasLocation) {
+        this.currentSortMode = 'start-time';
+        this.sortByStartTimeIsChecked = true;
+        this.applyFilters();
+        return;
+      }
+
+      this.geoSortNotice = 'Sorting by distance from your current location.';
+    } else {
+      this.geoSortNotice = '';
+    }
+
+    this.currentSortMode = mode;
+    this.sortByStartTimeIsChecked = mode === 'start-time';
+    this.applyFilters();
+  }
+
+  isActiveSortMode(mode: SortMode): boolean {
+    return this.currentSortMode === mode;
+  }
+
+  showGeoDistanceChip(game: any): boolean {
+    return (
+      this.currentSortMode === 'closest-geo' &&
+      Number.isFinite(+game?.geoDistanceMiles)
+    );
+  }
+
+  formatGeoDistanceMiles(game: any): string {
+    const miles = +game?.geoDistanceMiles;
+    if (!Number.isFinite(miles)) {
+      return '';
+    }
+
+    if (miles >= 100) {
+      return `${Math.round(miles).toLocaleString()} mi away`;
+    }
+
+    if (miles >= 10) {
+      return `${miles.toFixed(1)} mi away`;
+    }
+
+    return `${miles.toFixed(2)} mi away`;
   }
 
   canMoveGameCard(index: number, direction: number): boolean {
@@ -633,6 +697,12 @@ export class NorthAmericaComponent implements OnInit {
   }
 
   onSliderChange() {
+    if (this.sortByStartTimeIsChecked) {
+      this.currentSortMode = 'start-time';
+    } else if (this.currentSortMode === 'start-time') {
+      this.currentSortMode = 'favorites';
+    }
+
     this.getTheScores(
       this.getYearToCall(),
       this.getMonthToCall(),
@@ -1208,7 +1278,7 @@ export class NorthAmericaComponent implements OnInit {
     const liveState = this.liveOnlyIsChecked ? '1' : '0';
     const startTimeState = this.sortByStartTimeIsChecked ? '1' : '0';
     const orgState = this.org || 'all';
-    return `${selectedDate}|org:${orgState}|lvl:${levelState}|live:${liveState}|stime:${startTimeState}`;
+    return `${selectedDate}|org:${orgState}|lvl:${levelState}|live:${liveState}|stime:${startTimeState}|sort:${this.currentSortMode}`;
   }
 
   private getSelectedDateKey(): string {
@@ -1280,6 +1350,163 @@ export class NorthAmericaComponent implements OnInit {
     }
     this.saveFavoriteTeams();
     this.applyFilters();
+  }
+
+  private applySortMode(games: any[]) {
+    switch (this.currentSortMode) {
+      case 'live-first':
+        return this.sortGamesLiveFirst(games);
+      case 'start-time':
+        return this.sortGamesByStartTime(games);
+      case 'closest-geo':
+        return this.sortGamesClosestToUser(games);
+      case 'favorites':
+      default:
+        return this.sortGamesWithFavoritesFirst(games);
+    }
+  }
+
+  private sortGamesLiveFirst(games: any[]) {
+    return [...games].sort((a, b) => {
+      const aLive = a?.gameUtils?.isLive ? 1 : 0;
+      const bLive = b?.gameUtils?.isLive ? 1 : 0;
+      if (aLive !== bLive) {
+        return bLive - aLive;
+      }
+
+      return this.getGameStartTimeMs(a) - this.getGameStartTimeMs(b);
+    });
+  }
+
+  private sortGamesByStartTime(games: any[]) {
+    return [...games].sort(
+      (a, b) => this.getGameStartTimeMs(a) - this.getGameStartTimeMs(b)
+    );
+  }
+
+  private sortGamesClosestToUser(games: any[]) {
+    if (!this.userGeoLocation) {
+      return this.sortGamesByStartTime(games);
+    }
+
+    const { latitude, longitude } = this.userGeoLocation;
+    games.forEach((game) => {
+      const distance = this.getDistanceToVenueMiles(game, latitude, longitude);
+      game.geoDistanceMiles = Number.isFinite(distance) ? distance : null;
+    });
+
+    return [...games].sort((a, b) => {
+      const aDistance = this.getDistanceToVenueMiles(a, latitude, longitude);
+      const bDistance = this.getDistanceToVenueMiles(b, latitude, longitude);
+
+      const aHasDistance = Number.isFinite(aDistance);
+      const bHasDistance = Number.isFinite(bDistance);
+
+      if (aHasDistance && bHasDistance && aDistance !== bDistance) {
+        return aDistance - bDistance;
+      }
+
+      if (aHasDistance !== bHasDistance) {
+        return aHasDistance ? -1 : 1;
+      }
+
+      return this.getGameStartTimeMs(a) - this.getGameStartTimeMs(b);
+    });
+  }
+
+  private getDistanceToVenueMiles(
+    game: any,
+    userLatitude: number,
+    userLongitude: number
+  ): number {
+    const coords = game?.venue?.location?.defaultCoordinates;
+    const venueLatitude = +coords?.latitude;
+    const venueLongitude = +coords?.longitude;
+
+    if (!Number.isFinite(venueLatitude) || !Number.isFinite(venueLongitude)) {
+      return Number.POSITIVE_INFINITY;
+    }
+
+    return this.haversineDistanceMiles(
+      userLatitude,
+      userLongitude,
+      venueLatitude,
+      venueLongitude
+    );
+  }
+
+  private haversineDistanceMiles(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number {
+    const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+    const earthRadiusMiles = 3958.7613;
+
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) *
+        Math.cos(toRadians(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return earthRadiusMiles * c;
+  }
+
+  private async ensureUserLocationForGeoSort(): Promise<boolean> {
+    if (this.userGeoLocation) {
+      return true;
+    }
+
+    if (typeof window === 'undefined' || !window.navigator?.geolocation) {
+      this.geoSortNotice =
+        'Could not access location in this browser, so sort fell back to Start time.';
+      return false;
+    }
+
+    if (this.geolocationRequestInFlight) {
+      return this.geolocationRequestInFlight;
+    }
+
+    this.geoSortNotice = 'Allow location access to sort games nearest to you.';
+
+    this.geolocationRequestInFlight = new Promise<boolean>((resolve) => {
+      window.navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.userGeoLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          this.geoSortNotice = '';
+          this.geolocationRequestInFlight = null;
+          resolve(true);
+        },
+        (error) => {
+          const denied =
+            error.code === error.PERMISSION_DENIED || error.code === 1;
+          this.geoSortNotice = denied
+            ? 'Location permission was denied, so sort fell back to Start time.'
+            : 'Could not get your location, so sort fell back to Start time.';
+          this.geolocationRequestInFlight = null;
+          resolve(false);
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 10000,
+          maximumAge: 15 * 60 * 1000,
+        }
+      );
+    });
+
+    return this.geolocationRequestInFlight;
+  }
+
+  private getGameStartTimeMs(game: any): number {
+    const value = new Date(game?.gameDate).getTime();
+    return Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER;
   }
 
   private sortGamesWithFavoritesFirst(games: any[]) {

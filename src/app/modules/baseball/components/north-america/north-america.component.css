@@ -180,6 +180,42 @@
     margin-bottom: 10px;
 }
 
+.sort-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: -2px;
+    margin-bottom: 10px;
+}
+
+.sort-chip {
+    border: 1px solid #c3d3ef;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #2f4f79;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.sort-chip:hover {
+    background: #edf4ff;
+}
+
+.sort-chip.sort-chip-active {
+    background: #2f5da8;
+    border-color: #2f5da8;
+    color: #ffffff;
+}
+
+.sort-note {
+    margin-top: -4px;
+    color: #2d4e7b;
+    font-style: italic;
+}
+
 .pitching-alert-overlay {
     position: fixed;
     inset: 0;
@@ -340,6 +376,24 @@
     margin-top: 4px;
     margin-bottom: 8px;
     line-height: 1.35;
+}
+
+.geo-distance-chip,
+.mobile-geo-distance-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid #c7d8f3;
+    background: #eef4ff;
+    color: #244c84;
+    border-radius: 999px;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    margin-top: 2px;
+    margin-bottom: 8px;
+    width: fit-content;
 }
 
 .game-card {

@@ -105,6 +105,22 @@
       </mat-slide-toggle>
     </div>
 
+    <div class="organization-filter-select sort-chip-row">
+      <button
+        type="button"
+        class="sort-chip"
+        *ngFor="let mode of sortModeOptions"
+        [class.sort-chip-active]="isActiveSortMode(mode.value)"
+        (click)="setSortMode(mode.value)"
+      >
+        {{ mode.label }}
+      </button>
+    </div>
+
+    <div class="organization-filter-select sort-note" *ngIf="geoSortNotice">
+      {{ geoSortNotice }}
+    </div>
+
     <div class="organization-filter-select toggles-row">
   <mat-slide-toggle
     #mlbToggle
@@ -467,6 +483,9 @@
                   class="game-time"
                 >
                   {{ game.gameDate | date : "shortTime" }}
+                </div>
+                <div *ngIf="showGeoDistanceChip(game)" class="geo-distance-chip">
+                  📍 {{ formatGeoDistanceMiles(game) }}
                 </div>
                 <div
                   *ngIf="$any(game).preGameForecast"
@@ -850,6 +869,9 @@
             </div>
             <div *ngIf="(game.gameUtils.isPreview || game.gameUtils.isWarmup)" class="mobile-start-time">
               {{ game.gameDate | date : "shortTime" }}
+            </div>
+            <div *ngIf="showGeoDistanceChip(game)" class="mobile-geo-distance-chip">
+              📍 {{ formatGeoDistanceMiles(game) }}
             </div>
             <div *ngIf="$any(game).preGameForecast" class="mobile-pregame-forecast">
               {{ $any(game).preGameForecast }}
