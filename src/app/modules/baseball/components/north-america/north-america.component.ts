@@ -40,6 +40,8 @@ export class NorthAmericaComponent implements OnInit {
     'favoriteBaseballHelpDismissedV1';
   private readonly pitchingFeatAlertsEnabledStorageKey: string =
     'baseballPitchingFeatAlertsEnabledV1';
+  private readonly compactDensityStorageKey: string =
+    'baseballCompactDensityEnabledV1';
   private readonly cardOrderStorageKey: string =
     'baseballCardOrderSlatesV1';
   private readonly cardOrderRetentionLimit: number = 45;
@@ -108,6 +110,7 @@ export class NorthAmericaComponent implements OnInit {
   initialState: boolean = true;
   showFavoriteHelp: boolean = true;
   showPitchingFeatAlerts: boolean = true;
+  isCompactDensity: boolean = false;
   favoriteTeamIds: number[] = [];
   favoriteTeamLabels: Record<number, string> = {};
   cardOrderBySlate: Record<string, CardOrderEntry> = {};
@@ -189,6 +192,7 @@ export class NorthAmericaComponent implements OnInit {
       dateToCall: new FormControl(this.setTodayDate(), [Validators.required]),
     });
     this.loadPitchingFeatAlertPreference();
+    this.loadCompactDensityPreference();
     this.loadCardOrderState();
     this.loadFavoriteHelpPreference();
     this.loadFavoriteTeams();
@@ -718,6 +722,10 @@ export class NorthAmericaComponent implements OnInit {
     }
   }
 
+  onCompactDensityToggle() {
+    this.saveCompactDensityPreference();
+  }
+
   dismissPitchingFeatAlert() {
     this.activePitchingFeatAlert = null;
     this.showNextPitchingFeatAlertIfNeeded();
@@ -1094,6 +1102,26 @@ export class NorthAmericaComponent implements OnInit {
     window.localStorage.setItem(
       this.pitchingFeatAlertsEnabledStorageKey,
       this.showPitchingFeatAlerts ? 'true' : 'false'
+    );
+  }
+
+  private loadCompactDensityPreference() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const stored = window.localStorage.getItem(this.compactDensityStorageKey);
+    this.isCompactDensity = stored === 'true';
+  }
+
+  private saveCompactDensityPreference() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.localStorage.setItem(
+      this.compactDensityStorageKey,
+      this.isCompactDensity ? 'true' : 'false'
     );
   }
 

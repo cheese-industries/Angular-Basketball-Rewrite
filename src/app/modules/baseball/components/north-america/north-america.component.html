@@ -1,4 +1,4 @@
-<div class="scoreboard-shell">
+<div class="scoreboard-shell" [class.compact-density]="isCompactDensity">
   <header class="scoreboard-header">
     <h1>Every Baseball Score</h1>
     <p>Live updates every 30 seconds for every game across MLB and the minors. Click a game to see its box score.</p>
@@ -102,6 +102,15 @@
         (change)="onPitchingFeatAlertsToggle()"
       >
         Show no-hitter/perfect game alerts
+      </mat-slide-toggle>
+    </div>
+
+    <div class="organization-filter-select density-toggle-row">
+      <mat-slide-toggle
+        [(ngModel)]="isCompactDensity"
+        (change)="onCompactDensityToggle()"
+      >
+        Compact density
       </mat-slide-toggle>
     </div>
 
@@ -581,6 +590,68 @@
                 </div>
 
                 <div
+                  *ngIf="isCompactDensity && game.gameUtils.isLive"
+                  class="compact-live-details"
+                >
+                  <div
+                    *ngIf="game.linescore.defense.pitcher"
+                    class="compact-live-row"
+                  >
+                    <b>Pitcher:</b>
+                    {{ game.linescore.defense.pitcher.fullName }}
+                    ({{ game.linescore.defense.pitcher.stats[3].stats.wins }}-{{
+                      game.linescore.defense.pitcher.stats[3].stats.losses
+                    }}, {{ game.linescore.defense.pitcher.stats[3].stats.era }})
+                  </div>
+                  <div
+                    *ngIf="game.linescore.offense.batter"
+                    class="compact-live-row"
+                  >
+                    <b>Batter:</b>
+                    {{ game.linescore.offense.batter.fullName }}
+                    ({{ game.linescore.offense.batter.stats[2].stats.avg }}-{{ game.linescore.offense.batter.stats[2].stats.obp }}-{{ game.linescore.offense.batter.stats[2].stats.slg }})
+                  </div>
+                  <div
+                    *ngIf="game.linescore.offense.onDeck"
+                    class="compact-live-row"
+                  >
+                    <b>On deck:</b>
+                    {{ game.linescore.offense.onDeck.fullName }}
+                  </div>
+                  <div
+                    *ngIf="game.linescore.offense.inHole"
+                    class="compact-live-row"
+                  >
+                    <b>In the hole:</b>
+                    {{ game.linescore.offense.inHole.fullName }}
+                  </div>
+                  <div class="compact-live-row compact-baserunners">
+                    <b>Baserunners:</b>
+                    <span
+                      >1st: {{
+                        game.linescore.offense.first
+                          ? game.linescore.offense.first.boxscoreName
+                          : '—'
+                      }}</span
+                    >
+                    <span
+                      >2nd: {{
+                        game.linescore.offense.second
+                          ? game.linescore.offense.second.boxscoreName
+                          : '—'
+                      }}</span
+                    >
+                    <span
+                      >3rd: {{
+                        game.linescore.offense.third
+                          ? game.linescore.offense.third.boxscoreName
+                          : '—'
+                      }}</span
+                    >
+                  </div>
+                </div>
+
+                <div
                   *ngIf="
                     game.decisions &&
                     game.decisions.winner &&
@@ -656,7 +727,7 @@
                   </span>
                 </div>
               </div>
-              <div class="rightside" *ngIf="game.gameUtils.isLive">
+              <div class="rightside" *ngIf="game.gameUtils.isLive && !isCompactDensity">
                 <span class="diamond">
                   <div class="data-inside-diamond">
                     <span *ngIf="game.linescore.defense.pitcher" class="pitcher"

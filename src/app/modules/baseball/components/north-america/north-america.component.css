@@ -180,6 +180,11 @@
     margin-bottom: 10px;
 }
 
+.density-toggle-row {
+    margin-top: -4px;
+    margin-bottom: 10px;
+}
+
 .sort-chip-row {
     display: flex;
     flex-wrap: wrap;
@@ -767,6 +772,146 @@ a {
     padding-top: 10px;
     display: flex;
     width: 320px;
+}
+
+.scoreboard-shell.compact-density .scoreboard-header h1 {
+    font-size: 1.72rem;
+}
+
+.scoreboard-shell.compact-density .scoreboard-header p {
+    font-size: 0.86rem;
+}
+
+.scoreboard-shell.compact-density .scoreboard-controls {
+    padding: 10px 12px 4px;
+    margin-bottom: 14px;
+}
+
+.scoreboard-shell.compact-density .organization-filter-select {
+    margin-bottom: 8px;
+    font-size: 0.78rem;
+}
+
+.scoreboard-shell.compact-density .sort-chip {
+    padding: 4px 10px;
+    font-size: 11px;
+}
+
+.scoreboard-shell.compact-density .desktop-container {
+    column-gap: 10px;
+    row-gap: 10px;
+}
+
+.scoreboard-shell.compact-density .game-card {
+    min-height: 214px;
+}
+
+.scoreboard-shell.compact-density .mat-card-content {
+    padding: 10px 12px 8px !important;
+}
+
+.scoreboard-shell.compact-density .card-subtitle {
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+}
+
+.scoreboard-shell.compact-density .team-name,
+.scoreboard-shell.compact-density .team-runs,
+.scoreboard-shell.compact-density .team-hits,
+.scoreboard-shell.compact-density .team-errors {
+    font-size: 16px;
+}
+
+.scoreboard-shell.compact-density .away-broadcast,
+.scoreboard-shell.compact-density .home-broadcast,
+.scoreboard-shell.compact-density .pregame-forecast,
+.scoreboard-shell.compact-density .notes,
+.scoreboard-shell.compact-density .probable-pitchers,
+.scoreboard-shell.compact-density .postgame-pitcher-info,
+.scoreboard-shell.compact-density .lastPlay,
+.scoreboard-shell.compact-density .homeruns {
+    font-size: 12px;
+    line-height: 1.25;
+}
+
+.scoreboard-shell.compact-density .broadcasts,
+.scoreboard-shell.compact-density .game-time {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.scoreboard-shell.compact-density .lastPlay,
+.scoreboard-shell.compact-density .homeruns {
+    padding-top: 8px;
+}
+
+.scoreboard-shell.compact-density .lastPlay {
+    padding-bottom: 8px;
+}
+
+.scoreboard-shell.compact-density .compact-live-details {
+    border-top: 1px solid #e7edf8;
+    margin-top: 6px;
+    padding-top: 6px;
+    display: grid;
+    row-gap: 3px;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+.scoreboard-shell.compact-density .compact-live-row {
+    font-size: 12px;
+    line-height: 1.22;
+    color: #2f3f5c;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.scoreboard-shell.compact-density .compact-live-row b {
+    color: #223a62;
+}
+
+.scoreboard-shell.compact-density .compact-baserunners {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+}
+
+.scoreboard-shell.compact-density .compact-baserunners b {
+    margin-right: 2px;
+}
+
+.scoreboard-shell.compact-density .mobile-card-container {
+    margin: 8px;
+    row-gap: 3px;
+}
+
+.scoreboard-shell.compact-density .mobile-team-line {
+    font-size: 20px;
+}
+
+.scoreboard-shell.compact-density .mobile-inning,
+.scoreboard-shell.compact-density .mobile-start-time,
+.scoreboard-shell.compact-density .mobile-broadcaster,
+.scoreboard-shell.compact-density .mobile-pregame-forecast,
+.scoreboard-shell.compact-density .mobile-away-probable-pitcher,
+.scoreboard-shell.compact-density .mobile-home-probable-pitcher,
+.scoreboard-shell.compact-density .mobile-batter,
+.scoreboard-shell.compact-density .mobile-pitcher,
+.scoreboard-shell.compact-density .mobile-final,
+.scoreboard-shell.compact-density .mobile-decision-pitcher,
+.scoreboard-shell.compact-density .mobile-win-pitcher,
+.scoreboard-shell.compact-density .mobile-game-over-home-runs,
+.scoreboard-shell.compact-density .mobile-in-progress-home-runs,
+.scoreboard-shell.compact-density .mobile-baserunners {
+    font-size: 12px;
+    line-height: 1.25;
+}
+
+@media only screen and (min-width: 1360px) {
+    .scoreboard-shell.compact-density .desktop-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        max-width: 1680px;
+    }
 }
 
 @media only screen and (max-width: 1024px) {
