@@ -1,4 +1,5 @@
 .scoreboard-shell {
+    --mini-filter-bar-height: 42px;
     padding: 18px 20px 28px;
     background: linear-gradient(180deg, #f7f9ff 0%, #eef2f9 100%);
     min-height: calc(100vh - 64px);
@@ -25,6 +26,7 @@
 .mini-filter-inner {
     max-width: 1240px;
     margin: 0 auto;
+    min-height: var(--mini-filter-bar-height);
     padding: 6px 12px;
     border: 1px solid rgba(126, 145, 178, 0.35);
     border-top: none;
@@ -118,6 +120,45 @@
     padding: 14px 14px 6px;
     margin: 0 auto 20px;
     max-width: 1240px;
+}
+
+.empty-state-panel {
+    max-width: 860px;
+    margin: 8px auto 18px;
+    border: 1px solid #d6e3f8;
+    border-radius: 14px;
+    background: #f7faff;
+    text-align: center;
+    padding: 16px 14px;
+    color: #2a446d;
+}
+
+.empty-state-panel h3 {
+    margin: 0 0 6px;
+    font-size: 1.06rem;
+    font-weight: 800;
+    color: #23497f;
+}
+
+.empty-state-panel p {
+    margin: 0 0 10px;
+    font-size: 0.9rem;
+    color: #49618a;
+}
+
+.empty-state-reset-btn {
+    border: 1px solid #b6caed;
+    border-radius: 999px;
+    background: #eaf2ff;
+    color: #234b86;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.empty-state-reset-btn:hover {
+    background: #dfeaff;
 }
 
 .datepicker-center {
@@ -301,10 +342,160 @@
     color: #ffffff;
 }
 
+.section-jump-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: -6px;
+    margin-bottom: 10px;
+}
+
+.section-jump-chip {
+    border: 1px solid #c6d5ef;
+    border-radius: 999px;
+    background: #f6f9ff;
+    color: #2f4f79;
+    padding: 4px 11px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.section-jump-chip:hover:not(:disabled) {
+    background: #eaf1ff;
+}
+
+.section-jump-chip:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.game-section-header {
+    width: 100%;
+    margin: 6px 0 2px;
+    padding: 6px 10px;
+    border: 1px solid #d5e2f7;
+    border-radius: 10px;
+    background: #eef4ff;
+    color: #264777;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+}
+
+.desktop-section-header {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 22;
+}
+
+.desktop-section-header:first-child {
+    margin-top: 0;
+}
+
+.mobile-game-section-header {
+    margin: 8px 0 4px;
+    position: sticky;
+    top: 0;
+    z-index: 22;
+}
+
+.scoreboard-shell.mini-filter-active .desktop-section-header,
+.scoreboard-shell.mini-filter-active .mobile-game-section-header {
+    top: calc(var(--mini-filter-bar-height) + 12px)
+}
+
+.game-section-count {
+    font-weight: 700;
+    color: #3a5b8d;
+}
+
 .sort-note {
     margin-top: -4px;
     color: #2d4e7b;
     font-style: italic;
+}
+
+.keyboard-shortcuts-note {
+    margin-top: -4px;
+    margin-bottom: 8px;
+    color: #37517c;
+    font-size: 12px;
+}
+
+.keyboard-shortcuts-note kbd {
+    display: inline-block;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    color: #2a4a79;
+    background: #edf4ff;
+    border: 1px solid #c7d8f3;
+    border-radius: 5px;
+    padding: 1px 6px;
+    line-height: 1.2;
+}
+
+.keyboard-shortcut-status {
+    margin-top: -4px;
+    margin-bottom: 10px;
+    color: #244d84;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.update-status-row {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: -4px;
+    margin-bottom: 10px;
+}
+
+.updated-at-text {
+    color: #2e4e7a;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.refresh-now-btn {
+    border: 1px solid #b8caea;
+    border-radius: 999px;
+    background: #eef4ff;
+    color: #234e92;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    cursor: pointer;
+}
+
+.refresh-now-btn:hover:not(:disabled) {
+    background: #e3ecff;
+}
+
+.refresh-now-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.score-cell-changed {
+    animation: score-cell-flash 1.2s ease-out;
+    border-radius: 6px;
+}
+
+@keyframes score-cell-flash {
+    0% {
+        background-color: rgba(253, 224, 71, 0.85);
+        color: #1e2f4e;
+    }
+    100% {
+        background-color: transparent;
+        color: inherit;
+    }
 }
 
 .pitching-alert-overlay {
@@ -451,6 +642,71 @@
 
 .leverage-index {
     width: 100%;
+}
+
+.win-prob-sparkline-row,
+.mobile-win-prob-sparkline-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 3px;
+    margin-bottom: 4px;
+    width: 100%;
+}
+
+.win-prob-sparkline-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #3b5681;
+}
+
+.win-prob-sparkline {
+    width: 96px;
+    height: 24px;
+    overflow: visible;
+}
+
+.win-prob-sparkline-track {
+    fill: none;
+    stroke: rgba(130, 153, 191, 0.32);
+    stroke-width: 1;
+}
+
+.win-prob-sparkline-line {
+    fill: none;
+    stroke: #2f5da8;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.win-prob-sparkline-line.trend-home {
+    stroke: #1f9d55;
+}
+
+.win-prob-sparkline-line.trend-away {
+    stroke: #dc3545;
+}
+
+.win-prob-sparkline-line.trend-even {
+    stroke: #2f5da8;
+}
+
+.win-prob-sparkline-endpoint {
+    stroke: #fff;
+    stroke-width: 1.1;
+}
+
+.win-prob-sparkline-endpoint.trend-home {
+    fill: #1f9d55;
+}
+
+.win-prob-sparkline-endpoint.trend-away {
+    fill: #dc3545;
+}
+
+.win-prob-sparkline-endpoint.trend-even {
+    fill: #2f5da8;
 }
 
 .game-time,
@@ -1018,6 +1274,10 @@ a {
 }
 
 @media only screen and (max-width: 449px) {
+    .keyboard-shortcuts-note {
+        display: none;
+    }
+
     .scoreboard-shell {
         padding: 12px 8px 20px;
     }

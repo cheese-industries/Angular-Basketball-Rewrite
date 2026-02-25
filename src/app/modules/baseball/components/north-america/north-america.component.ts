@@ -27,6 +27,17 @@ type SortMode =
   | 'start-time'
   | 'closest-geo';
 
+type GameSectionKey = 'live' | 'final' | 'preview';
+
+type ScoreSnapshot = {
+  awayRuns: number | null;
+  awayHits: number | null;
+  awayErrors: number | null;
+  homeRuns: number | null;
+  homeHits: number | null;
+  homeErrors: number | null;
+};
+
 @Component({
   selector: 'app-north-america',
   templateUrl: './north-america.component.html',
@@ -113,6 +124,22 @@ export class NorthAmericaComponent implements OnInit {
   showPitchingFeatAlerts: boolean = true;
   isCompactDensity: boolean = false;
   miniFilterVisible: boolean = false;
+  shortcutNotice: string = '';
+  lastUpdatedAt: Date | null = null;
+  isRefreshingNow: boolean = false;
+  sectionOrder: GameSectionKey[] = ['live', 'final', 'preview'];
+  sectionLabels: Record<GameSectionKey, string> = {
+    live: 'Live',
+    final: 'Final',
+    preview: 'Preview',
+  };
+  sectionCounts: Record<GameSectionKey, number> = {
+    live: 0,
+    final: 0,
+    preview: 0,
+  };
+  showSectionNavigation: boolean = false;
+  sourceSlateGames: any[] = [];
   favoriteTeamIds: number[] = [];
   favoriteTeamLabels: Record<number, string> = {};
   cardOrderBySlate: Record<string, CardOrderEntry> = {};
@@ -128,6 +155,10 @@ export class NorthAmericaComponent implements OnInit {
   private userGeoLocation: { latitude: number; longitude: number } | null =
     null;
   private geolocationRequestInFlight: Promise<boolean> | null = null;
+  private shortcutNoticeTimeout: ReturnType<typeof setTimeout> | null = null;
+  private readonly scoreFlashDurationMs: number = 1800;
+  private scoreSnapshotByGamePk: Record<number, ScoreSnapshot> = {};
+  private scoreFlashTimeoutByGamePk: Record<number, ReturnType<typeof setTimeout>> = {};
 
   sortModeOptions: Array<{ value: SortMode; label: string }> = [
     { value: 'favorites', label: 'Favorites' },
@@ -226,9 +257,55 @@ export class NorthAmericaComponent implements OnInit {
     this.updateMiniFilterVisibility();
   }
 
+  @HostListener('window:keydown', ['$event'])
+  onWindowKeydown(event: KeyboardEvent) {
+    if (this.shouldIgnoreShortcutEvent(event)) {
+      return;
+    }
+
+    const key = event.key.toLowerCase();
+    if (key === 'l') {
+      event.preventDefault();
+      this.liveOnlyIsChecked = !this.liveOnlyIsChecked;
+      this.onSliderChange();
+      this.showShortcutFeedback(
+        this.liveOnlyIsChecked
+          ? 'Live-only filter is ON (shortcut). Press L again to turn it off.'
+          : 'Live-only filter is OFF. Press L to turn it back on.'
+      );
+      return;
+    }
+
+    if (key === 'f') {
+      event.preventDefault();
+      const orgSelect = document.getElementById('orgFilter') as
+        | HTMLSelectElement
+        | null;
+      orgSelect?.focus();
+      this.showShortcutFeedback(
+        'Organization filter focused. Choose “Show all scores” to clear the org filter.'
+      );
+      return;
+    }
+
+    if (key === 'r') {
+      event.preventDefault();
+      this.refreshNow();
+      this.showShortcutFeedback('Refreshing scores now…');
+    }
+  }
+
   ngOnDestroy(): void {
     clearInterval(this.interval);
     clearInterval(this.weatherInterval);
+    if (this.shortcutNoticeTimeout) {
+      clearTimeout(this.shortcutNoticeTimeout);
+      this.shortcutNoticeTimeout = null;
+    }
+    Object.values(this.scoreFlashTimeoutByGamePk).forEach((timeoutId) =>
+      clearTimeout(timeoutId)
+    );
+    this.scoreFlashTimeoutByGamePk = {};
   }
 
   setIntrvl() {
@@ -575,7 +652,11 @@ export class NorthAmericaComponent implements OnInit {
 
     games.forEach((game) => this.applyAthleticsOverridesToGame(game));
 
+    this.sourceSlateGames = [...games];
+    this.applyScoreChangeFlags(games);
+
     this.everyGame = { ...response, dates: [{ ...response.dates[0], games }] };
+    this.lastUpdatedAt = new Date();
 
     this.enqueuePitchingFeatAlerts(games);
 
@@ -598,7 +679,11 @@ export class NorthAmericaComponent implements OnInit {
       return;
     }
 
-    let filteredGames = [...this.everyGame.dates[0].games];
+    const sourceGames = this.sourceSlateGames?.length
+      ? this.sourceSlateGames
+      : this.everyGame.dates[0].games;
+
+    let filteredGames = [...sourceGames];
     if (this.orgNumber) {
       filteredGames = filteredGames.filter(
         (game) =>
@@ -610,10 +695,18 @@ export class NorthAmericaComponent implements OnInit {
     }
 
     const sortedGames = this.applySortMode(filteredGames);
+    const orderedGames = this.applySavedCardOrder(sortedGames);
+    this.showSectionNavigation = this.isSelectedDateToday();
 
-    this.everyGame.dates[0].games = this.applySavedCardOrder(
-      sortedGames
-    );
+    if (this.showSectionNavigation) {
+      const groupedGames = this.groupGamesByState(orderedGames);
+      this.updateSectionCounts(groupedGames);
+      this.everyGame.dates[0].games = groupedGames;
+      return;
+    }
+
+    this.sectionCounts = { live: 0, final: 0, preview: 0 };
+    this.everyGame.dates[0].games = orderedGames;
   }
 
   async setSortMode(mode: SortMode) {
@@ -638,6 +731,79 @@ export class NorthAmericaComponent implements OnInit {
 
   isActiveSortMode(mode: SortMode): boolean {
     return this.currentSortMode === mode;
+  }
+
+  getSectionLabel(section: GameSectionKey): string {
+    return this.sectionLabels[section];
+  }
+
+  getSectionCount(section: GameSectionKey): number {
+    return this.sectionCounts[section] || 0;
+  }
+
+  hasSectionGames(section: GameSectionKey): boolean {
+    return this.getSectionCount(section) > 0;
+  }
+
+  shouldRenderSectionHeader(index: number, game: any): boolean {
+    if (!this.showSectionNavigation) {
+      return false;
+    }
+
+    if (index === 0) {
+      return true;
+    }
+
+    const currentSection = this.getGameSectionKey(game);
+    const previousSection = this.getGameSectionKey(
+      this.everyGame?.dates?.[0]?.games?.[index - 1]
+    );
+    return currentSection !== previousSection;
+  }
+
+  getSectionLabelForGame(game: any): string {
+    const section = this.getGameSectionKey(game);
+    return this.getSectionLabel(section);
+  }
+
+  getSectionCountForGame(game: any): number {
+    const section = this.getGameSectionKey(game);
+    return this.getSectionCount(section);
+  }
+
+  getDesktopSectionHeaderId(index: number, game: any): string | null {
+    if (!this.shouldRenderSectionHeader(index, game)) {
+      return null;
+    }
+
+    return `desktop-section-${this.getGameSectionKey(game)}`;
+  }
+
+  getMobileSectionHeaderId(index: number, game: any): string | null {
+    if (!this.shouldRenderSectionHeader(index, game)) {
+      return null;
+    }
+
+    return `mobile-section-${this.getGameSectionKey(game)}`;
+  }
+
+  jumpToSection(section: GameSectionKey) {
+    if (
+      !this.showSectionNavigation ||
+      !this.hasSectionGames(section) ||
+      typeof window === 'undefined'
+    ) {
+      return;
+    }
+
+    const isMobile = window.innerWidth < 450;
+    const elementId = `${isMobile ? 'mobile' : 'desktop'}-section-${section}`;
+    const target = document.getElementById(elementId);
+    if (!target) {
+      return;
+    }
+
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   showGeoDistanceChip(game: any): boolean {
@@ -740,15 +906,58 @@ export class NorthAmericaComponent implements OnInit {
   }
 
   getTheScores(yearToFetch: string, monthToFetch: string, dayToFetch: string) {
-    this.getEveryGameOnEveryLevel(+yearToFetch, +monthToFetch, +dayToFetch);
+    return this.getEveryGameOnEveryLevel(+yearToFetch, +monthToFetch, +dayToFetch);
+  }
+
+  async refreshNow() {
+    if (this.isRefreshingNow) {
+      return;
+    }
+
+    this.isRefreshingNow = true;
+    try {
+      await this.getTheScores(
+        this.getYearToCall(),
+        this.getMonthToCall(),
+        this.getDayToCall()
+      );
+    } finally {
+      this.isRefreshingNow = false;
+    }
+  }
+
+  getLastUpdatedText(): string {
+    if (!this.lastUpdatedAt) {
+      return 'Not updated yet';
+    }
+
+    return this.lastUpdatedAt.toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+  }
+
+  hasNoVisibleGames(): boolean {
+    if (!this.everyGame?.dates?.[0]) {
+      return false;
+    }
+
+    return (this.everyGame.dates[0].games || []).length === 0;
   }
 
   async getLastPlay() {
     if (!this.everyGame) return;
     for (let i = 0; i < this.everyGame.dates[0].games.length; i++) {
       const game = this.everyGame.dates[0].games[i];
+      const gameAny = game as any;
       if (!game.gameUtils.isLive) {
         this.pbpDataArray[i] = '';
+        gameAny.winProbSparklinePath = '';
+        gameAny.winProbSparklinePoints = '';
+        gameAny.winProbSparklineEndX = null;
+        gameAny.winProbSparklineEndY = null;
+        gameAny.winProbSparklineTrendClass = 'trend-even';
         continue;
       }
       const response = await firstValueFrom(
@@ -762,7 +971,82 @@ export class NorthAmericaComponent implements OnInit {
       this.everyGame.dates[0].games[i].leverageIndex = lastPlay.leverageIndex;
       this.everyGame.dates[0].games[i].homeWinProb =
         Math.round(lastPlay.homeTeamWinProbability * 10) / 10;
+
+      const homeWinProbSeries = response
+        .map((play) => +play?.homeTeamWinProbability)
+        .filter((value) => Number.isFinite(value));
+
+      const sparkline = this.buildWinProbSparkline(homeWinProbSeries);
+      gameAny.winProbSparklinePath = sparkline.path;
+      gameAny.winProbSparklinePoints = sparkline.points;
+      gameAny.winProbSparklineEndX = sparkline.endX;
+      gameAny.winProbSparklineEndY = sparkline.endY;
+      gameAny.winProbSparklineTrendClass = sparkline.trendClass;
     }
+  }
+
+  private buildWinProbSparkline(homeWinProbSeries: number[]): {
+    path: string;
+    points: string;
+    endX: number | null;
+    endY: number | null;
+    trendClass: 'trend-home' | 'trend-away' | 'trend-even';
+  } {
+    if (!homeWinProbSeries || homeWinProbSeries.length < 2) {
+      return {
+        path: '',
+        points: '',
+        endX: null,
+        endY: null,
+        trendClass: 'trend-even',
+      };
+    }
+
+    const width = 96;
+    const height = 24;
+    const padding = 2;
+    const xDenominator = Math.max(1, homeWinProbSeries.length - 1);
+
+    const points = homeWinProbSeries.map((value, index) => {
+      const clamped = Math.max(0, Math.min(100, value));
+      const x = padding + (index / xDenominator) * (width - padding * 2);
+      const y =
+        height - padding - (clamped / 100) * (height - padding * 2);
+      return `${x.toFixed(2)},${y.toFixed(2)}`;
+    });
+
+    const [firstPoint, ...otherPoints] = points;
+    const path = `M ${firstPoint} ${otherPoints.map((point) => `L ${point}`).join(' ')}`;
+
+    const lastValue = Math.max(
+      0,
+      Math.min(100, homeWinProbSeries[homeWinProbSeries.length - 1])
+    );
+    const endX = padding + (width - padding * 2);
+    const endY =
+      height - padding - (lastValue / 100) * (height - padding * 2);
+
+    return {
+      path,
+      points: points.join(' '),
+      endX,
+      endY,
+      trendClass: this.getWinProbTrendClass(lastValue),
+    };
+  }
+
+  private getWinProbTrendClass(
+    homeWinProb: number
+  ): 'trend-home' | 'trend-away' | 'trend-even' {
+    if (homeWinProb >= 55) {
+      return 'trend-home';
+    }
+
+    if (homeWinProb <= 45) {
+      return 'trend-away';
+    }
+
+    return 'trend-even';
   }
 
   makeTheBroadcastDivs() {
@@ -1403,6 +1687,110 @@ export class NorthAmericaComponent implements OnInit {
       window.scrollY > this.miniFilterScrollThresholdPx;
   }
 
+  private isSelectedDateToday(): boolean {
+    return this.getSelectedDateKey() === this.getTodayDateKey();
+  }
+
+  private shouldIgnoreShortcutEvent(event: KeyboardEvent): boolean {
+    if (event.altKey || event.ctrlKey || event.metaKey) {
+      return true;
+    }
+
+    const target = event.target as HTMLElement | null;
+    if (!target) {
+      return false;
+    }
+
+    const tagName = target.tagName?.toLowerCase();
+    return (
+      target.isContentEditable ||
+      tagName === 'input' ||
+      tagName === 'textarea' ||
+      tagName === 'select'
+    );
+  }
+
+  private showShortcutFeedback(message: string, durationMs: number = 2600) {
+    this.shortcutNotice = message;
+    if (this.shortcutNoticeTimeout) {
+      clearTimeout(this.shortcutNoticeTimeout);
+    }
+
+    this.shortcutNoticeTimeout = setTimeout(() => {
+      this.shortcutNotice = '';
+      this.shortcutNoticeTimeout = null;
+    }, durationMs);
+  }
+
+  private applyScoreChangeFlags(games: any[]) {
+    const nextSnapshots: Record<number, ScoreSnapshot> = {};
+
+    games.forEach((game) => {
+      const gamePk = +game?.gamePk;
+      if (!Number.isFinite(gamePk)) {
+        game.scoreChangeFlags = {};
+        return;
+      }
+
+      const currentSnapshot = this.buildScoreSnapshot(game);
+      nextSnapshots[gamePk] = currentSnapshot;
+      const previousSnapshot = this.scoreSnapshotByGamePk[gamePk];
+
+      const scoreChangeFlags = {
+        awayRuns: this.didScoreValueChange(previousSnapshot?.awayRuns, currentSnapshot.awayRuns),
+        awayHits: this.didScoreValueChange(previousSnapshot?.awayHits, currentSnapshot.awayHits),
+        awayErrors: this.didScoreValueChange(previousSnapshot?.awayErrors, currentSnapshot.awayErrors),
+        homeRuns: this.didScoreValueChange(previousSnapshot?.homeRuns, currentSnapshot.homeRuns),
+        homeHits: this.didScoreValueChange(previousSnapshot?.homeHits, currentSnapshot.homeHits),
+        homeErrors: this.didScoreValueChange(previousSnapshot?.homeErrors, currentSnapshot.homeErrors),
+      };
+
+      game.scoreChangeFlags = scoreChangeFlags;
+
+      if (Object.values(scoreChangeFlags).some(Boolean)) {
+        const existingTimeout = this.scoreFlashTimeoutByGamePk[gamePk];
+        if (existingTimeout) {
+          clearTimeout(existingTimeout);
+        }
+
+        this.scoreFlashTimeoutByGamePk[gamePk] = setTimeout(() => {
+          game.scoreChangeFlags = {};
+          delete this.scoreFlashTimeoutByGamePk[gamePk];
+        }, this.scoreFlashDurationMs);
+      }
+    });
+
+    this.scoreSnapshotByGamePk = nextSnapshots;
+  }
+
+  private buildScoreSnapshot(game: any): ScoreSnapshot {
+    const away = game?.linescore?.teams?.away;
+    const home = game?.linescore?.teams?.home;
+
+    return {
+      awayRuns: this.asFiniteScoreValue(away?.runs),
+      awayHits: this.asFiniteScoreValue(away?.hits),
+      awayErrors: this.asFiniteScoreValue(away?.errors),
+      homeRuns: this.asFiniteScoreValue(home?.runs),
+      homeHits: this.asFiniteScoreValue(home?.hits),
+      homeErrors: this.asFiniteScoreValue(home?.errors),
+    };
+  }
+
+  private asFiniteScoreValue(value: any): number | null {
+    const numeric = +value;
+    return Number.isFinite(numeric) ? numeric : null;
+  }
+
+  private didScoreValueChange(previous: number | null | undefined, current: number | null): boolean {
+    return (
+      previous !== null &&
+      previous !== undefined &&
+      current !== null &&
+      previous !== current
+    );
+  }
+
   private cleanAndPersistCardOrderState() {
     const now = DateTime.now();
 
@@ -1462,6 +1850,50 @@ export class NorthAmericaComponent implements OnInit {
       default:
         return this.sortGamesWithFavoritesFirst(games);
     }
+  }
+
+  private groupGamesByState(games: any[]) {
+    const grouped: Record<GameSectionKey, any[]> = {
+      live: [],
+      final: [],
+      preview: [],
+    };
+
+    games.forEach((game) => {
+      grouped[this.getGameSectionKey(game)].push(game);
+    });
+
+    return this.sectionOrder.flatMap((section) => grouped[section]);
+  }
+
+  private updateSectionCounts(games: any[]) {
+    const counts: Record<GameSectionKey, number> = {
+      live: 0,
+      final: 0,
+      preview: 0,
+    };
+
+    games.forEach((game) => {
+      counts[this.getGameSectionKey(game)] += 1;
+    });
+
+    this.sectionCounts = counts;
+  }
+
+  private getGameSectionKey(game: any): GameSectionKey {
+    if (game?.gameUtils?.isLive) {
+      return 'live';
+    }
+
+    if (
+      game?.gameUtils?.isPreview ||
+      game?.gameUtils?.isWarmup ||
+      game?.gameUtils?.isPreGameDelay
+    ) {
+      return 'preview';
+    }
+
+    return 'final';
   }
 
   private sortGamesLiveFirst(games: any[]) {

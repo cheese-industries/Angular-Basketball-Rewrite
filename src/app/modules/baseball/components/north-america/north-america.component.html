@@ -1,4 +1,4 @@
-<div class="scoreboard-shell" [class.compact-density]="isCompactDensity">
+<div class="scoreboard-shell" [class.compact-density]="isCompactDensity" [class.mini-filter-active]="miniFilterVisible">
   <div class="mini-filter-bar" [class.is-visible]="miniFilterVisible">
     <div class="mini-filter-inner">
       <label class="mini-filter-item">
@@ -154,8 +154,41 @@
       </button>
     </div>
 
+    <div class="organization-filter-select section-jump-row" *ngIf="everyGame && showSectionNavigation">
+      <button
+        type="button"
+        class="section-jump-chip"
+        *ngFor="let section of sectionOrder"
+        [disabled]="!hasSectionGames(section)"
+        (click)="jumpToSection(section)"
+      >
+        {{ getSectionLabel(section) }} ({{ getSectionCount(section) }})
+      </button>
+    </div>
+
     <div class="organization-filter-select sort-note" *ngIf="geoSortNotice">
       {{ geoSortNotice }}
+    </div>
+
+    <div class="organization-filter-select keyboard-shortcuts-note">
+      Shortcuts: <kbd>L</kbd> live-only (press again to remove), <kbd>F</kbd> focus org filter, <kbd>R</kbd> refresh now.
+    </div>
+
+    <div class="organization-filter-select keyboard-shortcut-status" *ngIf="shortcutNotice">
+      {{ shortcutNotice }}
+    </div>
+
+    <div class="organization-filter-select update-status-row">
+      <span class="updated-at-text">Updated {{ getLastUpdatedText() }}</span>
+      <button
+        type="button"
+        class="refresh-now-btn"
+        (click)="refreshNow()"
+        [disabled]="isRefreshingNow"
+        [attr.aria-label]="isRefreshingNow ? 'Refreshing scores' : 'Refresh scores now'"
+      >
+        ⟳ {{ isRefreshingNow ? 'Refreshing…' : 'Refresh now' }}
+      </button>
     </div>
 
     <div class="organization-filter-select toggles-row">
@@ -204,6 +237,14 @@
     </div>
   </section>
 
+  <section class="empty-state-panel" *ngIf="hasNoVisibleGames()">
+    <h3>No games match your current filters</h3>
+    <p>Try broadening your filters or jump back to the full scoreboard.</p>
+    <button type="button" class="empty-state-reset-btn" (click)="resetFilters()">
+      Reset filters
+    </button>
+  </section>
+
 <ng-container>
   <div
     *ngIf="everyGame"
@@ -212,11 +253,19 @@
     [cdkDropListData]="everyGame.dates[0].games"
     (cdkDropListDropped)="onGameCardDrop($event)"
   >
-    <div
-      class="desktop"
-      cdkDrag
-      *ngFor="let game of everyGame.dates[0].games; let i = index"
-    >
+    <ng-container *ngFor="let game of everyGame.dates[0].games; let i = index">
+      <div
+        *ngIf="showSectionNavigation && shouldRenderSectionHeader(i, game)"
+        class="game-section-header desktop-section-header"
+        [id]="getDesktopSectionHeaderId(i, game)"
+      >
+        {{ getSectionLabelForGame(game) }}
+        <span class="game-section-count">({{ getSectionCountForGame(game) }})</span>
+      </div>
+      <div
+        class="desktop"
+        cdkDrag
+      >
       <div class="card-reorder-controls" (click)="$event.stopPropagation()">
         <button
           type="button"
@@ -302,6 +351,45 @@
             <div *ngIf="game.gameUtils.isLive" class="leverage-index">
               {{ game.teams.home.team.shortName }} Win Probability:
               {{ game.homeWinProb }}%
+            </div>
+            <div
+              *ngIf="game.gameUtils.isLive && $any(game).winProbSparklinePath"
+              class="win-prob-sparkline-row"
+            >
+              <span
+                class="win-prob-sparkline-label tooltip"
+                title="Rising line: increasing home win probability. Falling line: increasing away win probability."
+              >
+                Win probability trend
+                <span class="tooltiptext"
+                  >Rising line: increasing home win probability. Falling line: increasing away win probability.</span
+                >
+              </span>
+              <svg
+                class="win-prob-sparkline"
+                viewBox="0 0 96 24"
+                preserveAspectRatio="none"
+                role="img"
+                aria-label="Home win probability trend"
+              >
+                <polyline
+                  class="win-prob-sparkline-track"
+                  [attr.points]="$any(game).winProbSparklinePoints"
+                ></polyline>
+                <path
+                  class="win-prob-sparkline-line"
+                  [ngClass]="$any(game).winProbSparklineTrendClass || 'trend-even'"
+                  [attr.d]="$any(game).winProbSparklinePath"
+                ></path>
+                <circle
+                  *ngIf="$any(game).winProbSparklineEndX !== null && $any(game).winProbSparklineEndY !== null"
+                  class="win-prob-sparkline-endpoint"
+                  [ngClass]="$any(game).winProbSparklineTrendClass || 'trend-even'"
+                  [attr.cx]="$any(game).winProbSparklineEndX"
+                  [attr.cy]="$any(game).winProbSparklineEndY"
+                  r="2.6"
+                ></circle>
+              </svg>
             </div>
             <div
               *ngIf="game.gameUtils.isLive && game.weather"
@@ -435,13 +523,14 @@
                         game.gameUtils.isSuspended)
                     "
                     class="team-runs"
+                    [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayRuns"
                   >
                     {{ game.linescore.teams.away.runs }}
                   </span>
-                  <span *ngIf="game.linescore.teams" class="team-hits">
+                  <span *ngIf="game.linescore.teams" class="team-hits" [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayHits">
                     {{ game.linescore.teams.away.hits }}
                   </span>
-                  <span *ngIf="game.linescore.teams" class="team-errors">
+                  <span *ngIf="game.linescore.teams" class="team-errors" [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayErrors">
                     {{ game.linescore.teams.away.errors }}
                   </span>
                 </div>
@@ -501,13 +590,14 @@
                         game.gameUtils.isSuspended)
                     "
                     class="team-runs"
+                    [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeRuns"
                   >
                     {{ game.linescore.teams.home.runs }}
                   </span>
-                  <span *ngIf="game.linescore.teams" class="team-hits">
+                  <span *ngIf="game.linescore.teams" class="team-hits" [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeHits">
                     {{ game.linescore.teams.home.hits }}
                   </span>
-                  <span *ngIf="game.linescore.teams" class="team-errors">
+                  <span *ngIf="game.linescore.teams" class="team-errors" [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeErrors">
                     {{ game.linescore.teams.home.errors }}
                   </span>
                 </div>
@@ -816,6 +906,7 @@
         </mat-card>
       </a>
     </div>
+    </ng-container>
   </div>
 </ng-container>
 
@@ -827,11 +918,19 @@
     [cdkDropListData]="everyGame.dates[0].games"
     (cdkDropListDropped)="onGameCardDrop($event)"
   >
-    <div
-      class="mobile"
-      cdkDrag
-      *ngFor="let game of everyGame.dates[0].games; let i = index"
-    >
+    <ng-container *ngFor="let game of everyGame.dates[0].games; let i = index">
+      <div
+        *ngIf="showSectionNavigation && shouldRenderSectionHeader(i, game)"
+        class="game-section-header mobile-game-section-header"
+        [id]="getMobileSectionHeaderId(i, game)"
+      >
+        {{ getSectionLabelForGame(game) }}
+        <span class="game-section-count">({{ getSectionCountForGame(game) }})</span>
+      </div>
+      <div
+        class="mobile"
+        cdkDrag
+      >
       <div class="mobile-card-reorder-controls" (click)="$event.stopPropagation()">
         <button
           type="button"
@@ -913,9 +1012,9 @@
               >
                 {{ isFavoriteTeam(game.teams.away.team.id) ? '★' : '☆' }}
               </button></div>
-              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.away" class="mobile-rhe">{{game.linescore.teams.away.runs}}</div>
-              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.away" class="mobile-rhe">{{game.linescore.teams.away.hits}}</div>
-              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.away" class="mobile-rhe">{{game.linescore.teams.away.errors}}</div>
+              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.away" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayRuns">{{game.linescore.teams.away.runs}}</div>
+              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.away" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayHits">{{game.linescore.teams.away.hits}}</div>
+              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.away" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayErrors">{{game.linescore.teams.away.errors}}</div>
             </div>
             <div *ngIf="game.teams.away.team.sport.name !== 'Major League Baseball'"class="mobile-level">{{game.teams.away.team.sport.name}}</div>
             <div *ngIf="game.teams.away.team.sport.name === 'Major League Baseball'"class="mobile-level">MLB</div>
@@ -959,12 +1058,51 @@
               >
                 {{ isFavoriteTeam(game.teams.home.team.id) ? '★' : '☆' }}
               </button></div>
-              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.home" class="mobile-rhe">{{game.linescore.teams.home.runs}}</div>
-              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.home" class="mobile-rhe">{{game.linescore.teams.home.hits}}</div>
-              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.home" class="mobile-rhe">{{game.linescore.teams.home.errors}}</div>
+              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.home" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeRuns">{{game.linescore.teams.home.runs}}</div>
+              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.home" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeHits">{{game.linescore.teams.home.hits}}</div>
+              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.home" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeErrors">{{game.linescore.teams.home.errors}}</div>
             </div>
             <div *ngIf="game.gameUtils.isLive && !game.gameUtils.isWarmup" class="mobile-inning">
                 {{game.linescore.inningState}} {{game.linescore.currentInningOrdinal}}&nbsp;&nbsp;&nbsp;<span *ngIf="game.linescore">Balls: {{game.linescore.balls}}</span>&nbsp;&nbsp;&nbsp;<span *ngIf="game.linescore">Strikes: {{game.linescore.strikes}}</span>&nbsp;&nbsp;&nbsp; <span *ngIf="game.linescore">Outs: {{game.linescore.outs}}</span>
+            </div>
+            <div
+              *ngIf="game.gameUtils.isLive && $any(game).winProbSparklinePath"
+              class="mobile-win-prob-sparkline-row"
+            >
+              <span
+                class="win-prob-sparkline-label tooltip"
+                title="Rising line: increasing home win probability. Falling line: increasing away win probability."
+              >
+                Win probability trend
+                <span class="tooltiptext"
+                  >Rising line: increasing home win probability. Falling line: increasing away win probability.</span
+                >
+              </span>
+              <svg
+                class="win-prob-sparkline"
+                viewBox="0 0 96 24"
+                preserveAspectRatio="none"
+                role="img"
+                aria-label="Home win probability trend"
+              >
+                <polyline
+                  class="win-prob-sparkline-track"
+                  [attr.points]="$any(game).winProbSparklinePoints"
+                ></polyline>
+                <path
+                  class="win-prob-sparkline-line"
+                  [ngClass]="$any(game).winProbSparklineTrendClass || 'trend-even'"
+                  [attr.d]="$any(game).winProbSparklinePath"
+                ></path>
+                <circle
+                  *ngIf="$any(game).winProbSparklineEndX !== null && $any(game).winProbSparklineEndY !== null"
+                  class="win-prob-sparkline-endpoint"
+                  [ngClass]="$any(game).winProbSparklineTrendClass || 'trend-even'"
+                  [attr.cx]="$any(game).winProbSparklineEndX"
+                  [attr.cy]="$any(game).winProbSparklineEndY"
+                  r="2.6"
+                ></circle>
+              </svg>
             </div>
             <div *ngIf="(game.gameUtils.isPreview || game.gameUtils.isWarmup)" class="mobile-start-time">
               {{ game.gameDate | date : "shortTime" }}
@@ -1071,6 +1209,7 @@
       </mat-card>
       </a>
     </div>
+    </ng-container>
   </div>
 </ng-container>
 
