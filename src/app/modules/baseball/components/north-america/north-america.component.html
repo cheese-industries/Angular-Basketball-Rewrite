@@ -1,4 +1,32 @@
 <div class="scoreboard-shell" [class.compact-density]="isCompactDensity">
+  <div class="mini-filter-bar" [class.is-visible]="miniFilterVisible">
+    <div class="mini-filter-inner">
+      <label class="mini-filter-item">
+        <span class="mini-filter-label">Date</span>
+        <input
+          type="date"
+          class="mini-filter-date"
+          [value]="getMiniDateInputValue()"
+          (change)="onMiniDateInputChange($event)"
+        />
+      </label>
+
+      <label class="mini-filter-item mini-live-toggle" for="miniLiveOnlyToggle">
+        <input
+          id="miniLiveOnlyToggle"
+          type="checkbox"
+          [checked]="liveOnlyIsChecked"
+          (change)="onMiniLiveOnlyToggle($event)"
+        />
+        <span>Live only</span>
+      </label>
+
+      <button type="button" class="mini-reset-btn" (click)="resetFilters()">
+        Reset filters
+      </button>
+    </div>
+  </div>
+
   <header class="scoreboard-header">
     <h1>Every Baseball Score</h1>
     <p>Live updates every 30 seconds for every game across MLB and the minors. Click a game to see its box score.</p>

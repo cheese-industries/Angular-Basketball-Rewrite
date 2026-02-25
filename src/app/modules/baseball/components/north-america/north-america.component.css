@@ -4,6 +4,92 @@
     min-height: calc(100vh - 64px);
 }
 
+.mini-filter-bar {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 0px);
+    left: 0;
+    right: 0;
+    z-index: 950;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-120%);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.mini-filter-bar.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.mini-filter-inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 6px 12px;
+    border: 1px solid rgba(126, 145, 178, 0.35);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 8px 18px rgba(24, 39, 75, 0.14);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.mini-filter-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #2e456e;
+}
+
+.mini-filter-label {
+    font-weight: 700;
+}
+
+.mini-filter-date {
+    border: 1px solid #c8d2e6;
+    border-radius: 8px;
+    padding: 3px 8px;
+    font-size: 12px;
+    color: #1f2d45;
+    background: #fff;
+}
+
+.mini-live-toggle {
+    font-weight: 600;
+}
+
+.mini-live-toggle input {
+    width: 14px;
+    height: 14px;
+}
+
+.mini-reset-btn {
+    border: 1px solid #b8c9e9;
+    border-radius: 999px;
+    background: #eef4ff;
+    color: #264d88;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    cursor: pointer;
+}
+
+.mini-reset-btn:hover {
+    background: #e3ecff;
+}
+
+.mini-reset-btn:focus-visible,
+.mini-filter-date:focus-visible {
+    outline: 2px solid #7fa2ff;
+    outline-offset: 2px;
+}
+
 .scoreboard-header {
     text-align: center;
     margin: 6px auto 14px;

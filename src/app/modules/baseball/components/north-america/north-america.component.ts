@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { NorthAmericaService } from '../../north-america.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { mlbApiReturn } from '../../models/mlb-api-models/mlb-api-return';
@@ -48,6 +48,7 @@ export class NorthAmericaComponent implements OnInit {
   private readonly forecastDaysAheadLimit: number = 3;
   private readonly forecastCacheTtlMs: number = 20 * 60 * 1000;
   private readonly maxConcurrentForecastRequests: number = 6;
+  private readonly miniFilterScrollThresholdPx: number = 190;
   showOneOrganization: boolean = false;
   filteredGames!: any[];
   liveGamesNow!: any[];
@@ -111,6 +112,7 @@ export class NorthAmericaComponent implements OnInit {
   showFavoriteHelp: boolean = true;
   showPitchingFeatAlerts: boolean = true;
   isCompactDensity: boolean = false;
+  miniFilterVisible: boolean = false;
   favoriteTeamIds: number[] = [];
   favoriteTeamLabels: Record<number, string> = {};
   cardOrderBySlate: Record<string, CardOrderEntry> = {};
@@ -216,6 +218,12 @@ export class NorthAmericaComponent implements OnInit {
     );
     await this.getTheWeather();
     this.setIntrvl();
+    this.updateMiniFilterVisibility();
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.updateMiniFilterVisibility();
   }
 
   ngOnDestroy(): void {
@@ -941,6 +949,58 @@ export class NorthAmericaComponent implements OnInit {
     );
   }
 
+  getMiniDateInputValue(): string {
+    return this.getSelectedDateKey();
+  }
+
+  onMiniDateInputChange(event: Event) {
+    const value = (event.target as HTMLInputElement)?.value;
+    if (!value) {
+      return;
+    }
+
+    const parsed = DateTime.fromISO(value);
+    if (!parsed.isValid) {
+      return;
+    }
+
+    this.form.get('dateToCall')?.setValue(parsed.toJSDate());
+    this.handleDateChange();
+  }
+
+  onMiniLiveOnlyToggle(event: Event) {
+    const checked = (event.target as HTMLInputElement)?.checked;
+    this.liveOnlyIsChecked = !!checked;
+    this.onSliderChange();
+  }
+
+  resetFilters() {
+    this.org = '';
+    this.orgNumber = null;
+    this.hasOrgFilter = false;
+
+    this.mlbIsChecked = true;
+    this.aaaIsChecked = true;
+    this.aaIsChecked = true;
+    this.highAIsChecked = true;
+    this.lowAIsChecked = true;
+    this.liveOnlyIsChecked = false;
+    this.sortByStartTimeIsChecked = false;
+    this.currentSortMode = 'favorites';
+    this.geoSortNotice = '';
+
+    this.router.navigate(['/'], {
+      queryParams: { org: null },
+      queryParamsHandling: 'merge',
+    });
+
+    this.getTheScores(
+      this.getYearToCall(),
+      this.getMonthToCall(),
+      this.getDayToCall()
+    );
+  }
+
   addOrgFilter(event: any) {
     this.org = event.target.value;
     this.hasOrgFilter = !!(this.org && this.org.length > 0);
@@ -1331,6 +1391,16 @@ export class NorthAmericaComponent implements OnInit {
         .toUTC()
         .toISO() || ''
     );
+  }
+
+  private updateMiniFilterVisibility() {
+    if (typeof window === 'undefined') {
+      this.miniFilterVisible = false;
+      return;
+    }
+
+    this.miniFilterVisible =
+      window.scrollY > this.miniFilterScrollThresholdPx;
   }
 
   private cleanAndPersistCardOrderState() {
