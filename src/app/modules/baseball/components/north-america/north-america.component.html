@@ -338,7 +338,7 @@
                 ></span
               >
             </div>
-            <div *ngIf="game.gameUtils.isLive" class="leverage-index">
+            <div *ngIf="game.statusFlags.isLive" class="leverage-index">
               <div class="tooltip">
                 Leverage Index:<span class="tooltiptext"
                   >A measure of how important the current plate appearance is to
@@ -348,12 +348,12 @@
               </div>
               {{ game.leverageIndex }}
             </div>
-            <div *ngIf="game.gameUtils.isLive" class="leverage-index">
+            <div *ngIf="game.statusFlags.isLive" class="leverage-index">
               {{ game.teams.home.team.shortName }} Win Probability:
               {{ game.homeWinProb }}%
             </div>
             <div
-              *ngIf="game.gameUtils.isLive && $any(game).winProbSparklinePath"
+              *ngIf="game.statusFlags.isLive && $any(game).winProbSparklinePath"
               class="win-prob-sparkline-row"
             >
               <span
@@ -392,7 +392,7 @@
               </svg>
             </div>
             <div
-              *ngIf="game.gameUtils.isLive && game.weather"
+              *ngIf="game.statusFlags.isLive && game.weather"
               class="leverage-index"
             >
               {{ game.weather }}
@@ -403,9 +403,9 @@
               <div class="leftside">
                 <div
                   *ngIf="
-                    !game.gameUtils.isLive &&
-                    game.gameUtils.isFinal &&
-                    !game.gameUtils.isPostponed &&
+                    !game.statusFlags.isLive &&
+                    game.statusFlags.isFinal &&
+                    !game.statusFlags.isPostponed &&
                     game.linescore.currentInning != 9
                   "
                   class="delay-flag"
@@ -415,9 +415,9 @@
                 </div>
                 <div
                   *ngIf="
-                    (!game.gameUtils.isLive && !game.gameUtils.isFinal) ||
+                    (!game.statusFlags.isLive && !game.statusFlags.isFinal) ||
                     game.linescore.currentInning == 9 ||
-                    game.gameUtils.isPostponed
+                    game.statusFlags.isPostponed
                   "
                   class="delay-flag"
                 >
@@ -436,7 +436,7 @@
                     game.flags &&
                     (game.flags.perfectGame ||
                       game.flags.noHitter ||
-                      game.gameUtils.isLive)
+                      game.statusFlags.isLive)
                   "
                   class="inning-div"
                 >
@@ -457,7 +457,7 @@
                     class="event-flag"
                     >NO-HITTER</span
                   >
-                  <span *ngIf="game.gameUtils.isLive" class="inning-span"
+                  <span *ngIf="game.statusFlags.isLive" class="inning-span"
                     >{{ game.linescore.inningState }}
                     {{ game.linescore.currentInning }}</span
                   >
@@ -518,9 +518,9 @@
                   <span
                     *ngIf="
                       game.linescore.teams &&
-                      (game.gameUtils.isFinal ||
-                        game.gameUtils.isLive ||
-                        game.gameUtils.isSuspended)
+                      (game.statusFlags.isFinal ||
+                        game.statusFlags.isLive ||
+                        game.statusFlags.isSuspended)
                     "
                     class="team-runs"
                     [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayRuns"
@@ -585,9 +585,9 @@
                   <span
                     *ngIf="
                       game.linescore.teams &&
-                      (game.gameUtils.isFinal ||
-                        game.gameUtils.isLive ||
-                        game.gameUtils.isSuspended)
+                      (game.statusFlags.isFinal ||
+                        game.statusFlags.isLive ||
+                        game.statusFlags.isSuspended)
                     "
                     class="team-runs"
                     [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeRuns"
@@ -603,9 +603,9 @@
                 </div>
                 <div
                   *ngIf="
-                    (game.gameDate && game.gameUtils.isPreview) ||
-                    game.gameUtils.isWarmup ||
-                    game.gameUtils.isPreGameDelay
+                    (game.gameDate && game.statusFlags.isPreview) ||
+                    game.statusFlags.isWarmup ||
+                    game.statusFlags.isPreGameDelay
                   "
                   class="game-time"
                 >
@@ -626,10 +626,10 @@
 
                 <div
                   *ngIf="
-                    !game.gameUtils.isFinal &&
-                    !game.gameUtils.isCancelled &&
-                    !game.gameUtils.isPostponed &&
-                    !game.gameUtils.isSuspended
+                    !game.statusFlags.isFinal &&
+                    !game.statusFlags.isCancelled &&
+                    !game.statusFlags.isPostponed &&
+                    !game.statusFlags.isSuspended
                   "
                   class="broadcasts"
                 >
@@ -645,9 +645,9 @@
                   *ngIf="
                     (game.teams.away.probablePitcher ||
                       game.teams.home.probablePitcher) &&
-                    (game.gameUtils.isPreview ||
-                      game.gameUtils.isWarmup ||
-                      game.gameUtils.isPreGameDelay)
+                    (game.statusFlags.isPreview ||
+                      game.statusFlags.isWarmup ||
+                      game.statusFlags.isPreGameDelay)
                   "
                   class="probable-pitchers"
                 >
@@ -678,7 +678,7 @@
                 </div>
 
                 <div
-                  *ngIf="game.gameUtils.isLive"
+                  *ngIf="game.statusFlags.isLive"
                   class="balls-strikes-outs-inning"
                 >
                   <span
@@ -701,14 +701,14 @@
                 </div>
 
                 <div
-                  *ngIf="game.gameUtils.isLive && game.lastPlay"
+                  *ngIf="game.statusFlags.isLive && game.lastPlay"
                   class="lastPlay"
                 >
                   <b>Last Play: </b>{{ game.lastPlay }}
                 </div>
 
                 <div
-                  *ngIf="isCompactDensity && game.gameUtils.isLive"
+                  *ngIf="isCompactDensity && game.statusFlags.isLive"
                   class="compact-live-details"
                 >
                   <div
@@ -810,9 +810,9 @@
                 </div>
                 <div
                   *ngIf="
-                    !game.gameUtils.isPreview &&
-                    !game.gameUtils.isWarmup &&
-                    !game.gameUtils.isPreGameDelay
+                    !game.statusFlags.isPreview &&
+                    !game.statusFlags.isWarmup &&
+                    !game.statusFlags.isPreGameDelay
                   "
                   class="homeruns"
                 >
@@ -845,7 +845,7 @@
                   </span>
                 </div>
               </div>
-              <div class="rightside" *ngIf="game.gameUtils.isLive && !isCompactDensity">
+              <div class="rightside" *ngIf="game.statusFlags.isLive && !isCompactDensity">
                 <span class="diamond">
                   <div class="data-inside-diamond">
                     <span *ngIf="game.linescore.defense.pitcher" class="pitcher"
@@ -1012,9 +1012,9 @@
               >
                 {{ isFavoriteTeam(game.teams.away.team.id) ? '★' : '☆' }}
               </button></div>
-              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.away" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayRuns">{{game.linescore.teams.away.runs}}</div>
-              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.away" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayHits">{{game.linescore.teams.away.hits}}</div>
-              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.away" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayErrors">{{game.linescore.teams.away.errors}}</div>
+              <div *ngIf="!game.statusFlags.isPreview && !game.statusFlags.isWarmup && game.linescore?.teams?.away" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayRuns">{{game.linescore.teams.away.runs}}</div>
+              <div *ngIf="!game.statusFlags.isPreview && !game.statusFlags.isWarmup && game.linescore?.teams?.away" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayHits">{{game.linescore.teams.away.hits}}</div>
+              <div *ngIf="!game.statusFlags.isPreview && !game.statusFlags.isWarmup && game.linescore?.teams?.away" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.awayErrors">{{game.linescore.teams.away.errors}}</div>
             </div>
             <div *ngIf="game.teams.away.team.sport.name !== 'Major League Baseball'"class="mobile-level">{{game.teams.away.team.sport.name}}</div>
             <div *ngIf="game.teams.away.team.sport.name === 'Major League Baseball'"class="mobile-level">MLB</div>
@@ -1058,15 +1058,15 @@
               >
                 {{ isFavoriteTeam(game.teams.home.team.id) ? '★' : '☆' }}
               </button></div>
-              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.home" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeRuns">{{game.linescore.teams.home.runs}}</div>
-              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.home" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeHits">{{game.linescore.teams.home.hits}}</div>
-              <div *ngIf="!game.gameUtils.isPreview && !game.gameUtils.isWarmup && game.linescore?.teams?.home" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeErrors">{{game.linescore.teams.home.errors}}</div>
+              <div *ngIf="!game.statusFlags.isPreview && !game.statusFlags.isWarmup && game.linescore?.teams?.home" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeRuns">{{game.linescore.teams.home.runs}}</div>
+              <div *ngIf="!game.statusFlags.isPreview && !game.statusFlags.isWarmup && game.linescore?.teams?.home" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeHits">{{game.linescore.teams.home.hits}}</div>
+              <div *ngIf="!game.statusFlags.isPreview && !game.statusFlags.isWarmup && game.linescore?.teams?.home" class="mobile-rhe" [class.score-cell-changed]="$any(game).scoreChangeFlags?.homeErrors">{{game.linescore.teams.home.errors}}</div>
             </div>
-            <div *ngIf="game.gameUtils.isLive && !game.gameUtils.isWarmup" class="mobile-inning">
+            <div *ngIf="game.statusFlags.isLive && !game.statusFlags.isWarmup" class="mobile-inning">
                 {{game.linescore.inningState}} {{game.linescore.currentInningOrdinal}}&nbsp;&nbsp;&nbsp;<span *ngIf="game.linescore">Balls: {{game.linescore.balls}}</span>&nbsp;&nbsp;&nbsp;<span *ngIf="game.linescore">Strikes: {{game.linescore.strikes}}</span>&nbsp;&nbsp;&nbsp; <span *ngIf="game.linescore">Outs: {{game.linescore.outs}}</span>
             </div>
             <div
-              *ngIf="game.gameUtils.isLive && $any(game).winProbSparklinePath"
+              *ngIf="game.statusFlags.isLive && $any(game).winProbSparklinePath"
               class="mobile-win-prob-sparkline-row"
             >
               <span
@@ -1104,7 +1104,7 @@
                 ></circle>
               </svg>
             </div>
-            <div *ngIf="(game.gameUtils.isPreview || game.gameUtils.isWarmup)" class="mobile-start-time">
+            <div *ngIf="(game.statusFlags.isPreview || game.statusFlags.isWarmup)" class="mobile-start-time">
               {{ game.gameDate | date : "shortTime" }}
             </div>
             <div *ngIf="showGeoDistanceChip(game)" class="mobile-geo-distance-chip">
@@ -1113,16 +1113,16 @@
             <div *ngIf="$any(game).preGameForecast" class="mobile-pregame-forecast">
               {{ $any(game).preGameForecast }}
             </div>
-            <div *ngIf="!game.gameUtils.isLive && !game.gameUtils.isPreview && !game.gameUtils.isWarmup && !game.gameUtils.isPostponed && !game.gameUtils.isCancelled" class="mobile-final">
+            <div *ngIf="!game.statusFlags.isLive && !game.statusFlags.isPreview && !game.statusFlags.isWarmup && !game.statusFlags.isPostponed && !game.statusFlags.isCancelled" class="mobile-final">
                 <b>Final</b>
             </div>
-            <div *ngIf="game.gameUtils.isCancelled" class="mobile-final">
+            <div *ngIf="game.statusFlags.isCancelled" class="mobile-final">
                 <b>Cancelled<span *ngIf="game.status.reason"> - {{game.status.reason}}</span></b>
             </div>
-            <div *ngIf="game.gameUtils.isPostponed" class="mobile-final">
+            <div *ngIf="game.statusFlags.isPostponed" class="mobile-final">
                 <b>Postponed<span *ngIf="game.status.reason"> - {{game.status.reason}}</span></b>
             </div>
-            <div *ngIf="game.gameUtils.isLive && !game.gameUtils.isWarmup && game.linescore.offense.batter" class="mobile-batter">
+            <div *ngIf="game.statusFlags.isLive && !game.statusFlags.isWarmup && game.linescore.offense.batter" class="mobile-batter">
                 Batter: {{ game.linescore.offense.batter.fullName }} ({{
                     game.linescore.offense.batter.stats[2].stats.avg
                   }}/{{
@@ -1131,7 +1131,7 @@
                     game.linescore.offense.batter.stats[2].stats.slg
                   }})
             </div>
-            <div *ngIf="game.gameUtils.isLive && !game.gameUtils.isWarmup && game.linescore.defense.pitcher" class="mobile-pitcher">
+            <div *ngIf="game.statusFlags.isLive && !game.statusFlags.isWarmup && game.linescore.defense.pitcher" class="mobile-pitcher">
                 Pitcher: {{ game.linescore.defense.pitcher.fullName }} ({{
                     game.linescore.defense.pitcher.stats[3].stats.wins
                   }}-{{
@@ -1141,7 +1141,7 @@
                     game.linescore.defense.pitcher.stats[3].stats.era
                   }})
             </div>
-            <div *ngIf="game.gameUtils.isPreview || game.gameUtils.isWarmup" class="mobile-away-probable-pitcher">
+            <div *ngIf="game.statusFlags.isPreview || game.statusFlags.isWarmup" class="mobile-away-probable-pitcher">
               {{ game.teams.away.team.abbreviation }}: <span *ngIf="game.teams.away.probablePitcher">
               {{ game.teams.away.probablePitcher.fullName }} ({{
                 game.teams.away.probablePitcher.stats[3].stats.wins
@@ -1154,7 +1154,7 @@
                 TBA
               </span>
             </div>
-            <div *ngIf="game.gameUtils.isPreview || game.gameUtils.isWarmup" class="mobile-home-probable-pitcher">
+            <div *ngIf="game.statusFlags.isPreview || game.statusFlags.isWarmup" class="mobile-home-probable-pitcher">
               {{ game.teams.home.team.abbreviation }}: <span *ngIf="game.teams.home.probablePitcher">
               {{ game.teams.home.probablePitcher.fullName }} ({{
                 game.teams.home.probablePitcher.stats[3].stats.wins
@@ -1186,22 +1186,22 @@
               {{ game.decisions.save.stats[3].stats.era }},
               {{ game.decisions.save.stats[3].stats.saves }} sv)
       </div>
-            <div *ngIf="game.gameUtils.isPreview || game.gameUtils.isWarmup || game.gameUtils.isLive" class="mobile-broadcaster">
+            <div *ngIf="game.statusFlags.isPreview || game.statusFlags.isWarmup || game.statusFlags.isLive" class="mobile-broadcaster">
                 {{ game.awayTVDiv }}
             </div>
-            <div *ngIf="game.gameUtils.isPreview || game.gameUtils.isWarmup || game.gameUtils.isLive" class="mobile-broadcaster">
+            <div *ngIf="game.statusFlags.isPreview || game.statusFlags.isWarmup || game.statusFlags.isLive" class="mobile-broadcaster">
                 {{ game.homeTVDiv }}
             </div>
-            <div *ngIf="game.gameUtils.isLive && !game.gameUtils.isWarmup" class="mobile-baserunners">
+            <div *ngIf="game.statusFlags.isLive && !game.statusFlags.isWarmup" class="mobile-baserunners">
               <div class="mobile-runner"><b>Baserunners</b></div>
                 <div class="mobile-runner"><b>1st: </b><span *ngIf="game.linescore.offense.first">{{game.linescore.offense.first.boxscoreName}}</span></div>
                 <div class="mobile-runner"><b>2nd: </b><span *ngIf="game.linescore.offense.second">{{game.linescore.offense.second.boxscoreName}}</span></div>
                 <div class="mobile-runner"><b>3rd: </b><span *ngIf="game.linescore.offense.third">{{game.linescore.offense.third.boxscoreName}}</span></div>
             </div>
-            <div *ngIf="game.gameUtils.isLive && !game.gameUtils.isWarmup" class="mobile-in-progress-home-runs">
+            <div *ngIf="game.statusFlags.isLive && !game.statusFlags.isWarmup" class="mobile-in-progress-home-runs">
                 <b>HR: </b>{{game.mobileHomeRunList}}
             </div>
-            <div *ngIf="game.gameUtils.isGameOver || game.gameUtils.isFinal" class="mobile-game-over-home-runs">
+            <div *ngIf="game.statusFlags.isGameOver || game.statusFlags.isFinal" class="mobile-game-over-home-runs">
               <b>HR: </b>{{game.mobileHomeRunList}}
             </div>
           </div>

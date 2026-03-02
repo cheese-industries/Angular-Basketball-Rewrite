@@ -487,12 +487,12 @@ export class NorthAmericaComponent implements OnInit {
   private shouldShowPregameForecast(game: any): boolean {
     return Boolean(
       game &&
-        !game?.gameUtils?.isLive &&
-        !game?.gameUtils?.isFinal &&
-        !game?.gameUtils?.isGameOver &&
-        !game?.gameUtils?.isCancelled &&
-        !game?.gameUtils?.isPostponed &&
-        !game?.gameUtils?.isSuspended &&
+        !game?.statusFlags?.isLive &&
+        !game?.statusFlags?.isFinal &&
+        !game?.statusFlags?.isGameOver &&
+        !game?.statusFlags?.isCancelled &&
+        !game?.statusFlags?.isPostponed &&
+        !game?.statusFlags?.isSuspended &&
         game?.venue?.location?.defaultCoordinates &&
         game?.gameDate
     );
@@ -630,7 +630,7 @@ export class NorthAmericaComponent implements OnInit {
     if (this.liveOnlyIsChecked) {
       let liveOnlyGames = response.dates[0].games;
       liveOnlyGames = liveOnlyGames.filter(
-        (game) => game.gameUtils.isLive == true
+        (game) => game.statusFlags.isLive == true
       );
       response.dates[0].games = liveOnlyGames;
     }
@@ -951,7 +951,7 @@ export class NorthAmericaComponent implements OnInit {
     for (let i = 0; i < this.everyGame.dates[0].games.length; i++) {
       const game = this.everyGame.dates[0].games[i];
       const gameAny = game as any;
-      if (!game.gameUtils.isLive) {
+      if (!game.statusFlags.isLive) {
         this.pbpDataArray[i] = '';
         gameAny.winProbSparklinePath = '';
         gameAny.winProbSparklinePoints = '';
@@ -1493,13 +1493,13 @@ export class NorthAmericaComponent implements OnInit {
         : game?.status?.detailedState || 'Live';
 
       const isPerfectGame = Boolean(
-        game?.gameUtils?.isPerfectGame ||
+        game?.statusFlags?.isPerfectGame ||
           game?.flags?.perfectGame ||
           game?.flags?.awayTeamPerfectGame ||
           game?.flags?.homeTeamPerfectGame
       );
       const isNoHitter = Boolean(
-        game?.gameUtils?.isNoHitter ||
+        game?.statusFlags?.isNoHitter ||
           game?.flags?.noHitter ||
           game?.flags?.awayTeamNoHitter ||
           game?.flags?.homeTeamNoHitter
@@ -1881,14 +1881,14 @@ export class NorthAmericaComponent implements OnInit {
   }
 
   private getGameSectionKey(game: any): GameSectionKey {
-    if (game?.gameUtils?.isLive) {
+    if (game?.statusFlags?.isLive) {
       return 'live';
     }
 
     if (
-      game?.gameUtils?.isPreview ||
-      game?.gameUtils?.isWarmup ||
-      game?.gameUtils?.isPreGameDelay
+      game?.statusFlags?.isPreview ||
+      game?.statusFlags?.isWarmup ||
+      game?.statusFlags?.isPreGameDelay
     ) {
       return 'preview';
     }
@@ -1898,8 +1898,8 @@ export class NorthAmericaComponent implements OnInit {
 
   private sortGamesLiveFirst(games: any[]) {
     return [...games].sort((a, b) => {
-      const aLive = a?.gameUtils?.isLive ? 1 : 0;
-      const bLive = b?.gameUtils?.isLive ? 1 : 0;
+      const aLive = a?.statusFlags?.isLive ? 1 : 0;
+      const bLive = b?.statusFlags?.isLive ? 1 : 0;
       if (aLive !== bLive) {
         return bLive - aLive;
       }

@@ -61,7 +61,7 @@ export interface Game {
   recordSource: string;
   ifNecessary: string;
   ifNecessaryDescription: string;
-  gameUtils: GameUtils;
+  statusFlags: GameUtils;
   description?: string;
   homeTVArray: string[];
   awayTVArray: string[];
