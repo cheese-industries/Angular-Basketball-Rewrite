@@ -34,7 +34,7 @@ export interface Game {
   gameDate: Date;
   officialDate: string;
   status: Status;
-  linescore: Linescore;
+  linescore?: Linescore;
   decisions: Decisions;
   venue: Venue3;
   broadcasts: Broadcast[];

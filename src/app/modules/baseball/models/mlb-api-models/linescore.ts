@@ -12,9 +12,9 @@ export interface Linescore {
     isTopInning: boolean;
     scheduledInnings: number;
     innings: Innings[];
-    teams: Teams2;
-    defense: Defense;
-    offense: Offense;
+    teams?: Teams2;
+    defense?: Defense;
+    offense?: Offense;
     balls: number;
     strikes: number;
     outs: number;

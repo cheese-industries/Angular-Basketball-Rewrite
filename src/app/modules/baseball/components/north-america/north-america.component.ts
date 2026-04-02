@@ -1085,7 +1085,7 @@ export class NorthAmericaComponent implements OnInit {
     games.forEach((game) => {
       ['offense.batter', 'offense.onDeck', 'offense.inHole'].forEach(
         (position) => {
-          const player = game.linescore.position;
+          const player = game.linescore?.position;
           if (player && +player.stats[2].stats.atBats > 0) {
             const slg = (
               (player.stats[2].stats.hits +
